@@ -8,7 +8,7 @@
 <link rel="up" href="ch31.html" title="Migrating from GConf to GSettings">
 <link rel="prev" href="ch31s02.html" title="Conceptual differences">
 <link rel="next" href="ch31s04.html" title="Change notification">
-<meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -21,7 +21,7 @@
 </tr></table>
 <div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="idp55896880"></a>GConfClient (and GConfBridge) API conversion</h2></div></div></div>
+<a name="idp8786112"></a>GConfClient (and GConfBridge) API conversion</h2></div></div></div>
 <p>
         Most people use GConf via the high-level <span class="type">GConfClient</span> API.
         The corresponding API is the <a class="link" href="GSettings.html" title="GSettings"><span class="type">GSettings</span></a> object. While not
@@ -41,86 +41,86 @@
 </tr></thead>
 <tbody>
 <tr>
-<td><code class="function">gconf_client_get_default()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-get-default"><code class="function">gconf_client_get_default()</code></a></td>
 <td>no direct equivalent,
                                                                    instead you call <a class="link" href="GSettings.html#g-settings-new" title="g_settings_new ()"><code class="function">g_settings_new()</code></a> for the schemas you use</td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_set()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-set"><code class="function">gconf_client_set()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-set" title="g_settings_set ()"><code class="function">g_settings_set()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_get()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-get"><code class="function">gconf_client_get()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-get" title="g_settings_get ()"><code class="function">g_settings_get()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_get_bool()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-get-bool"><code class="function">gconf_client_get_bool()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-get-boolean" title="g_settings_get_boolean ()"><code class="function">g_settings_get_boolean()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_set_bool()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-set-bool"><code class="function">gconf_client_set_bool()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-set-boolean" title="g_settings_set_boolean ()"><code class="function">g_settings_set_boolean()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_get_int()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-get-int"><code class="function">gconf_client_get_int()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-get-int" title="g_settings_get_int ()"><code class="function">g_settings_get_int()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_set_int()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-set-int"><code class="function">gconf_client_set_int()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-set-int" title="g_settings_set_int ()"><code class="function">g_settings_set_int()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_get_float()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-get-float"><code class="function">gconf_client_get_float()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-get-double" title="g_settings_get_double ()"><code class="function">g_settings_get_double()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_set_float()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-set-float"><code class="function">gconf_client_set_float()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-set-double" title="g_settings_set_double ()"><code class="function">g_settings_set_double()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_get_string()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-get-string"><code class="function">gconf_client_get_string()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-get-string" title="g_settings_get_string ()"><code class="function">g_settings_get_string()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_set_string()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-set-string"><code class="function">gconf_client_set_string()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-set-string" title="g_settings_set_string ()"><code class="function">g_settings_set_string()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_get_list()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-get-list"><code class="function">gconf_client_get_list()</code></a></td>
 <td>for string lists, see <a class="link" href="GSettings.html#g-settings-get-strv" title="g_settings_get_strv ()"><code class="function">g_settings_get_strv()</code></a>, else see <a class="link" href="GSettings.html#g-settings-get-value" title="g_settings_get_value ()"><code class="function">g_settings_get_value()</code></a> and <a href="./../glib/glib/glib-GVariant.html#GVariant"><span class="type">GVariant</span></a> API</td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_set_list()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-set-list"><code class="function">gconf_client_set_list()</code></a></td>
 <td>for string lists, see <a class="link" href="GSettings.html#g-settings-set-strv" title="g_settings_set_strv ()"><code class="function">g_settings_set_strv()</code></a>, else see <a class="link" href="GSettings.html#g-settings-set-value" title="g_settings_set_value ()"><code class="function">g_settings_set_value()</code></a> and <a href="./../glib/glib/glib-GVariant.html#GVariant"><span class="type">GVariant</span></a> API</td>
 </tr>
 <tr>
-<td><code class="function">gconf_entry_get_is_writable()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-value.html#gconf-entry-get-is-writable"><code class="function">gconf_entry_get_is_writable()</code></a></td>
 <td><a class="link" href="GSettings.html#g-settings-is-writable" title="g_settings_is_writable ()"><code class="function">g_settings_is_writable()</code></a></td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_notify_add()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-notify-add"><code class="function">gconf_client_notify_add()</code></a></td>
 <td>not required, the <a class="link" href="GSettings.html#GSettings-changed" title='The "changed" signal'><span class="type">"changed"</span></a> signal is emitted automatically</td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_add_dir()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-add-dir"><code class="function">gconf_client_add_dir()</code></a></td>
 <td>not required, each GSettings instance automatically watches all keys in its path</td>
 </tr>
 <tr>
-<td><span class="type">GConfChangeSet</span></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-changeset.html#GConfChangeSet"><span class="type">GConfChangeSet</span></a></td>
 <td>
 <a class="link" href="GSettings.html#g-settings-delay" title="g_settings_delay ()"><code class="function">g_settings_delay()</code></a>, <a class="link" href="GSettings.html#g-settings-apply" title="g_settings_apply ()"><code class="function">g_settings_apply()</code></a>
 </td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_get_default_from_schema()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-get-default-from-schema"><code class="function">gconf_client_get_default_from_schema()</code></a></td>
 <td>no equivalent, applications are expected to know their schema</td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_all_entries()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-all-entries"><code class="function">gconf_client_all_entries()</code></a></td>
 <td>no equivalent, applications are expected to know their schema, and GSettings does not allow schema-less entries</td>
 </tr>
 <tr>
-<td><code class="function">gconf_client_get_without_default()</code></td>
+<td><a href="/usr/share/gtk-doc/html/gconf/gconf-gconf-client.html#gconf-client-get-without-default"><code class="function">gconf_client_get_without_default()</code></a></td>
 <td>no equivalent</td>
 </tr>
 <tr>
@@ -154,6 +154,6 @@
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.18.1</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

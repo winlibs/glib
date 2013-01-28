@@ -20,8 +20,14 @@
 <ANCHOR id="example-animal-complete-poke" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-complete-poke">
 <ANCHOR id="example-animal-emit-jumped" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-emit-jumped">
 <ANCHOR id="example-animal-get-mood" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-get-mood">
+<ANCHOR id="example-animal-get-foo" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-get-foo">
+<ANCHOR id="example-animal-get-bar" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-get-bar">
 <ANCHOR id="example-animal-dup-mood" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-dup-mood">
+<ANCHOR id="example-animal-dup-foo" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-dup-foo">
+<ANCHOR id="example-animal-dup-bar" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-dup-bar">
 <ANCHOR id="example-animal-set-mood" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-set-mood">
+<ANCHOR id="example-animal-set-foo" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-set-foo">
+<ANCHOR id="example-animal-set-bar" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-set-bar">
 <ANCHOR id="ExampleAnimalProxy-struct" href="gdbus-object-manager-example/ExampleAnimal.html#ExampleAnimalProxy-struct">
 <ANCHOR id="ExampleAnimalProxyClass" href="gdbus-object-manager-example/ExampleAnimal.html#ExampleAnimalProxyClass">
 <ANCHOR id="example-animal-proxy-new" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-proxy-new">
@@ -34,6 +40,8 @@
 <ANCHOR id="ExampleAnimalSkeletonClass" href="gdbus-object-manager-example/ExampleAnimal.html#ExampleAnimalSkeletonClass">
 <ANCHOR id="example-animal-skeleton-new" href="gdbus-object-manager-example/ExampleAnimal.html#example-animal-skeleton-new">
 <ANCHOR id="ExampleAnimal.property-details" href="gdbus-object-manager-example/ExampleAnimal.html#ExampleAnimal.property-details">
+<ANCHOR id="ExampleAnimal--bar" href="gdbus-object-manager-example/ExampleAnimal.html#ExampleAnimal--bar">
+<ANCHOR id="ExampleAnimal--foo" href="gdbus-object-manager-example/ExampleAnimal.html#ExampleAnimal--foo">
 <ANCHOR id="ExampleAnimal--mood" href="gdbus-object-manager-example/ExampleAnimal.html#ExampleAnimal--mood">
 <ANCHOR id="ExampleAnimal.signal-details" href="gdbus-object-manager-example/ExampleAnimal.html#ExampleAnimal.signal-details">
 <ANCHOR id="ExampleAnimal-handle-poke" href="gdbus-object-manager-example/ExampleAnimal.html#ExampleAnimal-handle-poke">

@@ -158,7 +158,7 @@ typedef unsigned __int64 guintptr;
 
 #define GLIB_MAJOR_VERSION 2
 #define GLIB_MINOR_VERSION 34
-#define GLIB_MICRO_VERSION 0
+#define GLIB_MICRO_VERSION 3
 
 #define G_OS_WIN32
 #define G_PLATFORM_WIN32
@@ -260,10 +260,6 @@ typedef void * GPid;
 #define GLIB_SYSDEF_MSG_OOB       1
 #define GLIB_SYSDEF_MSG_PEEK      2
 #define GLIB_SYSDEF_MSG_DONTROUTE 4
-
-#define ALIGNOF_GUINT32 4
-#define ALIGNOF_GUINT64 8
-#define ALIGNOF_UNSIGNED_LONG 4
 
 G_END_DECLS
 

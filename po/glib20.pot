@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=glib&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-09-23 21:44-0400\n"
+"POT-Creation-Date: 2012-11-26 14:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: ../gio/gcancellable.c:318 ../gio/gdbusconnection.c:1885
 #: ../gio/gdbusconnection.c:1977 ../gio/gdbusprivate.c:1414
-#: ../gio/glocalfile.c:2152 ../gio/gsimpleasyncresult.c:841
+#: ../gio/glocalfile.c:2125 ../gio/gsimpleasyncresult.c:841
 #: ../gio/gsimpleasyncresult.c:867
 #, c-format
 msgid "Operation was cancelled"
@@ -69,12 +69,12 @@ msgstr ""
 #: ../gio/gcharsetconverter.c:344 ../gio/gdatainputstream.c:854
 #: ../gio/gdatainputstream.c:1294 ../glib/gconvert.c:764
 #: ../glib/gconvert.c:1156 ../glib/giochannel.c:1583 ../glib/giochannel.c:1625
-#: ../glib/giochannel.c:2468 ../glib/gutf8.c:841 ../glib/gutf8.c:1292
+#: ../glib/giochannel.c:2469 ../glib/gutf8.c:841 ../glib/gutf8.c:1292
 msgid "Invalid byte sequence in conversion input"
 msgstr ""
 
 #: ../gio/gcharsetconverter.c:349 ../glib/gconvert.c:772
-#: ../glib/gconvert.c:1081 ../glib/giochannel.c:1590 ../glib/giochannel.c:2480
+#: ../glib/gconvert.c:1081 ../glib/giochannel.c:1590 ../glib/giochannel.c:2481
 #, c-format
 msgid "Error during conversion: %s"
 msgstr ""
@@ -985,7 +985,7 @@ msgstr ""
 msgid "Containing mount does not exist"
 msgstr ""
 
-#: ../gio/gfile.c:2460 ../gio/glocalfile.c:2308
+#: ../gio/gfile.c:2460 ../gio/glocalfile.c:2281
 msgid "Can't copy over directory"
 msgstr ""
 
@@ -993,7 +993,7 @@ msgstr ""
 msgid "Can't copy directory over directory"
 msgstr ""
 
-#: ../gio/gfile.c:2528 ../gio/glocalfile.c:2317
+#: ../gio/gfile.c:2528 ../gio/glocalfile.c:2290
 msgid "Target file exists"
 msgstr ""
 
@@ -1177,12 +1177,12 @@ msgstr ""
 msgid "Failed to locate '%s' in current directory"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:288
+#: ../gio/glib-compile-resources.c:287
 #, c-format
 msgid "Unknown processing option \"%s\""
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:306 ../gio/glib-compile-resources.c:365
+#: ../gio/glib-compile-resources.c:306 ../gio/glib-compile-resources.c:366
 #, c-format
 msgid "Failed to create temp file: %s"
 msgstr ""
@@ -1194,81 +1194,81 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:391
+#: ../gio/glib-compile-resources.c:392
 #, c-format
 msgid ""
 "Error processing input file with to-pixdata:\n"
 "%s"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:404
+#: ../gio/glib-compile-resources.c:406
 #, c-format
 msgid "Error reading file %s: %s"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:424
+#: ../gio/glib-compile-resources.c:426
 #, c-format
 msgid "Error compressing file %s"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:488 ../gio/glib-compile-schemas.c:1567
+#: ../gio/glib-compile-resources.c:490 ../gio/glib-compile-schemas.c:1567
 #, c-format
 msgid "text may not appear inside <%s>"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:611
+#: ../gio/glib-compile-resources.c:613
 msgid "name of the output file"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:611 ../gio/glib-compile-resources.c:644
+#: ../gio/glib-compile-resources.c:613 ../gio/glib-compile-resources.c:646
 #: ../gio/gresource-tool.c:478 ../gio/gresource-tool.c:544
 msgid "FILE"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:612
+#: ../gio/glib-compile-resources.c:614
 msgid ""
 "The directories where files are to be read from (default to current "
 "directory)"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:612 ../gio/glib-compile-schemas.c:1995
+#: ../gio/glib-compile-resources.c:614 ../gio/glib-compile-schemas.c:1995
 #: ../gio/glib-compile-schemas.c:2025
 msgid "DIRECTORY"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:613
+#: ../gio/glib-compile-resources.c:615
 msgid ""
 "Generate output in the format selected for by the target filename extension"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:614
+#: ../gio/glib-compile-resources.c:616
 msgid "Generate source header"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:615
+#: ../gio/glib-compile-resources.c:617
 msgid "Generate sourcecode used to link in the resource file into your code"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:616
+#: ../gio/glib-compile-resources.c:618
 msgid "Generate dependency list"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:617
+#: ../gio/glib-compile-resources.c:619
 msgid "Don't automatically create and register resource"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:618
+#: ../gio/glib-compile-resources.c:620
 msgid "C identifier name used for the generated source code"
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:647
+#: ../gio/glib-compile-resources.c:649
 msgid ""
 "Compile a resource specification into a resource file.\n"
 "Resource specification files have the extension .gresource.xml,\n"
 "and the resource file have the extension called .gresource."
 msgstr ""
 
-#: ../gio/glib-compile-resources.c:663
+#: ../gio/glib-compile-resources.c:665
 #, c-format
 msgid "You should give exactly one file name\n"
 msgstr ""
@@ -1544,8 +1544,8 @@ msgstr ""
 msgid "Can't rename file, filename already exists"
 msgstr ""
 
-#: ../gio/glocalfile.c:1177 ../gio/glocalfile.c:2181 ../gio/glocalfile.c:2210
-#: ../gio/glocalfile.c:2370 ../gio/glocalfileoutputstream.c:581
+#: ../gio/glocalfile.c:1177 ../gio/glocalfile.c:2154 ../gio/glocalfile.c:2183
+#: ../gio/glocalfile.c:2343 ../gio/glocalfileoutputstream.c:581
 #: ../gio/glocalfileoutputstream.c:634 ../gio/glocalfileoutputstream.c:679
 #: ../gio/glocalfileoutputstream.c:1167
 msgid "Invalid filename"
@@ -1565,75 +1565,75 @@ msgstr ""
 msgid "Error removing file: %s"
 msgstr ""
 
-#: ../gio/glocalfile.c:1860
+#: ../gio/glocalfile.c:1833
 #, c-format
 msgid "Error trashing file: %s"
 msgstr ""
 
-#: ../gio/glocalfile.c:1883
+#: ../gio/glocalfile.c:1856
 #, c-format
 msgid "Unable to create trash dir %s: %s"
 msgstr ""
 
-#: ../gio/glocalfile.c:1904
+#: ../gio/glocalfile.c:1877
 msgid "Unable to find toplevel directory for trash"
 msgstr ""
 
-#: ../gio/glocalfile.c:1983 ../gio/glocalfile.c:2003
+#: ../gio/glocalfile.c:1956 ../gio/glocalfile.c:1976
 msgid "Unable to find or create trash directory"
 msgstr ""
 
-#: ../gio/glocalfile.c:2037
+#: ../gio/glocalfile.c:2010
 #, c-format
 msgid "Unable to create trashing info file: %s"
 msgstr ""
 
-#: ../gio/glocalfile.c:2066 ../gio/glocalfile.c:2071 ../gio/glocalfile.c:2151
-#: ../gio/glocalfile.c:2158
+#: ../gio/glocalfile.c:2039 ../gio/glocalfile.c:2044 ../gio/glocalfile.c:2124
+#: ../gio/glocalfile.c:2131
 #, c-format
 msgid "Unable to trash file: %s"
 msgstr ""
 
-#: ../gio/glocalfile.c:2159 ../glib/gregex.c:280
+#: ../gio/glocalfile.c:2132 ../glib/gregex.c:280
 msgid "internal error"
 msgstr ""
 
-#: ../gio/glocalfile.c:2185
+#: ../gio/glocalfile.c:2158
 #, c-format
 msgid "Error creating directory: %s"
 msgstr ""
 
-#: ../gio/glocalfile.c:2214
+#: ../gio/glocalfile.c:2187
 #, c-format
 msgid "Filesystem does not support symbolic links"
 msgstr ""
 
-#: ../gio/glocalfile.c:2218
+#: ../gio/glocalfile.c:2191
 #, c-format
 msgid "Error making symbolic link: %s"
 msgstr ""
 
-#: ../gio/glocalfile.c:2280 ../gio/glocalfile.c:2374
+#: ../gio/glocalfile.c:2253 ../gio/glocalfile.c:2347
 #, c-format
 msgid "Error moving file: %s"
 msgstr ""
 
-#: ../gio/glocalfile.c:2303
+#: ../gio/glocalfile.c:2276
 msgid "Can't move directory over directory"
 msgstr ""
 
-#: ../gio/glocalfile.c:2330 ../gio/glocalfileoutputstream.c:965
+#: ../gio/glocalfile.c:2303 ../gio/glocalfileoutputstream.c:965
 #: ../gio/glocalfileoutputstream.c:979 ../gio/glocalfileoutputstream.c:994
 #: ../gio/glocalfileoutputstream.c:1010 ../gio/glocalfileoutputstream.c:1024
 msgid "Backup file creation failed"
 msgstr ""
 
-#: ../gio/glocalfile.c:2349
+#: ../gio/glocalfile.c:2322
 #, c-format
 msgid "Error removing target file: %s"
 msgstr ""
 
-#: ../gio/glocalfile.c:2363
+#: ../gio/glocalfile.c:2336
 msgid "Move between mounts not supported"
 msgstr ""
 
@@ -2282,7 +2282,7 @@ msgstr ""
 msgid "Socket is already closed"
 msgstr ""
 
-#: ../gio/gsocket.c:309 ../gio/gsocket.c:3529 ../gio/gsocket.c:3584
+#: ../gio/gsocket.c:309 ../gio/gsocket.c:3530 ../gio/gsocket.c:3585
 msgid "Socket I/O timed out"
 msgstr ""
 
@@ -2347,7 +2347,7 @@ msgstr ""
 msgid "Connection in progress"
 msgstr ""
 
-#: ../gio/gsocket.c:2347 ../gio/gsocket.c:4326
+#: ../gio/gsocket.c:2347 ../gio/gsocket.c:4327
 #, c-format
 msgid "Unable to get pending error: %s"
 msgstr ""
@@ -2372,26 +2372,26 @@ msgstr ""
 msgid "Error closing socket: %s"
 msgstr ""
 
-#: ../gio/gsocket.c:3522
+#: ../gio/gsocket.c:3523
 #, c-format
 msgid "Waiting for socket condition: %s"
 msgstr ""
 
-#: ../gio/gsocket.c:3800 ../gio/gsocket.c:3881
+#: ../gio/gsocket.c:3801 ../gio/gsocket.c:3882
 #, c-format
 msgid "Error sending message: %s"
 msgstr ""
 
-#: ../gio/gsocket.c:3825
+#: ../gio/gsocket.c:3826
 msgid "GSocketControlMessage not supported on Windows"
 msgstr ""
 
-#: ../gio/gsocket.c:4105 ../gio/gsocket.c:4241
+#: ../gio/gsocket.c:4106 ../gio/gsocket.c:4242
 #, c-format
 msgid "Error receiving message: %s"
 msgstr ""
 
-#: ../gio/gsocket.c:4345
+#: ../gio/gsocket.c:4346
 msgid "g_socket_get_credentials not implemented for this OS"
 msgstr ""
 
@@ -2804,37 +2804,37 @@ msgstr ""
 msgid "Cannot convert fallback '%s' to codeset '%s'"
 msgstr ""
 
-#: ../glib/gconvert.c:1870
+#: ../glib/gconvert.c:1871
 #, c-format
 msgid "The URI '%s' is not an absolute URI using the \"file\" scheme"
 msgstr ""
 
-#: ../glib/gconvert.c:1880
+#: ../glib/gconvert.c:1881
 #, c-format
 msgid "The local file URI '%s' may not include a '#'"
 msgstr ""
 
-#: ../glib/gconvert.c:1897
+#: ../glib/gconvert.c:1898
 #, c-format
 msgid "The URI '%s' is invalid"
 msgstr ""
 
-#: ../glib/gconvert.c:1909
+#: ../glib/gconvert.c:1910
 #, c-format
 msgid "The hostname of the URI '%s' is invalid"
 msgstr ""
 
-#: ../glib/gconvert.c:1925
+#: ../glib/gconvert.c:1926
 #, c-format
 msgid "The URI '%s' contains invalidly escaped characters"
 msgstr ""
 
-#: ../glib/gconvert.c:2020
+#: ../glib/gconvert.c:2021
 #, c-format
 msgid "The pathname '%s' is not an absolute path"
 msgstr ""
 
-#: ../glib/gconvert.c:2030
+#: ../glib/gconvert.c:2031
 msgid "Invalid hostname"
 msgstr ""
 
@@ -3109,7 +3109,7 @@ msgstr ""
 msgid "Failed to rename file '%s' to '%s': g_rename() failed: %s"
 msgstr ""
 
-#: ../glib/gfileutils.c:1035 ../glib/gfileutils.c:1579
+#: ../glib/gfileutils.c:1035 ../glib/gfileutils.c:1593
 #, c-format
 msgid "Failed to create file '%s': %s"
 msgstr ""
@@ -3144,22 +3144,22 @@ msgstr ""
 msgid "Existing file '%s' could not be removed: g_unlink() failed: %s"
 msgstr ""
 
-#: ../glib/gfileutils.c:1542
+#: ../glib/gfileutils.c:1556
 #, c-format
 msgid "Template '%s' invalid, should not contain a '%s'"
 msgstr ""
 
-#: ../glib/gfileutils.c:1555
+#: ../glib/gfileutils.c:1569
 #, c-format
 msgid "Template '%s' doesn't contain XXXXXX"
 msgstr ""
 
-#: ../glib/gfileutils.c:2083
+#: ../glib/gfileutils.c:2097
 #, c-format
 msgid "Failed to read the symbolic link '%s': %s"
 msgstr ""
 
-#: ../glib/gfileutils.c:2104
+#: ../glib/gfileutils.c:2118
 msgid "Symbolic links not supported"
 msgstr ""
 
@@ -3172,8 +3172,8 @@ msgstr ""
 msgid "Can't do a raw read in g_io_channel_read_line_string"
 msgstr ""
 
-#: ../glib/giochannel.c:1807 ../glib/giochannel.c:2064
-#: ../glib/giochannel.c:2151
+#: ../glib/giochannel.c:1807 ../glib/giochannel.c:2065
+#: ../glib/giochannel.c:2152
 msgid "Leftover unconverted data in read buffer"
 msgstr ""
 

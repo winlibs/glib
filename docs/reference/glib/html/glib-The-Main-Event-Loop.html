@@ -8,7 +8,7 @@
 <link rel="up" href="glib-core.html" title="GLib Core Application Support">
 <link rel="prev" href="glib-core.html" title="GLib Core Application Support">
 <link rel="next" href="glib-Threads.html" title="Threads">
-<meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -271,13 +271,13 @@ boxes. Note that event sources are associated with a particular
 loops associated with that GMainContext.
 </p>
 <p>
-GTK+ contains wrappers of some of these functions, e.g. <a href="http://library.gnome.org/devel/gtk3/gtk-General.html#gtk-main"><code class="function">gtk_main()</code></a>,
-<a href="http://library.gnome.org/devel/gtk3/gtk-General.html#gtk-main-quit"><code class="function">gtk_main_quit()</code></a> and <a href="http://library.gnome.org/devel/gtk3/gtk-General.html#gtk-events-pending"><code class="function">gtk_events_pending()</code></a>.
+GTK+ contains wrappers of some of these functions, e.g. <a href="http://developer.gnome.org/gtk2/gtk3-General.html#gtk-main"><code class="function">gtk_main()</code></a>,
+<a href="http://developer.gnome.org/gtk2/gtk3-General.html#gtk-main-quit"><code class="function">gtk_main_quit()</code></a> and <a href="http://developer.gnome.org/gtk2/gtk3-General.html#gtk-events-pending"><code class="function">gtk_events_pending()</code></a>.
 </p>
 <p>
 </p>
 <div class="refsect2">
-<a name="idp17354464"></a><h3>Creating new source types</h3>
+<a name="idp17306496"></a><h3>Creating new source types</h3>
 <p>One of the unusual features of the <a class="link" href="glib-The-Main-Event-Loop.html#GMainLoop" title="GMainLoop"><span class="type">GMainLoop</span></a> functionality
 is that new types of event source can be created and used in
 addition to the builtin type of event source. A new event source
@@ -300,7 +300,7 @@ can add file descriptors to the set that the main context checks using
 </p>
 <hr>
 <div class="refsect2">
-<a name="idp17362720"></a><h3>Customizing the main loop iteration</h3>
+<a name="idp17314752"></a><h3>Customizing the main loop iteration</h3>
 <p>Single iterations of a <a class="link" href="glib-The-Main-Event-Loop.html#GMainContext" title="GMainContext"><span class="type">GMainContext</span></a> can be run with
 <a class="link" href="glib-The-Main-Event-Loop.html#g-main-context-iteration" title="g_main_context_iteration ()"><code class="function">g_main_context_iteration()</code></a>. In some cases, more detailed control
 of exactly how the details of the main loop work is desired, for
@@ -1266,7 +1266,7 @@ Determines information necessary to poll this main loop.
 <tr>
 <td><p><span class="term"><em class="parameter"><code>fds</code></em> :</span></p></td>
 <td>location to
-store <a class="link" href="glib-The-Main-Event-Loop.html#GPollFD" title="struct GPollFD"><span class="type">GPollFD</span></a> records that need to be polled. <span class="annotation">[<acronym title="Out parameter, where caller must allocate storage."><span class="acronym">out caller-allocates</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=n_fds]</span>
+store <a class="link" href="glib-The-Main-Event-Loop.html#GPollFD" title="struct GPollFD"><span class="type">GPollFD</span></a> records that need to be polled. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym> caller-allocates][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=n_fds]</span>
 </td>
 </tr>
 <tr>
@@ -1687,7 +1687,7 @@ following techniques:
 </p>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem"><p>
-    Use <a href="http://library.gnome.org/devel/gtk3/GtkWidget.html#gtk-widget-set-sensitive"><code class="function">gtk_widget_set_sensitive()</code></a> or modal dialogs to prevent
+    Use <a href="http://developer.gnome.org/gtk2/GtkWidget.html#gtk-widget-set-sensitive"><code class="function">gtk_widget_set_sensitive()</code></a> or modal dialogs to prevent
     the user from interacting with elements while the main
     loop is recursing.
   </p></li>
@@ -1958,7 +1958,7 @@ started while the non-default context is active.
 <p>
 Beware that libraries that predate this function may not correctly
 handle being used from a thread with a thread-default context. Eg,
-see <a href="http://library.gnome.org/devel/gio/unstable/GFile.html#g-file-supports-thread-contexts"><code class="function">g_file_supports_thread_contexts()</code></a>.
+see <a href="./../gio/gio/GFile.html#g-file-supports-thread-contexts"><code class="function">g_file_supports_thread_contexts()</code></a>.
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
@@ -2833,7 +2833,7 @@ representing an event source.
 <a name="GSourceDummyMarshal"></a><h3>GSourceDummyMarshal ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                (*GSourceDummyMarshal)              (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <p>
-This is just a placeholder for <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Closures.html#GClosureMarshal"><span class="type">GClosureMarshal</span></a>,
+This is just a placeholder for <a href="./../gobject/gobject/gobject-Closures.html#GClosureMarshal"><span class="type">GClosureMarshal</span></a>,
 which cannot be used here for dependency reasons.
 </p>
 </div>
@@ -3194,7 +3194,7 @@ before the dispatch of your idle handler.
 <span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">-&gt;</span><span class="normal">idle_id</span><span class="symbol">)</span>
 <span class="normal">    </span><span class="function"><a href="glib-The-Main-Event-Loop.html#g-source-remove">g_source_remove</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">-&gt;</span><span class="normal">idle_id</span><span class="symbol">);</span>
 <span class="normal">   </span>
-<span class="normal">  </span><span class="function"><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#G-OBJECT-CLASS:CAPS">G_OBJECT_CLASS</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">parent_class</span><span class="symbol">)-&gt;</span><span class="function">finalize</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span>
+<span class="normal">  </span><span class="function"><a href="./../gobject/gobject/gobject-The-Base-Object-Type.html#G-OBJECT-CLASS:CAPS">G_OBJECT_CLASS</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">parent_class</span><span class="symbol">)-&gt;</span><span class="function">finalize</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span>
 <span class="cbracket">}</span></pre></td>
       </tr>
     </tbody>
@@ -3724,7 +3724,7 @@ its own prepare/check functions indicate that it is ready.)
 </p>
 <p>
 If you don't need <em class="parameter"><code>child_source</code></em> to do anything on its own when it
-triggers, you can call <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Closures.html#g-source-set-dummy-callback"><code class="function">g_source_set_dummy_callback()</code></a> on it to set a
+triggers, you can call <a href="./../gobject/gobject/gobject-Closures.html#g-source-set-dummy-callback"><code class="function">g_source_set_dummy_callback()</code></a> on it to set a
 callback that does nothing (except return <a class="link" href="glib-Standard-Macros.html#TRUE:CAPS" title="TRUE"><code class="literal">TRUE</code></a> if appropriate).
 </p>
 <p>
@@ -3941,6 +3941,6 @@ data, only one will be destroyed.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.18.1</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

@@ -8,7 +8,7 @@
 <link rel="up" href="ch32.html" title="Migrating to GDBus">
 <link rel="prev" href="ch32s02.html" title="API comparison">
 <link rel="next" href="ch32s04.html" title="Creating proxies for well-known names">
-<meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -21,7 +21,7 @@
 </tr></table>
 <div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="idp77277568"></a>Owning bus names</h2></div></div></div>
+<a name="idp76996624"></a>Owning bus names</h2></div></div></div>
 <p>
       Using dbus-glib, you typically call RequestName manually
       to own a name, like in the following excerpt:
@@ -76,7 +76,7 @@
 44
 45</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="normal">error </span><span class="symbol">=</span><span class="normal"> <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span>
-<span class="normal">res </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="/home/mclasen/gnome/share/gtk-doc/html/dbus-glib/dbus-glib-DBusGProxy.html#dbus-g-proxy-call">dbus_g_proxy_call</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">system_bus_proxy</span><span class="symbol">,</span>
+<span class="normal">res </span><span class="symbol">=</span><span class="normal"> </span><span class="function">dbus_g_proxy_call</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">system_bus_proxy</span><span class="symbol">,</span>
 <span class="normal">                         </span><span class="string">"RequestName"</span><span class="symbol">,</span>
 <span class="normal">                         </span><span class="symbol">&amp;</span><span class="normal">error</span><span class="symbol">,</span>
 <span class="normal">                         <a href="./../gobject/gobject/gobject-Type-Information.html#G-TYPE-STRING:CAPS">G_TYPE_STRING</a></span><span class="symbol">,</span><span class="normal"> NAME_TO_CLAIM</span><span class="symbol">,</span>
@@ -114,9 +114,9 @@
 <span class="normal">    </span><span class="function">exit</span><span class="normal"> </span><span class="symbol">(</span><span class="number">1</span><span class="symbol">);</span>
 <span class="normal">  </span><span class="cbracket">}</span>
 
-<span class="function"><a href="/home/mclasen/gnome/share/gtk-doc/html/dbus-glib/dbus-glib-DBusGProxy.html#dbus-g-proxy-add-signal">dbus_g_proxy_add_signal</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">system_bus_proxy</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"NameLost"</span><span class="symbol">,</span>
+<span class="function">dbus_g_proxy_add_signal</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">system_bus_proxy</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"NameLost"</span><span class="symbol">,</span>
 <span class="normal">                         <a href="./../gobject/gobject/gobject-Type-Information.html#G-TYPE-STRING:CAPS">G_TYPE_STRING</a></span><span class="symbol">,</span><span class="normal"> <a href="./../gobject/gobject/gobject-Type-Information.html#G-TYPE-INVALID:CAPS">G_TYPE_INVALID</a></span><span class="symbol">);</span>
-<span class="function"><a href="/home/mclasen/gnome/share/gtk-doc/html/dbus-glib/dbus-glib-DBusGProxy.html#dbus-g-proxy-connect-signal">dbus_g_proxy_connect_signal</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">system_bus_proxy</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"NameLost"</span><span class="symbol">,</span>
+<span class="function">dbus_g_proxy_connect_signal</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">system_bus_proxy</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"NameLost"</span><span class="symbol">,</span>
 <span class="normal">                             </span><span class="function"><a href="./../gobject/gobject/gobject-Closures.html#G-CALLBACK:CAPS">G_CALLBACK</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">on_name_lost</span><span class="symbol">),</span><span class="normal"> <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">,</span><span class="normal"> <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">);</span>
 
 <span class="comment">/* further setup ... */</span></pre></td>
@@ -197,6 +197,6 @@
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.18.1</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

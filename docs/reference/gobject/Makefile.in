@@ -875,12 +875,12 @@ setup-build.stamp:
 
 scan-build.stamp: $(HFILE_GLOB) $(CFILE_GLOB)
 	@echo '  DOC   Scanning header files'
-	_source_dir='' ; \
+	@_source_dir='' ; \
 	for i in $(DOC_SOURCE_DIR) ; do \
 	    _source_dir="$${_source_dir} --source-dir=$$i" ; \
 	done ; \
 	gtkdoc-scan --module=$(DOC_MODULE) --ignore-headers="$(IGNORE_HFILES)" $${_source_dir} $(SCAN_OPTIONS) $(EXTRA_HFILES)
-	if grep -l '^..*$$' $(DOC_MODULE).types > /dev/null 2>&1 ; then \
+	@if grep -l '^..*$$' $(DOC_MODULE).types > /dev/null 2>&1 ; then \
 	    echo "  DOC   Introspecting gobjects"; \
 	    scanobj_options=""; \
 	    gtkdoc-scangobj 2>&1 --help | grep  >/dev/null "\-\-verbose"; \
@@ -896,7 +896,7 @@ scan-build.stamp: $(HFILE_GLOB) $(CFILE_GLOB)
 	        test -f $$i || touch $$i ; \
 	    done \
 	fi
-	touch scan-build.stamp
+	@touch scan-build.stamp
 
 $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt: scan-build.stamp
 	@true
@@ -983,7 +983,7 @@ distclean-local:
 	    rm -f $(SETUP_FILES) $(expand_content_files) $(DOC_MODULE).types; \
 	fi
 
-maintainer-clean-local:
+maintainer-clean-local: clean
 	@rm -rf xml html
 
 install-data-local:
@@ -1019,7 +1019,7 @@ uninstall-local:
 #
 # Require gtk-doc when making dist
 #
-@ENABLE_GTK_DOC_TRUE@dist-check-gtkdoc: docs
+@ENABLE_GTK_DOC_TRUE@dist-check-gtkdoc:
 @ENABLE_GTK_DOC_FALSE@dist-check-gtkdoc:
 @ENABLE_GTK_DOC_FALSE@	@echo "*** gtk-doc must be installed and enabled in order to make dist"
 @ENABLE_GTK_DOC_FALSE@	@false

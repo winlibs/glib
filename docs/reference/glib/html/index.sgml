@@ -3053,7 +3053,6 @@
 <ANCHOR id="glib-gettextize" href="glib/glib-gettextize.html">
 <ANCHOR id="gtester" href="glib/gtester.html">
 <ANCHOR id="gtester-report" href="glib/gtester-report.html">
-<ANCHOR id="annotation-glossterm-out caller-allocates" href="glib/annotation-glossary.html#annotation-glossterm-out caller-allocates">
 <ANCHOR id="annotation-glossterm-out" href="glib/annotation-glossary.html#annotation-glossterm-out">
 <ANCHOR id="annotation-glossterm-scope async" href="glib/annotation-glossary.html#annotation-glossterm-scope async">
 <ANCHOR id="annotation-glossterm-allow-none" href="glib/annotation-glossary.html#annotation-glossterm-allow-none">
@@ -3064,5 +3063,6 @@
 <ANCHOR id="annotation-glossterm-array" href="glib/annotation-glossary.html#annotation-glossterm-array">
 <ANCHOR id="annotation-glossterm-element-type" href="glib/annotation-glossary.html#annotation-glossterm-element-type">
 <ANCHOR id="annotation-glossterm-transfer container" href="glib/annotation-glossary.html#annotation-glossterm-transfer container">
+<ANCHOR id="annotation-glossterm-in" href="glib/annotation-glossary.html#annotation-glossterm-in">
 <ANCHOR id="annotation-glossterm-transfer full" href="glib/annotation-glossary.html#annotation-glossterm-transfer full">
 <ANCHOR id="annotation-glossterm-type" href="glib/annotation-glossary.html#annotation-glossterm-type">

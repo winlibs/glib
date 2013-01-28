@@ -65,7 +65,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/INSTALL.in \
 	$(srcdir)/gobject-2.0.pc.in $(srcdir)/gthread-2.0.pc.in \
 	$(top_srcdir)/Makefile.decl $(top_srcdir)/configure AUTHORS \
 	COPYING ChangeLog INSTALL NEWS compile config.guess config.sub \
-	install-sh ltmain.sh missing mkinstalldirs
+	depcomp install-sh ltmain.sh missing mkinstalldirs py-compile
 @BUILD_MODULAR_TESTS_TRUE@am__append_1 = tests 
 @BUILD_MODULAR_TESTS_FALSE@am__append_2 = tests
 @OS_UNIX_TRUE@am__append_3 = gio-unix-2.0.pc

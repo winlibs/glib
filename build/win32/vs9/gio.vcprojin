@@ -70,7 +70,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib_a.lib ws2_32.lib shlwapi.lib dnsapi.lib"
+				AdditionalDependencies="zlib1.lib ws2_32.lib shlwapi.lib dnsapi.lib"
 				OutputFile="$(OutDir)\$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="$(IntDir)\gio.def"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib_a.lib ws2_32.lib shlwapi.lib dnsapi.lib"
+				AdditionalDependencies="zlib1.lib ws2_32.lib shlwapi.lib dnsapi.lib"
 				OutputFile="$(OutDir)\$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="$(IntDir)\gio.def"

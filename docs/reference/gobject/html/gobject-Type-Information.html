@@ -8,7 +8,7 @@
 <link rel="up" href="rn01.html" title="API Reference">
 <link rel="prev" href="rn01.html" title="API Reference">
 <link rel="next" href="GTypePlugin.html" title="GTypePlugin">
-<meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -857,6 +857,10 @@ used specifically for managing interface types.
 				  guint		collect_flags);
 };
 </pre>
+<p>
+The <a class="link" href="gobject-Type-Information.html#GTypeValueTable" title="struct GTypeValueTable"><span class="type">GTypeValueTable</span></a> provides the functions required by the <a class="link" href="gobject-Generic-values.html#GValue" title="GValue"><span class="type">GValue</span></a> implementation,
+to serve as a container for values of a type.
+</p>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">
@@ -1084,15 +1088,94 @@ a look at an exemplary implementation for <code class="function">collect_value()
 </div>
 
 The reference count for valid objects is always incremented,
-regardless of <em class="parameter"><code>collect_flags</code></em>. For invalid objects, the example</td>
+regardless of <em class="parameter"><code>collect_flags</code></em>. For invalid objects, the example
+returns a newly allocated string without altering <em class="parameter"><code>value</code></em>.
+Upon success, <code class="function">collect_value()</code> needs to return <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. If, however,
+an error condition occurred, <code class="function">collect_value()</code> may spew an
+error by returning a newly allocated non-<a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> string, giving
+a suitable description of the error condition.
+The calling code makes no assumptions about the <em class="parameter"><code>value</code></em>
+contents being valid upon error returns, <em class="parameter"><code>value</code></em>
+is simply thrown away without further freeing. As such, it is
+a good idea to not allocate <a class="link" href="gobject-Generic-values.html#GValue" title="GValue"><span class="type">GValue</span></a> contents, prior to returning
+an error, however, <code class="function">collect_values()</code> is not obliged to return
+a correctly setup <em class="parameter"><code>value</code></em> for error returns, simply because
+any non-<a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> return is considered a fatal condition so further
+program behaviour is undefined.</td>
 </tr>
 <tr>
 <td><p><span class="term">const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *<em class="structfield"><code><a name="GTypeValueTable.lcopy-format"></a>lcopy_format</code></em>;</span></p></td>
-<td></td>
+<td>Format description of the arguments to collect for <em class="parameter"><code>lcopy_value</code></em>,
+analogous to <em class="parameter"><code>collect_format</code></em>. Usually, <em class="parameter"><code>lcopy_format</code></em> string consists
+only of 'p's to provide <code class="function">lcopy_value()</code> with pointers to storage locations.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="GTypeValueTable.lcopy-value"></a>lcopy_value</code></em> ()</span></p></td>
-<td></td>
+<td>This function is responsible for storing the <em class="parameter"><code>value</code></em> contents into
+arguments passed through a variable argument list which got
+collected into <em class="parameter"><code>collect_values</code></em> according to <em class="parameter"><code>lcopy_format</code></em>.
+<em class="parameter"><code>n_collect_values</code></em> equals the string length of <em class="parameter"><code>lcopy_format</code></em>,
+and <em class="parameter"><code>collect_flags</code></em> may contain <code class="literal">G_VALUE_NOCOPY_CONTENTS</code>.
+In contrast to <code class="function">collect_value()</code>, <code class="function">lcopy_value()</code> is obliged to
+always properly support <code class="literal">G_VALUE_NOCOPY_CONTENTS</code>.
+Similar to <code class="function">collect_value()</code> the function may prematurely abort
+by returning a newly allocated string describing an error condition.
+To complete the string example:
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">**</span><span class="normal">string_p </span><span class="symbol">=</span><span class="normal"> collect_values</span><span class="symbol">[</span><span class="number">0</span><span class="symbol">].</span><span class="normal">v_pointer</span><span class="symbol">;</span>
+<span class="keyword">if</span><span class="normal"> </span><span class="symbol">(!</span><span class="normal">string_p</span><span class="symbol">)</span>
+<span class="keyword">return</span><span class="normal"> </span><span class="function"><a href="./../glib/glib/glib-String-Utility-Functions.html#g-strdup-printf">g_strdup_printf</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"string location passed as NULL"</span><span class="symbol">);</span>
+<span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">collect_flags </span><span class="symbol">&amp;</span><span class="normal"> G_VALUE_NOCOPY_CONTENTS</span><span class="symbol">)</span>
+<span class="symbol">*</span><span class="normal">string_p </span><span class="symbol">=</span><span class="normal"> value</span><span class="symbol">-&gt;</span><span class="normal">data</span><span class="symbol">[</span><span class="number">0</span><span class="symbol">].</span><span class="normal">v_pointer</span><span class="symbol">;</span>
+<span class="keyword">else</span>
+<span class="symbol">*</span><span class="normal">string_p </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="./../glib/glib/glib-String-Utility-Functions.html#g-strdup">g_strdup</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">-&gt;</span><span class="normal">data</span><span class="symbol">[</span><span class="number">0</span><span class="symbol">].</span><span class="normal">v_pointer</span><span class="symbol">);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+And an illustrative version of <code class="function">lcopy_value()</code> for
+reference-counted types:
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">GObject</span><span class="normal"> </span><span class="symbol">**</span><span class="normal">object_p </span><span class="symbol">=</span><span class="normal"> collect_values</span><span class="symbol">[</span><span class="number">0</span><span class="symbol">].</span><span class="normal">v_pointer</span><span class="symbol">;</span>
+<span class="keyword">if</span><span class="normal"> </span><span class="symbol">(!</span><span class="normal">object_p</span><span class="symbol">)</span>
+<span class="keyword">return</span><span class="normal"> </span><span class="function"><a href="./../glib/glib/glib-String-Utility-Functions.html#g-strdup-printf">g_strdup_printf</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"object location passed as NULL"</span><span class="symbol">);</span>
+<span class="keyword">if</span><span class="normal"> </span><span class="symbol">(!</span><span class="normal">value</span><span class="symbol">-&gt;</span><span class="normal">data</span><span class="symbol">[</span><span class="number">0</span><span class="symbol">].</span><span class="normal">v_pointer</span><span class="symbol">)</span>
+<span class="symbol">*</span><span class="normal">object_p </span><span class="symbol">=</span><span class="normal"> <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span>
+<span class="keyword">else</span><span class="normal"> </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">collect_flags </span><span class="symbol">&amp;</span><span class="normal"> G_VALUE_NOCOPY_CONTENTS</span><span class="symbol">)</span><span class="normal"> </span><span class="comment">/* always honour */</span>
+<span class="symbol">*</span><span class="normal">object_p </span><span class="symbol">=</span><span class="normal"> value</span><span class="symbol">-&gt;</span><span class="normal">data</span><span class="symbol">[</span><span class="number">0</span><span class="symbol">].</span><span class="normal">v_pointer</span><span class="symbol">;</span>
+<span class="keyword">else</span>
+<span class="symbol">*</span><span class="normal">object_p </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-ref">g_object_ref</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">-&gt;</span><span class="normal">data</span><span class="symbol">[</span><span class="number">0</span><span class="symbol">].</span><span class="normal">v_pointer</span><span class="symbol">);</span>
+<span class="keyword">return</span><span class="normal"> <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -1886,7 +1969,7 @@ exist already.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>The <a class="link" href="gobject-Type-Information.html#GTypeClass" title="struct GTypeClass"><span class="type">GTypeClass</span></a>
-structure for the given type ID. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeClass][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+structure for the given type ID. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeClass][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -1916,7 +1999,7 @@ exist (hasn't been referenced before).
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>The <a class="link" href="gobject-Type-Information.html#GTypeClass" title="struct GTypeClass"><span class="type">GTypeClass</span></a>
 structure for the given type ID or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the class does not
-currently exist. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeClass][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+currently exist. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeClass][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -1944,7 +2027,7 @@ static types.
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>The <a class="link" href="gobject-Type-Information.html#GTypeClass" title="struct GTypeClass"><span class="type">GTypeClass</span></a>
 structure for the given type ID or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the class does not
-currently exist or is dynamically loaded. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeClass][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+currently exist or is dynamically loaded. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeClass][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -1969,7 +2052,7 @@ class pointer after <a class="link" href="gobject-Type-Information.html#g-type-c
 <tbody><tr>
 <td><p><span class="term"><em class="parameter"><code>g_class</code></em> :</span></p></td>
 <td>The <a class="link" href="gobject-Type-Information.html#GTypeClass" title="struct GTypeClass"><span class="type">GTypeClass</span></a> structure to
-unreference. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeClass]</span>
+unreference. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeClass]</span>
 </td>
 </tr></tbody>
 </table></div>
@@ -2002,13 +2085,13 @@ g_type_class_peek (g_type_parent (G_TYPE_FROM_CLASS (g_class)));
 <tr>
 <td><p><span class="term"><em class="parameter"><code>g_class</code></em> :</span></p></td>
 <td>The <a class="link" href="gobject-Type-Information.html#GTypeClass" title="struct GTypeClass"><span class="type">GTypeClass</span></a> structure to
-retrieve the parent class for. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeClass]</span>
+retrieve the parent class for. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeClass]</span>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>The parent class
-of <em class="parameter"><code>g_class</code></em>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeClass][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+of <em class="parameter"><code>g_class</code></em>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeClass][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -2030,7 +2113,7 @@ structures.
 </p>
 <p>
 Note that the accumulated size of the private structures of
-a type and all its parent types cannot excced 64 KiB.
+a type and all its parent types cannot exceed 64 KiB.
 </p>
 <p>
 This function should be called in the type's <code class="function">class_init()</code> function.
@@ -2203,7 +2286,7 @@ passed in class conforms.
 <tbody>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>instance_class</code></em> :</span></p></td>
-<td>A <a class="link" href="gobject-Type-Information.html#GTypeClass" title="struct GTypeClass"><span class="type">GTypeClass</span></a> structure. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeClass]</span>
+<td>A <a class="link" href="gobject-Type-Information.html#GTypeClass" title="struct GTypeClass"><span class="type">GTypeClass</span></a> structure. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeClass]</span>
 </td>
 </tr>
 <tr>
@@ -2214,7 +2297,7 @@ passed in class conforms.
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>The GTypeInterface
 structure of iface_type if implemented by <em class="parameter"><code>instance_class</code></em>, <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>
-otherwise. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeInterface][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+otherwise. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeInterface][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -2238,7 +2321,7 @@ then possibly overriding some methods.
 <tbody>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>g_iface</code></em> :</span></p></td>
-<td>A <a class="link" href="gobject-Type-Information.html#GTypeInterface" title="struct GTypeInterface"><span class="type">GTypeInterface</span></a> structure. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeInterface]</span>
+<td>A <a class="link" href="gobject-Type-Information.html#GTypeInterface" title="struct GTypeInterface"><span class="type">GTypeInterface</span></a> structure. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeInterface]</span>
 </td>
 </tr>
 <tr>
@@ -2246,7 +2329,7 @@ then possibly overriding some methods.
 <td>The
 corresponding <a class="link" href="gobject-Type-Information.html#GTypeInterface" title="struct GTypeInterface"><span class="type">GTypeInterface</span></a> structure of the parent type of the
 instance type to which <em class="parameter"><code>g_iface</code></em> belongs, or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the parent
-type doesn't conform to the interface. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeInterface]</span>
+type doesn't conform to the interface. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeInterface]</span>
 </td>
 </tr>
 </tbody>
@@ -2284,7 +2367,7 @@ have been installed.
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the default
 vtable for the interface; call <a class="link" href="gobject-Type-Information.html#g-type-default-interface-unref" title="g_type_default_interface_unref ()"><code class="function">g_type_default_interface_unref()</code></a>
-when you are done using the interface. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeInterface][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+when you are done using the interface. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeInterface][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -2313,7 +2396,7 @@ default interface vtable.
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the default
 vtable for the interface, or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the type is not currently in
-use. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeInterface][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+use. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeInterface][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -2341,7 +2424,7 @@ vtable (the <em class="structfield"><code>class_finalize</code></em> member of
 <td><p><span class="term"><em class="parameter"><code>g_iface</code></em> :</span></p></td>
 <td>the default vtable
 structure for a interface, as returned by
-<a class="link" href="gobject-Type-Information.html#g-type-default-interface-ref" title="g_type_default_interface_ref ()"><code class="function">g_type_default_interface_ref()</code></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeInterface]</span>
+<a class="link" href="gobject-Type-Information.html#g-type-default-interface-ref" title="g_type_default_interface_ref ()"><code class="function">g_type_default_interface_ref()</code></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeInterface]</span>
 </td>
 </tr></tbody>
 </table></div>
@@ -2545,7 +2628,7 @@ left untouched.
 <tr>
 <td><p><span class="term"><em class="parameter"><code>query</code></em> :</span></p></td>
 <td>A user provided structure that is
-filled in with constant values upon success. <span class="annotation">[<acronym title="Out parameter, where caller must allocate storage."><span class="acronym">out caller-allocates</span></acronym>]</span>
+filled in with constant values upon success. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym> caller-allocates]</span>
 </td>
 </tr>
 </tbody>
@@ -3584,7 +3667,7 @@ otherwise.
 <tbody><tr>
 <td><p><span class="term"><em class="parameter"><code>g_class</code></em> :</span></p></td>
 <td>The <a class="link" href="gobject-Type-Information.html#GTypeClass" title="struct GTypeClass"><span class="type">GTypeClass</span></a> structure to
-unreference. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.TypeClass]</span>
+unreference. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.TypeClass]</span>
 </td>
 </tr></tbody>
 </table></div>
@@ -4556,6 +4639,6 @@ type id with <a class="link" href="gobject-Type-Information.html#G-TYPE-MAKE-FUN
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.18.1</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

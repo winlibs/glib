@@ -3561,6 +3561,8 @@
 <ANCHOR id="gdbus-signal-org-gtk-GDBus-Example-ObjectManager-Animal.Jumped" href="gio/gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-signal-org-gtk-GDBus-Example-ObjectManager-Animal.Jumped">
 <ANCHOR id="gdbus-properties-org.gtk.GDBus.Example.ObjectManager.Animal" href="gio/gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-properties-org.gtk.GDBus.Example.ObjectManager.Animal">
 <ANCHOR id="gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Mood" href="gio/gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Mood">
+<ANCHOR id="gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Foo" href="gio/gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Foo">
+<ANCHOR id="gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Bar" href="gio/gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Bar">
 <ANCHOR id="gdbus-org.gtk.GDBus.Example.ObjectManager.Cat" href="gio/gdbus-org.gtk.GDBus.Example.ObjectManager.Cat.html">
 <ANCHOR id="gdbus-interface-org-gtk-GDBus-Example-ObjectManager-Cat" href="gio/gdbus-org.gtk.GDBus.Example.ObjectManager.Cat.html#gdbus-interface-org-gtk-GDBus-Example-ObjectManager-Cat">
 <ANCHOR id="ExampleAnimal" href="gio/ExampleAnimal.html">
@@ -3585,8 +3587,14 @@
 <ANCHOR id="example-animal-complete-poke" href="gio/ExampleAnimal.html#example-animal-complete-poke">
 <ANCHOR id="example-animal-emit-jumped" href="gio/ExampleAnimal.html#example-animal-emit-jumped">
 <ANCHOR id="example-animal-get-mood" href="gio/ExampleAnimal.html#example-animal-get-mood">
+<ANCHOR id="example-animal-get-foo" href="gio/ExampleAnimal.html#example-animal-get-foo">
+<ANCHOR id="example-animal-get-bar" href="gio/ExampleAnimal.html#example-animal-get-bar">
 <ANCHOR id="example-animal-dup-mood" href="gio/ExampleAnimal.html#example-animal-dup-mood">
+<ANCHOR id="example-animal-dup-foo" href="gio/ExampleAnimal.html#example-animal-dup-foo">
+<ANCHOR id="example-animal-dup-bar" href="gio/ExampleAnimal.html#example-animal-dup-bar">
 <ANCHOR id="example-animal-set-mood" href="gio/ExampleAnimal.html#example-animal-set-mood">
+<ANCHOR id="example-animal-set-foo" href="gio/ExampleAnimal.html#example-animal-set-foo">
+<ANCHOR id="example-animal-set-bar" href="gio/ExampleAnimal.html#example-animal-set-bar">
 <ANCHOR id="ExampleAnimalProxy-struct" href="gio/ExampleAnimal.html#ExampleAnimalProxy-struct">
 <ANCHOR id="ExampleAnimalProxyClass" href="gio/ExampleAnimal.html#ExampleAnimalProxyClass">
 <ANCHOR id="example-animal-proxy-new" href="gio/ExampleAnimal.html#example-animal-proxy-new">
@@ -3599,6 +3607,8 @@
 <ANCHOR id="ExampleAnimalSkeletonClass" href="gio/ExampleAnimal.html#ExampleAnimalSkeletonClass">
 <ANCHOR id="example-animal-skeleton-new" href="gio/ExampleAnimal.html#example-animal-skeleton-new">
 <ANCHOR id="ExampleAnimal.property-details" href="gio/ExampleAnimal.html#ExampleAnimal.property-details">
+<ANCHOR id="ExampleAnimal--bar" href="gio/ExampleAnimal.html#ExampleAnimal--bar">
+<ANCHOR id="ExampleAnimal--foo" href="gio/ExampleAnimal.html#ExampleAnimal--foo">
 <ANCHOR id="ExampleAnimal--mood" href="gio/ExampleAnimal.html#ExampleAnimal--mood">
 <ANCHOR id="ExampleAnimal.signal-details" href="gio/ExampleAnimal.html#ExampleAnimal.signal-details">
 <ANCHOR id="ExampleAnimal-handle-poke" href="gio/ExampleAnimal.html#ExampleAnimal-handle-poke">
@@ -3671,7 +3681,6 @@
 <ANCHOR id="example-object-manager-client-new-for-bus" href="gio/ExampleObjectManagerClient.html#example-object-manager-client-new-for-bus">
 <ANCHOR id="example-object-manager-client-new-for-bus-finish" href="gio/ExampleObjectManagerClient.html#example-object-manager-client-new-for-bus-finish">
 <ANCHOR id="example-object-manager-client-new-for-bus-sync" href="gio/ExampleObjectManagerClient.html#example-object-manager-client-new-for-bus-sync">
-<ANCHOR id="annotation-glossterm-out caller-allocates" href="gio/annotation-glossary.html#annotation-glossterm-out caller-allocates">
 <ANCHOR id="annotation-glossterm-out" href="gio/annotation-glossary.html#annotation-glossterm-out">
 <ANCHOR id="annotation-glossterm-scope async" href="gio/annotation-glossary.html#annotation-glossterm-scope async">
 <ANCHOR id="annotation-glossterm-allow-none" href="gio/annotation-glossary.html#annotation-glossterm-allow-none">

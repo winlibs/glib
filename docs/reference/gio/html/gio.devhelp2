@@ -208,12 +208,12 @@
         <sub name="Migrating from POSIX to GIO" link="ch29.html"/>
       </sub>
       <sub name="Migrating from GnomeVFS to GIO" link="ch30.html">
-        <sub name="Trash handling" link="ch30.html#idp42350896"/>
+        <sub name="Trash handling" link="ch30.html#idp15312896"/>
         <sub name="Operations on multiple files" link="ch30s02.html"/>
         <sub name="Mime monitoring" link="ch30s03.html"/>
       </sub>
       <sub name="Migrating from GConf to GSettings" link="ch31.html">
-        <sub name="Before you start" link="ch31.html#idp15851920"/>
+        <sub name="Before you start" link="ch31.html#idp50422288"/>
         <sub name="Conceptual differences" link="ch31s02.html"/>
         <sub name="GConfClient (and GConfBridge) API conversion" link="ch31s03.html"/>
         <sub name="Change notification" link="ch31s04.html"/>
@@ -222,7 +222,7 @@
         <sub name="Data conversion" link="ch31s07.html"/>
       </sub>
       <sub name="Migrating to GDBus" link="ch32.html">
-        <sub name="Conceptual differences" link="ch32.html#idp77664560"/>
+        <sub name="Conceptual differences" link="ch32.html#idp77073552"/>
         <sub name="API comparison" link="ch32s02.html"/>
         <sub name="Owning bus names" link="ch32s03.html"/>
         <sub name="Creating proxies for well-known names" link="ch32s04.html"/>
@@ -2067,8 +2067,8 @@
     <keyword type="property" name="The &quot;object-path&quot; property" link="GDBusObjectManagerClient.html#GDBusObjectManagerClient--object-path"/>
     <keyword type="signal" name="The &quot;interface-proxy-properties-changed&quot; signal" link="GDBusObjectManagerClient.html#GDBusObjectManagerClient-interface-proxy-properties-changed"/>
     <keyword type="signal" name="The &quot;interface-proxy-signal&quot; signal" link="GDBusObjectManagerClient.html#GDBusObjectManagerClient-interface-proxy-signal"/>
-    <keyword type="" name="Vendor overrides" link="GSettings.html#idp60023216"/>
-    <keyword type="" name="Binding" link="GSettings.html#idp60028448"/>
+    <keyword type="" name="Vendor overrides" link="GSettings.html#idp61226416"/>
+    <keyword type="" name="Binding" link="GSettings.html#idp61231648"/>
     <keyword type="struct" name="GSettings" link="GSettings.html#GSettings-struct"/>
     <keyword type="function" name="g_settings_new ()" link="GSettings.html#g-settings-new" since="2.26"/>
     <keyword type="function" name="g_settings_new_with_path ()" link="GSettings.html#g-settings-new-with-path" since="2.26"/>
@@ -2406,8 +2406,8 @@
     <keyword type="function" name="g_io_extension_point_register ()" link="gio-Extension-Points.html#g-io-extension-point-register"/>
     <keyword type="function" name="g_io_extension_point_set_required_type ()" link="gio-Extension-Points.html#g-io-extension-point-set-required-type"/>
     <keyword type="function" name="g_io_extension_ref_class ()" link="gio-Extension-Points.html#g-io-extension-ref-class"/>
-    <keyword type="" name="Client-side usage" link="gdbus-codegen.html#idp38966960"/>
-    <keyword type="" name="Server-side usage" link="gdbus-codegen.html#idp9379376"/>
+    <keyword type="" name="Client-side usage" link="gdbus-codegen.html#idp53168224"/>
+    <keyword type="" name="Server-side usage" link="gdbus-codegen.html#idp12263664"/>
     <keyword type="struct" name="GTestDBus" link="GTestDBus.html#GTestDBus-struct"/>
     <keyword type="enum" name="enum GTestDBusFlags" link="GTestDBus.html#GTestDBusFlags-enum"/>
     <keyword type="function" name="g_test_dbus_new ()" link="GTestDBus.html#g-test-dbus-new"/>
@@ -2422,6 +2422,8 @@
     <keyword type="method" name="The Poke() method" link="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-method-org-gtk-GDBus-Example-ObjectManager-Animal.Poke"/>
     <keyword type="signal" name="The &quot;Jumped&quot; signal" link="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-signal-org-gtk-GDBus-Example-ObjectManager-Animal.Jumped"/>
     <keyword type="property" name="The &quot;Mood&quot; property" link="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Mood"/>
+    <keyword type="property" name="The &quot;Foo&quot; property" link="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Foo"/>
+    <keyword type="property" name="The &quot;Bar&quot; property" link="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Bar"/>
     <keyword type="struct" name="ExampleAnimal" link="ExampleAnimal.html#ExampleAnimal-struct"/>
     <keyword type="struct" name="struct ExampleAnimalIface" link="ExampleAnimal.html#ExampleAnimalIface" since="2.30"/>
     <keyword type="function" name="example_animal_interface_info ()" link="ExampleAnimal.html#example-animal-interface-info" since="2.30"/>
@@ -2432,8 +2434,14 @@
     <keyword type="function" name="example_animal_complete_poke ()" link="ExampleAnimal.html#example-animal-complete-poke" since="2.30"/>
     <keyword type="function" name="example_animal_emit_jumped ()" link="ExampleAnimal.html#example-animal-emit-jumped" since="2.30"/>
     <keyword type="function" name="example_animal_get_mood ()" link="ExampleAnimal.html#example-animal-get-mood" since="2.30"/>
+    <keyword type="function" name="example_animal_get_foo ()" link="ExampleAnimal.html#example-animal-get-foo" since="2.30"/>
+    <keyword type="function" name="example_animal_get_bar ()" link="ExampleAnimal.html#example-animal-get-bar" since="2.36"/>
     <keyword type="function" name="example_animal_dup_mood ()" link="ExampleAnimal.html#example-animal-dup-mood" since="2.30"/>
+    <keyword type="function" name="example_animal_dup_foo ()" link="ExampleAnimal.html#example-animal-dup-foo" since="2.30"/>
+    <keyword type="function" name="example_animal_dup_bar ()" link="ExampleAnimal.html#example-animal-dup-bar" since="2.36"/>
     <keyword type="function" name="example_animal_set_mood ()" link="ExampleAnimal.html#example-animal-set-mood" since="2.30"/>
+    <keyword type="function" name="example_animal_set_foo ()" link="ExampleAnimal.html#example-animal-set-foo" since="2.30"/>
+    <keyword type="function" name="example_animal_set_bar ()" link="ExampleAnimal.html#example-animal-set-bar" since="2.36"/>
     <keyword type="struct" name="struct ExampleAnimalProxy" link="ExampleAnimal.html#ExampleAnimalProxy-struct"/>
     <keyword type="struct" name="struct ExampleAnimalProxyClass" link="ExampleAnimal.html#ExampleAnimalProxyClass" since="2.30"/>
     <keyword type="function" name="example_animal_proxy_new ()" link="ExampleAnimal.html#example-animal-proxy-new" since="2.30"/>
@@ -2445,6 +2453,8 @@
     <keyword type="struct" name="struct ExampleAnimalSkeleton" link="ExampleAnimal.html#ExampleAnimalSkeleton-struct"/>
     <keyword type="struct" name="struct ExampleAnimalSkeletonClass" link="ExampleAnimal.html#ExampleAnimalSkeletonClass" since="2.30"/>
     <keyword type="function" name="example_animal_skeleton_new ()" link="ExampleAnimal.html#example-animal-skeleton-new" since="2.30"/>
+    <keyword type="property" name="The &quot;bar&quot; property" link="ExampleAnimal.html#ExampleAnimal--bar"/>
+    <keyword type="property" name="The &quot;foo&quot; property" link="ExampleAnimal.html#ExampleAnimal--foo"/>
     <keyword type="property" name="The &quot;mood&quot; property" link="ExampleAnimal.html#ExampleAnimal--mood"/>
     <keyword type="signal" name="The &quot;handle-poke&quot; signal" link="ExampleAnimal.html#ExampleAnimal-handle-poke"/>
     <keyword type="signal" name="The &quot;jumped&quot; signal" link="ExampleAnimal.html#ExampleAnimal-jumped"/>

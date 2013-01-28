@@ -22,8 +22,14 @@
     <keyword type="function" name="example_animal_complete_poke ()" link="ExampleAnimal.html#example-animal-complete-poke" since="2.30"/>
     <keyword type="function" name="example_animal_emit_jumped ()" link="ExampleAnimal.html#example-animal-emit-jumped" since="2.30"/>
     <keyword type="function" name="example_animal_get_mood ()" link="ExampleAnimal.html#example-animal-get-mood" since="2.30"/>
+    <keyword type="function" name="example_animal_get_foo ()" link="ExampleAnimal.html#example-animal-get-foo" since="2.30"/>
+    <keyword type="function" name="example_animal_get_bar ()" link="ExampleAnimal.html#example-animal-get-bar" since="2.36"/>
     <keyword type="function" name="example_animal_dup_mood ()" link="ExampleAnimal.html#example-animal-dup-mood" since="2.30"/>
+    <keyword type="function" name="example_animal_dup_foo ()" link="ExampleAnimal.html#example-animal-dup-foo" since="2.30"/>
+    <keyword type="function" name="example_animal_dup_bar ()" link="ExampleAnimal.html#example-animal-dup-bar" since="2.36"/>
     <keyword type="function" name="example_animal_set_mood ()" link="ExampleAnimal.html#example-animal-set-mood" since="2.30"/>
+    <keyword type="function" name="example_animal_set_foo ()" link="ExampleAnimal.html#example-animal-set-foo" since="2.30"/>
+    <keyword type="function" name="example_animal_set_bar ()" link="ExampleAnimal.html#example-animal-set-bar" since="2.36"/>
     <keyword type="struct" name="struct ExampleAnimalProxy" link="ExampleAnimal.html#ExampleAnimalProxy-struct"/>
     <keyword type="struct" name="struct ExampleAnimalProxyClass" link="ExampleAnimal.html#ExampleAnimalProxyClass" since="2.30"/>
     <keyword type="function" name="example_animal_proxy_new ()" link="ExampleAnimal.html#example-animal-proxy-new" since="2.30"/>
@@ -35,6 +41,8 @@
     <keyword type="struct" name="struct ExampleAnimalSkeleton" link="ExampleAnimal.html#ExampleAnimalSkeleton-struct"/>
     <keyword type="struct" name="struct ExampleAnimalSkeletonClass" link="ExampleAnimal.html#ExampleAnimalSkeletonClass" since="2.30"/>
     <keyword type="function" name="example_animal_skeleton_new ()" link="ExampleAnimal.html#example-animal-skeleton-new" since="2.30"/>
+    <keyword type="property" name="The &quot;bar&quot; property" link="ExampleAnimal.html#ExampleAnimal--bar"/>
+    <keyword type="property" name="The &quot;foo&quot; property" link="ExampleAnimal.html#ExampleAnimal--foo"/>
     <keyword type="property" name="The &quot;mood&quot; property" link="ExampleAnimal.html#ExampleAnimal--mood"/>
     <keyword type="signal" name="The &quot;handle-poke&quot; signal" link="ExampleAnimal.html#ExampleAnimal-handle-poke"/>
     <keyword type="signal" name="The &quot;jumped&quot; signal" link="ExampleAnimal.html#ExampleAnimal-jumped"/>

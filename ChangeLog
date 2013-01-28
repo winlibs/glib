@@ -1,4 +1,947 @@
-commit b470097b8baedeb2d021adb1141007edc805e90b
+commit 32fb4ca618f6d3f6b6edd6dfd0f44c00f8387a45 (HEAD, origin/glib-2-34,
+glib-2-34)
+Author: Dan Winship <danw@gnome.org>
+Date:   Mon Nov 26 14:07:16 2012 -0500
+
+    2.34.3 NEWS
+
+ NEWS | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+commit 2fc0687bcb067411a740bdfe51a49728b25a14e3
+Author: Dan Winship <danw@gnome.org>
+Date:   Sat Nov 24 15:47:45 2012 -0500
+
+    g_test_expect_message: fix two bugs in example code
+
+ glib/gmessages.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit ff358f1054224162dc2e2704e04e4d332c4348fe
+Author: Ryan Lortie <desrt@desrt.ca>
+Date:   Sat Nov 24 11:23:22 2012 -0500
+
+    gdatetime: Fix some docs sed damage
+
+ glib/gdatetime.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 1b1c132d98951eaed8ce17031f322b47d5716257
+Author: Aleksander Morgado <aleksander@lanedo.com>
+Date:   Thu Nov 15 09:31:14 2012 +0100
+
+    gdbus: improve documentation of the GDBusError section
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=688370
+
+ gio/gdbuserror.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+commit b458cff5b231633c8141381797aa4c80e7d5441b
+Author: Olivier Blin <olivier.blin@softathome.com>
+Date:   Wed Nov 14 19:08:10 2012 +0100
+
+    configure: add missing square bracket in AS_IF for memmove
+
+    This has been broken in commit
+    54e31ab4f172bbb28434eafc34c9345a93c9ccf5
+    It seems to be the only hunk that was incorrectly converted.
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=688377
+
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 8919e10c7fcc15dc383084759d4c33f785b4e0f5
+Author: Kjell Ahlstedt <kjell.ahlstedt@bredband.net>
+Date:   Mon Nov 12 17:07:39 2012 +0100
+
+    GObject: Fix code snippet in description of floating reference.
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=688180
+
+ gobject/gobject.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit cf63e32fa269e0becdad9c8fed52cbe090a79cc3
+Author: Will Thompson <will.thompson@collabora.co.uk>
+Date:   Wed Nov 14 14:59:42 2012 +0000
+
+    gthread: add AVAILABLE_IN_2_32 annotations
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=688319
+
+ glib/gthread.h | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+commit 658131f44d295db849fc2021b2414364bd51fefc
+Author: Sébastien Wilmet <swilmet@gnome.org>
+Date:   Thu Nov 22 19:41:19 2012 +0100
+
+    Improve i18n documentation
+
+    Clearly explain which gettext functions must be called. It depends
+    whether the program is an application or a library.
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=688886
+
+ glib/ggettext.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+commit 0e3839211bfc6051343403a1ba55638b83d6bf52
+Author: John Ralls <jralls@ceridwen.us>
+Date:   Sun Nov 25 16:35:08 2012 +0900
+
+    Bug 681685: Transcoding fails on OSX
+
+    Add aliases for codesets supported by iconv and included in locales.
+    Ifdef-out tests in glib/tests/gdatetime.c which fail because on
+    OSX only
+    ASCII numbers or symbols are returned for the format.
+
+    Even though nl_langinfo does weird things on Darwin in some cases, it
+    still acts correctly when LANG/LC_ALL is set to a supported
+    locale.codeset.
+
+ glib/libcharset/config.charset | 32 ++++++++++++++++++++++++++++++++
+ glib/tests/gdatetime.c         |  8 ++++++++
+ 2 files changed, 40 insertions(+)
+
+commit e866f431a7d3ef9b49dd789544ceb80aa9416e49
+Author: Sweta Kothari <swkothar@redhat.com>
+Date:   Fri Nov 23 13:29:24 2012 +0530
+
+    Updated gujarati file
+
+ po/gu.po | 145
+ +++++++++++++++++++++++++++++++++------------------------------
+ 1 file changed, 76 insertions(+), 69 deletions(-)
+
+commit bb36bbd09b06f26c043979d880a8a3653558233e
+Author: Sweta Kothari <swkothar@redhat.com>
+Date:   Fri Nov 23 12:20:14 2012 +0530
+
+    Updated gujarati file
+
+ po/gu.po | 226
+ ++++++++++++++++++++++++++++++++++++---------------------------
+ 1 file changed, 130 insertions(+), 96 deletions(-)
+
+commit 10f8f10a29bd451e5f9dcf4daf21186d77428cd4
+Author: ManojKumar Giri <mgiri@redhat.com>
+Date:   Thu Nov 22 20:23:57 2012 +0530
+
+    Updated Odia Translation with FUEL implementation.
+
+ po/or.po | 1897
+ +++++++++++++++++++++++++++++++++++---------------------------
+ 1 file changed, 1072 insertions(+), 825 deletions(-)
+
+commit c1609942ea9d9ff9b04560405162fda008e38e44
+Author: Dan Winship <danw@gnome.org>
+Date:   Mon Nov 19 23:13:29 2012 -0500
+
+    Revert "Return correct value for g_socket_get_available_bytes()
+    on Windows and OSX"
+
+    This neither compiles nor does what it's supposed to on Windows.
+
+    This reverts commit 49ad4e9494e4497cffcf145d3515231bcf05de29.
+
+ gio/gsocket.c      | 15 ++++-----------
+ gio/tests/socket.c | 53
+ -----------------------------------------------------
+ 2 files changed, 4 insertions(+), 64 deletions(-)
+
+commit 056086615672e7bf0ca6d245257a1b88bf7f1579
+Author: Kjartan Maraas <kmaraas@gnome.org>
+Date:   Sat Nov 17 11:31:07 2012 +0100
+
+    Updated Norwegian bokmål translation
+
+ po/nb.po | 273
+ ++++++++++++++++++++++++++++++++-------------------------------
+ 1 file changed, 139 insertions(+), 134 deletions(-)
+
+commit 42be40a1f88a55ff7d333e94ac2119d2b1867e9a
+Author: Michael Natterer <mitch@gimp.org>
+Date:   Fri Nov 16 18:48:09 2012 +0100
+
+    Bug 673047 - gunicollate is broken on OS X
+
+    Apply slightly modified patch from Camillo Lugaresi which fixes
+    gunicollate for OSX >= 10.6. It was totally hilariously broken
+    for anyone on 10.6 and later, I dont know if it's now broken
+    on 10.5, but better fix it for the vast majority of users.
+    (cherry picked from commit ef8510be09a746dcbc8d470376688820b225c40f)
+
+ glib/gunicollate.c | 29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
+
+commit 0116bf44dd61491a8b47abb92dcb856775b780e5
+Author: Kalev Lember <kalevlember@gmail.com>
+Date:   Fri Nov 16 17:33:14 2012 +0100
+
+    Fix a broken link in GConf migration guide
+
+    gnome-utils git repo was moved to archive/ and this broke the link.
+
+ docs/reference/gio/migrating-gconf.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit c1cb66418259304ffec8805941d8006ed9b50e13
+Author: Paul Menzel <paulepanter@users.sourceforge.net>
+Date:   Wed Nov 14 18:49:50 2012 +0100
+
+    docs: Fix spelling of "exceed" in gobject/gtype.c
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=688338
+
+ gobject/gtype.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 7839faac8420cd2797f7bb2a9308f7e8e2eee1d7
+Author: Sweta Kothari <swkothar@redhat.com>
+Date:   Thu Nov 15 11:32:47 2012 +0530
+
+    Updated gujarati file
+
+ po/gu.po | 1207
+ ++++++++++++++++++++++++++++++--------------------------------
+ 1 file changed, 593 insertions(+), 614 deletions(-)
+
+commit 2bcfabd0019550cd9fb044f8fea96b9f6554bc88
+Author: Paul Menzel <paulepanter@users.sourceforge.net>
+Date:   Sun Nov 11 14:48:15 2012 +0100
+
+    gio/*: Fix spelling of determining
+
+    $ sed -i s,determing,determining,g gio/gdrive.c
+    $ sed -i s,determing,determining,g gio/gdbusprivate.c
+
+    http://www.merriam-webster.com/dictionary/determining
+
+    For some reason according to `git log --follow` the whole file was
+    created during some translation update.
+
+        commit c45b8135046790e13b0d486f605dc62c9a783b16
+        Author: Timo Jyrinki <timo@debian.org>
+        Date:   Mon Mar 12 11:02:04 2012 +0200
+
+            Finnish translation update from
+            http://l10n.laxstrom.name/wiki/Gnome_3.4 translation sprint
+
+ gio/gdbusprivate.c | 2 +-
+ gio/gdrive.c       | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit cc837d9d18d24fad5e4b9914682819d78127c995
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Fri Nov 9 23:03:50 2012 -0500
+
+    Bump version
+
+ configure.ac | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 47d70243fd3f6af8fef99d6e77607eb51d1ec2f0 (tag: 2.34.2)
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Fri Nov 9 22:32:22 2012 -0500
+
+    Updates
+
+ NEWS | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+commit 49ad4e9494e4497cffcf145d3515231bcf05de29
+Author: Sebastian Dröge <sebastian.droege@collabora.co.uk>
+Date:   Wed Oct 24 14:25:01 2012 +0200
+
+    Return correct value for g_socket_get_available_bytes() on Windows
+    and OSX
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=686786
+
+ gio/gsocket.c      | 15 +++++++++++----
+ gio/tests/socket.c | 53
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 64 insertions(+), 4 deletions(-)
+
+commit 6589d35391126f018a4e4c3c6b3be79ca228e953
+Author: Timothy Arceri <t_arceri@yahoo.com.au>
+Date:   Fri Nov 9 23:48:38 2012 +1100
+
+    Use url encoding for trash fileinfo path as per freedesktop trash
+    specification
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=687540
+
+ gio/glocalfile.c | 29 +----------------------------
+ 1 file changed, 1 insertion(+), 28 deletions(-)
+
+commit 46274f6d5a4e6c2a95cdc1637f21be6c2e2aa00f
+Author: Emmanuel Pacaud <emmanuel@gnome.org>
+Date:   Wed Nov 7 09:58:45 2012 +0100
+
+    Check for PR_GET_NAME
+
+    PR_GET_NAME may not be defined when using an old kernel. Deal with it.
+
+ glib/tests/thread.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit 8195be761c27465d4347573a30c98620e720d957
+Author: Colin Walters <walters@verbum.org>
+Date:   Tue Nov 6 15:04:47 2012 -0500
+
+    tests/buffered-input-stream: Fix size of parameter passed
+
+    buffer-size is guint, but the public API is gsize for some reason.
+
+    Tested-By: gustavold@linux.vnet.ibm.com
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=687801
+
+ gio/tests/buffered-input-stream.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+commit 545cda4fef466988ce40f4afe6a490ae0d84900a
+Author: Ryan Lortie <desrt@desrt.ca>
+Date:   Mon Nov 5 12:22:49 2012 -0500
+
+    Don't call varargs open() through non-varargs type
+
+    open() is probably defined varargs.  Casting a varargs function to an
+    equivalent non-varargs type and then calling it is undefined, but
+    gfileutils.c was doing exactly that.
+
+    Add some non-varargs wrappers to avoid the problem.
+
+    Problem reported by John Spencer.
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=687600
+
+ glib/gfileutils.c | 42 ++++++++++++++++++++++++++++++++----------
+ 1 file changed, 32 insertions(+), 10 deletions(-)
+
+commit 9aa447b13ae82bf23b0e804a7ff724b7f4b435a5
+Author: Colin Walters <walters@verbum.org>
+Date:   Thu Nov 1 19:40:41 2012 -0400
+
+    build: Don't use C99 declarations
+
+    Since GLib needs to compile with MSVC, we can't use them.  This fixes
+    compilation when using -Werror=declaration-after-statement.
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=687385
+
+ gio/tests/gdbus-proxy.c        |  4 ++--
+ gio/tests/gdbus-test-codegen.c | 14 +++++++-------
+ glib/gthread-posix.c           | 10 ++++++----
+ glib/tests/gdatetime.c         |  3 ++-
+ 4 files changed, 17 insertions(+), 14 deletions(-)
+
+commit 759fb92905845dd371c1940ebfe0013158140849
+Author: Colin Walters <walters@verbum.org>
+Date:   Thu Oct 25 15:34:29 2012 -0400
+
+    tests/signals: Disable large enumeration value test that is failing
+    on PPC64
+
+    Basically due to a combination of va_args semantics around
+    signed/unsigned ints, this test case fails on ppc64.  At the moment,
+    we have as yet to find any real-world consumer with such a large
+    enumeration value.
+
+    Unfortunately, the possible fixes for this are extremely invasive;
+    we would have to define a new enum API.
+
+    Given both of these facts, we believe it makes the most sense at the
+    current time to simply not test this. If we at a later time determine
+    there is such a real-world consumer, we can look at doing the
+    necessary fixes.
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=686662
+
+ gobject/tests/signals.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+commit 27aca915879370382815449699573db85956dd54
+Author: Will Thompson <will.thompson@collabora.co.uk>
+Date:   Tue Oct 30 17:16:33 2012 +0000
+
+    GNetworkMonitor: add missing apostrophe to docstring
+
+ gio/gnetworkmonitor.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit f51231838b53f6d972a3d05ae4dc2ef862ddc4e5
+Author: Vincent Untz <vuntz@gnome.org>
+Date:   Tue Mar 27 16:52:24 2012 +0200
+
+    Add annotations for g_filename_from_uri()
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=672924
+
+ glib/gconvert.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit 30bb8e187aaf509b97b3508546e8a1ca3ecc8a7a
+Author: John Ralls <jralls@ceridwen.us>
+Date:   Fri Nov 9 09:22:19 2012 -0800
+
+    Fix pollable streams for Darwin (and probably BSD)
+
+    Darwin's poll doesn't change revents if there are no available
+    events, though it returns 0. Initialize the fd.revents to 0 so that
+    the test passes.
+
+    That reveals a test failure, though, because with socket streams
+    it takes time for an event to pass through the socket. Provide an
+    80-usec delay to allow time for the propagation.
+
+ gio/gsocket.c                | 1 +
+ gio/gunixinputstream.c       | 1 +
+ gio/gunixoutputstream.c      | 1 +
+ gio/tests/converter-stream.c | 6 ++++++
+ gio/tests/pollable.c         | 3 +++
+ 5 files changed, 12 insertions(+)
+
+commit 6d6d18ae5397a8068d82911b3e77fa8fe9847ba0
+Author: John Ralls <jralls@ceridwen.us>
+Date:   Thu Nov 8 09:52:28 2012 -0800
+
+    Fix compile error about missing prototype
+
+    For g_nextstep_settings_backend_get_type()
+
+ gio/gnextstepsettingsbackend.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit d27d3663979b99b8fc83b2eb84eed57b0e851dee
+Author: John Ralls <jralls@ceridwen.us>
+Date:   Thu Oct 18 10:47:18 2012 -0700
+
+    Skip test_non_utf8_printf() if EUC-JP is aliased to UTF-8
+
+    See https://bugzilla.gnome.org/show_bug.cgi?id=686185
+    This skips the test on those systems, like Darwin, which provide the
+    ja_JP.eucjp locale but which glib doesn't know how to transcode and
+    aliases JIS to UTF-8.
+
+ glib/tests/gdatetime.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+commit 1743c8460e6314c2fa7119cf17d7296e3fba13a1
+Author: Martin Pitt <martinpitt@gnome.org>
+Date:   Fri Nov 9 09:32:03 2012 +0100
+
+    GByteArray: Add missing transfer annotations
+
+    Make g_byte_array_new() and g_byte_array_new_take() introspectable
+    by adding
+    missing transfer annotations to return value.
+
+    Covered by tests in PyGObject.
+
+    Cherry-picked from trunk commit a07a5f82aaf.
+
+ glib/garray.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+commit e10e97fa9d698d602908078ab24aa95e86e9b9b8
+Author: Martin Pitt <martinpitt@gnome.org>
+Date:   Fri Nov 9 09:02:22 2012 +0100
+
+    GBytes: Add missing annotations
+
+    Annotate g_bytes_new*()'s data argument to be a guint8 array, as
+    introspection clients cannot deal with raw gconstpointers. This makes
+    GBytes' behaviour similar to GByteArray whose API already uses guint8.
+
+    Add missing transfer annotation to g_bytes_get_data() to make it
+    introspectable.
+
+    This is covered by test cases in PyGObject.
+
+ glib/gbytes.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+commit b600ca001d7e0987ad91705e5f3db14e5330e180
+Author: Chun-wei Fan <fanchunwei@src.gnome.org>
+Date:   Mon Nov 5 12:31:44 2012 +0800
+
+    Visual C++ 2010 projects: Prepare support for VS2012
+
+    Add the PlatformToolset tag to the project configs so that we can
+    use add a
+    simple script later to the autotools files to copy the projects
+    and change
+    the value (v100 -> v110) of that tag (and other simple changes)
+    in order
+    that we can quickly provide and maintain support for Visual Studio
+    2012
+    with minimal effort.
+
+    Note that at the moment GLib does not yet support the API/SDK
+    requirements
+    for Windows 8 Modern UI (formerly known as Metro), but this paves
+    the very
+    initial step.
+
+ build/win32/vs10/gio.vcxprojin                     |   4 +
+ build/win32/vs10/glib-compile-resources.vcxproj    |   4 +
+ build/win32/vs10/glib-compile-schemas.vcxproj      | 356
+ +++++++++---------
+ build/win32/vs10/glib-genmarshal.vcxproj           | 340
+ ++++++++---------
+ build/win32/vs10/glib.vcxprojin                    |   8 +
+ build/win32/vs10/gmodule.vcxproj                   | 402
+ +++++++++++----------
+ build/win32/vs10/gobject.vcxprojin                 |   4 +
+ build/win32/vs10/gresource.vcxproj                 |   4 +
+ build/win32/vs10/gsettings.vcxproj                 | 356
+ +++++++++---------
+ .../win32/vs10/gspawn-win32-helper-console.vcxproj | 344
+ +++++++++---------
+ build/win32/vs10/gspawn-win32-helper.vcxproj       | 344
+ +++++++++---------
+ build/win32/vs10/gthread.vcxproj                   | 376
+ +++++++++----------
+ build/win32/vs10/install.vcxproj                   | 300 +++++++--------
+ build/win32/vs10/testglib.vcxproj                  | 340
+ ++++++++---------
+ 14 files changed, 1621 insertions(+), 1561 deletions(-)
+
+commit 8ffa4b63383e3aaa1eaa992c9589e6bca43ff691
+Author: Simon Feltman <sfeltman@src.gnome.org>
+Date:   Sat Nov 3 18:59:25 2012 -0700
+
+    Add array length annotation to GSignalQuery param_types field
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=687541
+
+ gobject/gsignal.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 1061b0ddbc8774d7269b98725b30875bce63bcc4
+Author: Martin Pitt <martinpitt@gnome.org>
+Date:   Sat Nov 3 13:52:29 2012 +0100
+
+    Annotate g_filename_to_utf8()
+
+    bytes_read and bytes_written are (out) arguments, and the return
+    value must be
+    a byte array instead of utf8, as otherwise the function would
+    only support
+    UTF-8 locales/file names.
+
+ glib/gconvert.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+commit 11f26aafc29150363366ae44dde1c4570105572d
+Author: Simon McVittie <simon.mcvittie@collabora.co.uk>
+Date:   Sun Oct 21 23:38:31 2012 +0100
+
+    Use the FreeBSD credentials-passing code on Debian GNU/kFreeBSD
+
+    The __FreeBSD__ macro means we have both a FreeBSD kernel and FreeBSD
+    libc, which isn't the case on GNU/kFreeBSD (GNU libc and userland on
+    the FreeBSD kernel), so it predefines a different macro. The kernel
+    is what actually matters for credentials-passing, though.
+
+    Signed-off-by: Simon McVittie <simon.mcvittie@collabora.co.uk>
+    Tested-by: Steven Chamberlain <steven@pyro.eu.org>
+    Bug: https://bugzilla.gnome.org/show_bug.cgi?id=649302
+    Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=581750
+    Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=631968
+    Reviewed-by: Dan Winship <danw@gnome.org>
+
+ gio/gcredentials.c            | 18 +++++++++---------
+ gio/gunixcredentialsmessage.c | 12 ++++++------
+ 2 files changed, 15 insertions(+), 15 deletions(-)
+
+commit e8080750a71f503165777bd2e2017501e9f6232a
+Author: Ryan Lortie <desrt@desrt.ca>
+Date:   Mon Oct 29 09:09:49 2012 +0100
+
+    g_dbus_connection_export_menu_model(): fix a crash
+
+    Add some extra protection when 'preparing' a group that doesn't yet
+    contain any menus.  This can happen if you subscribe to a group that
+    doesn't yet exist.
+
+    It was possible to crash any application using
+    g_dbus_connection_export_menu_model() by requesting a non-existent
+    subscription group over the bus.
+
+    In practice this only happened in races -- where the proxy sees
+    a group
+    that exists and queries it, but by the time it does, it's already
+    gone.
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=687089
+
+ gio/gmenuexporter.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+commit ce3c5fe747e0d06d1d717f3632e396ae6daa7418
+Author: Matthew Barnes <mbarnes@redhat.com>
+Date:   Fri Oct 26 13:20:29 2012 -0400
+
+    Fix typo in G_TEST_DBUS.
+
+    (cherry picked from commit 7db2ac7b88a4d2211894153212e92ea9db5cacbb)
+
+ gio/gtestdbus.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 3ccd3b204c0619be34a8eae199b6464b6e45b4ac
+Author: Martin Pitt <martinpitt@gnome.org>
+Date:   Thu Oct 25 14:55:30 2012 +0200
+
+    GIOChannel: Add missing annotations
+
+    The various read and write methods have several out arguments which
+    were not
+    previously marked as such. Also, as GIOChannel supports binary data
+    with a NULL
+    encoding, the buffers need to be uint8 arrays instead of utf8 strings.
+
+ glib/giochannel.c | 29 +++++++++++++++--------------
+ 1 file changed, 15 insertions(+), 14 deletions(-)
+
+commit 9e05d0342029786528588a91cc8dc553d3287cb3
+Author: Martin Pitt <martinpitt@gnome.org>
+Date:   Thu Oct 25 07:51:40 2012 +0200
+
+    GIOChannel: Add missing (allow-none) annotations
+
+    g_io_channel_set_line_term() and g_io_channel_set_encoding() can
+    get NULL
+    arguments, mark them as such.
+
+ glib/giochannel.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+commit bab186e66a9e75e16f7534526eced0f521b12b24
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Tue Oct 16 21:16:50 2012 -0400
+
+    Add a test for the previous fix
+
+    Running tests/bytes with G_SLICE=always-malloc MALLOC_CHECK_=2
+    was aborting before.
+
+ glib/tests/bytes.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+commit 969dd0adf3893206320906369a133369f1dc4864
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Tue Oct 16 21:07:13 2012 -0400
+
+    GBytes: deal with a corner-case
+
+    When calling g_bytes_unref_to_data on a GBytes with NULL data
+    we could end up with double-free or use-after-free issues.
+    https://bugzilla.gnome.org/show_bug.cgi?id=686091
+
+ glib/gbytes.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 3766b7b5cd0f22d2773c7efc8b52fc2f214d0372
+Author: Ryan Lortie <desrt@desrt.ca>
+Date:   Tue Oct 16 12:27:12 2012 -0400
+
+    GMenuExporter: allow NULL bus on _name_vanished
+
+    GBusNameVanishedCallback is called with a NULL GDBusConnection in the
+    case that the connection has vanished.  We were doing an assert to
+    verify that it was the same as we had exported the menu on and that
+    assert was failing.
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=685995
+
+ gio/gmenuexporter.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit ce92bea73571791f60762b2bb66e28e603543570
+Author: Dan Winship <danw@gnome.org>
+Date:   Tue Oct 16 10:22:56 2012 -0400
+
+    g_socket_connection_connect_async: handle cancellation
+
+    g_socket_connection_connect_finish() was returning TRUE when the
+    connection attempt got cancelled. Fix that by using
+    g_simple_async_result_set_check_cancellable(). (Git master doesn't
+    have the bug because GTask behaves that way by default.)
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=686213
+
+ gio/gsocketconnection.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit 0a9881d9f2452a52c13ee0882715111c32efb625
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Mon Oct 15 21:51:55 2012 -0400
+
+    Bump version
+
+ configure.ac | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 080ce501406be1bf821b39ed40c43aeffeb1fb2f (tag: 2.34.1)
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Mon Oct 15 19:21:30 2012 -0400
+
+    2.34.1
+
+ NEWS | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+commit 344d98564bc5ef440d181315dff23e5d1a5c63f3
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Mon Oct 15 19:48:44 2012 -0400
+
+    Add missing semicolons to gobject_probes.d
+
+    Pointed out in
+    https://bugzilla.gnome.org/show_bug.cgi?id=686119
+
+ gobject/gobject_probes.d | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit 0015668d3950ac86a48aac0e2e2b423d80360295
+Author: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+Date:   Sat Oct 6 14:56:36 2012 +0200
+
+    gdbus-testserver: port to pygi
+
+    Signed-off-by: Marc-Antoine Perennou <Marc-Antoine@Perennou.com>
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=685608
+
+ gio/tests/gdbus-testserver.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit bb7c56dff8e0ff94404f5662d91046092eb28518
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Mon Oct 15 19:34:36 2012 -0400
+
+    Add return-if-fail checks to g_application_hold/release
+
+    This is our common practice for public API.
+    https://bugzilla.gnome.org/show_bug.cgi?id=685208
+
+ gio/gapplication.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+commit c8fb6f818777630c0b75eca92c159d0a20e22651
+Author: Ryan Lortie <desrt@desrt.ca>
+Date:   Mon Oct 15 19:28:28 2012 -0400
+
+    g_settings_bind: use canonical property name
+
+    We were using the user-passed value of the @property argument for
+    several purposes in g_settings_bind(): error messages, binding
+    uniqueness (ie: one-binding-per-property-per-object) and most
+    importantly, connecting to the detailed notify:: signal.
+
+    The user may pass a string like "property_name" when the property's
+    canonical name is "property-name".  g_object_class_find_property()
+    will
+    find the property under these circumstances, but a connection to
+    "notify::property_name" will not notice notifies emitted for
+    "property-name".
+
+    We can solve this by using the user's string to perform the lookup and
+    then using pspec->name for everything after that.
+
+    https://bugzilla.gnome.org/show_bug.cgi?id=684882
+
+ gio/gsettings.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+commit c03b542a9410bc6e73f552ed59a6de6470e3b33a
+Author: Arnel A. Borja <kyoushuu@yahoo.com>
+Date:   Fri Oct 12 09:58:05 2012 -0700
+
+    gtimezone: Indentation adn comment fixes
+
+ glib/gtimezone.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+commit 04aead8a42f4964bccd9f33de9056c9e567c8b16
+Author: John Ralls <jralls@ceridwen.us>
+Date:   Mon Sep 24 10:54:38 2012 -0700
+
+    Bug 631382 - GTimeZone support for zoneinfo version 1
+
+ glib/gtimezone.c | 62
+ ++++++++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 42 insertions(+), 20 deletions(-)
+
+commit 1182423a8c64c5d481b87583895b032d4f1e3b4b
+Author: David Zeuthen <zeuthen@gmail.com>
+Date:   Wed Oct 3 11:20:51 2012 -0400
+
+    gdbus-codegen: Update tests for new inheritance-semantics for Since
+
+    Signed-off-by: David Zeuthen <zeuthen@gmail.com>
+
+ gio/tests/test-codegen.xml | 2 --
+ 1 file changed, 2 deletions(-)
+
+commit 654d404af6e4628df72c68e218cf5afec0e120f9
+Author: David Zeuthen <zeuthen@gmail.com>
+Date:   Wed Oct 3 11:07:57 2012 -0400
+
+    gdbus-codegen: make members of an interface inherit the "Since"
+    annotation
+
+    This is the expected (and sane) behavior - without this bug-fix you'd
+    have to add "Since" to every member of a newly added D-Bus interface.
+
+    Also show-case this in the codegen example.
+
+    Signed-off-by: David Zeuthen <zeuthen@gmail.com>
+
+ .../gdbus-object-manager-example-sections.txt          |  6 ++++++
+ gio/gdbus-2.0/codegen/dbustypes.py                     | 18
+ ++++++++++++------
+ .../gdbus-example-objectmanager.xml                    | 13 +++++++++++++
+ 3 files changed, 31 insertions(+), 6 deletions(-)
+
+commit ec82f610655f09bda21e9da1ce629762f72570df
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Sun Sep 30 19:24:13 2012 -0400
+
+    Really fix the leak
+
+    Pointed out by Josselin Mouette.
+
+ gio/glib-compile-resources.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 7f325939bae0a82f4d0f926f73f1002dbd4a0a11
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Sun Sep 30 14:07:37 2012 -0400
+
+    Fix memory leaks in glib-compile resources
+
+    Based on a patch by Josselin Mouette,
+    https://bugzilla.gnome.org/show_bug.cgi?id=685069
+
+ gio/glib-compile-resources.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+commit 7c045e34238b9c9280bc77529f952ae5b8b581f2
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Sun Sep 30 13:37:39 2012 -0400
+
+    Correct to docs for g_strcmp0
+
+    Don't promise to return -1 or 1 - we fall back to strcmp which
+    does not guarantee this.
+    https://bugzilla.gnome.org/show_bug.cgi?id=685037
+
+ glib/gtestutils.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit f3f3f4a4120f2b828715933797220d3c594af0d1
+Author: Žygimantas Beručka <uid0@akl.lt>
+Date:   Sun Sep 30 13:01:14 2012 +0300
+
+    Updated Lithuanian translation
+
+ po/lt.po | 1263
+ +++++++++++++++++++++++++++++++-------------------------------
+ 1 file changed, 637 insertions(+), 626 deletions(-)
+
+commit 685259dfea99c16bdd97f596af6548f83cb5669a
+Author: Benjamin Otte <otte@redhat.com>
+Date:   Thu Sep 27 15:31:46 2012 +0200
+
+    Fix gdb script for new quark variable names
+
+    ... and don't spam stderr with exceptions if someone renames things
+    again.
+
+    Last but not least, keep the old names as a fallback, so that
+    LD_PRELOAD
+    with an older libglib still works.
+
+ glib/glib.py | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+commit 3d45854a580f35e191f89a567328b03009baf22a
+Author: Chun-wei Fan <fanchunwei@src.gnome.org>
+Date:   Wed Sep 26 17:47:52 2012 +0800
+
+    Update config.h.win32(.in) and glibconfig.h.win32(.in)
+
+    -Make config.h.win32(.in) have entries that more resembles the
+    generated
+     config.h.in
+    -Move the ALIGNOF_* #define's from glibconfig.h.win32(.in) to
+     config.h.win32(.in), where they were supposed to be.
+
+ config.h.win32.in          | 29 +++++++++++++++++++++++++++++
+ glib/glibconfig.h.win32.in |  4 ----
+ 2 files changed, 29 insertions(+), 4 deletions(-)
+
+commit 03658b1d123c69abdbde324b6ce43528e9a9e9cf
+Author: Chun-wei Fan <fanchunwei@src.gnome.org>
+Date:   Wed Sep 26 15:42:53 2012 +0800
+
+    Visual C++ property sheet updates
+
+    Make up for the missed GIO headers that need to be installed.
+
+ build/win32/vs10/glib.props  | 4 ++++
+ build/win32/vs9/glib.vsprops | 2 ++
+ 2 files changed, 6 insertions(+)
+
+commit d9b15f85a773fd93fa10b07ef1a08cf314ce4d09
+Author: Carles Ferrando <carles.ferrando@gmail.com>
+Date:   Wed Sep 26 01:50:49 2012 +0200
+
+    [l10n] Updated Catalan (Valencian) translation
+
+ po/ca@valencia.po | 795
+ +++++++++++++++++++++++++++---------------------------
+ 1 file changed, 399 insertions(+), 396 deletions(-)
+
+commit 51d32b23a4f048f6a380938f081d1504fa8484c7
+Author: Luca Ferretti <lferrett@gnome.org>
+Date:   Tue Sep 25 08:34:44 2012 +0200
+
+    [l10n] Updated Italian translation.
+
+ po/it.po | 1511
+ +++++++++++++++++++++++++++++++++-----------------------------
+ 1 file changed, 801 insertions(+), 710 deletions(-)
+
+commit 89fa960677ec918d8b731ebf8732ab930bfecc5e
+Author: Petr Kovar <pkovar@redhat.com>
+Date:   Mon Sep 24 18:23:18 2012 +0200
+
+    Update Czech translation
+
+ po/cs.po | 1443
+ ++++++++++++++++++++++++++++++++++----------------------------
+ 1 file changed, 795 insertions(+), 648 deletions(-)
+
+commit 9fa86cf2173ed7e1c3cee7865167ef8870d4661b
+Author: Matthias Clasen <mclasen@redhat.com>
+Date:   Sun Sep 23 22:39:20 2012 -0400
+
+    Bump version
+
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit b470097b8baedeb2d021adb1141007edc805e90b (tag: 2.34.0)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:   Sun Sep 23 22:33:21 2012 -0400
 
@@ -356,7 +1299,7 @@ Date:   Tue Sep 18 01:21:04 2012 +0200
  ++++++++++++++++++++++++++++++++++----------------------------
  1 file changed, 904 insertions(+), 763 deletions(-)
 
-commit a47761a36e0b23b11e4aa991948da17e4f6b17b0
+commit a47761a36e0b23b11e4aa991948da17e4f6b17b0 (tag: 2.33.14)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:   Mon Sep 17 17:53:58 2012 -0400
 
@@ -904,7 +1847,7 @@ Date:   Mon Sep 3 16:27:19 2012 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 626abfdc108154c3ae149e82580779669fb63881
+commit 626abfdc108154c3ae149e82580779669fb63881 (tag: 2.33.12)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:   Mon Sep 3 15:14:18 2012 -0400
 
@@ -2055,7 +2998,7 @@ Date:   Tue Aug 21 13:53:46 2012 +0700
  +++++++++++++++++++++++++++++++++-------------------------------
  1 file changed, 46 insertions(+), 44 deletions(-)
 
-commit ed40bf6715763045457cd6123b3882222c818cde
+commit ed40bf6715763045457cd6123b3882222c818cde (tag: 2.33.10)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:   Mon Aug 20 18:32:25 2012 -0400
 
@@ -3233,7 +4176,7 @@ Date:   Mon Aug 6 16:20:36 2012 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 6b43310ef41cde26978c261cf1c0e2715adf732d
+commit 6b43310ef41cde26978c261cf1c0e2715adf732d (tag: 2.33.8)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:   Mon Aug 6 15:56:26 2012 -0400
 
@@ -4064,7 +5007,7 @@ Date:   Tue Jul 17 14:23:08 2012 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit ffefa544d68972cf5cc7099eb015c35630c5314d
+commit ffefa544d68972cf5cc7099eb015c35630c5314d (tag: 2.33.6)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:   Tue Jul 17 13:50:58 2012 -0400
 
@@ -4180,7 +5123,7 @@ Date:   Mon Jul 16 06:01:55 2012 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit d48bd70853496c5a835e0d3a83136ef23ea778c9
+commit d48bd70853496c5a835e0d3a83136ef23ea778c9 (tag: 2.33.4)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:   Sun Jul 15 20:36:10 2012 -0400
 
@@ -5649,7 +6592,7 @@ Date:   Mon Jun 25 16:55:31 2012 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit a5ed95c9ad973e30c1c1938c55ffe60f4a14dab7
+commit a5ed95c9ad973e30c1c1938c55ffe60f4a14dab7 (tag: 2.33.3)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:   Mon Jun 25 16:29:53 2012 -0400
 
@@ -6488,7 +7431,7 @@ Date:	Tue Jun 5 18:50:36 2012 +0200
  gio/gdbusutils.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit bdf1660e2856a22aeca6b5927b5756119d6526ec
+commit bdf1660e2856a22aeca6b5927b5756119d6526ec (tag: 2.33.2)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Mon Jun 4 13:17:47 2012 -0400
 
@@ -7423,7 +8366,7 @@ Date:	Wed May 2 11:10:23 2012 +0800
  build/win32/vs9/gobject.vcprojin   | 8 ++++----
  4 files changed, 16 insertions(+), 16 deletions(-)
 
-commit 83f04afa0b8b66d200ccdc17ac6f5cd0e17b1c15
+commit 83f04afa0b8b66d200ccdc17ac6f5cd0e17b1c15 (tag: 2.33.1)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Tue May 1 12:57:00 2012 -0400
 
@@ -9358,7 +10301,7 @@ Date:	Fri Apr 13 19:54:42 2012 -0400
  configure.ac | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit 2b6cf583d264c101c72f4f7554925a0612b58e08
+commit 2b6cf583d264c101c72f4f7554925a0612b58e08 (tag: 2.32.1)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri Apr 13 19:53:42 2012 -0400
 
@@ -10975,7 +11918,7 @@ Date:	Sat Mar 24 11:31:01 2012 -0400
  configure.ac | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit 816554c62bf227498cb539924e6ee2050030b4b9
+commit 816554c62bf227498cb539924e6ee2050030b4b9 (tag: 2.32.0)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Sat Mar 24 11:28:35 2012 -0400
 
@@ -11100,7 +12043,7 @@ Date:	Mon Mar 19 16:59:54 2012 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 2826ece6fc91944a3469ba8f1b7b81143b11ccaa
+commit 2826ece6fc91944a3469ba8f1b7b81143b11ccaa (tag: 2.31.22)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Mar 19 16:58:48 2012 -0400
 
@@ -11941,7 +12884,7 @@ Date:	Mon Mar 5 15:05:07 2012 +0100
  glib/glib-init.c | 10 ++++++++--
  1 file changed, 8 insertions(+), 2 deletions(-)
 
-commit a970fddb0ed68de910120cbe009edb94aa38eb9d
+commit a970fddb0ed68de910120cbe009edb94aa38eb9d (tag: 2.31.20)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Mar 5 09:01:20 2012 -0500
 
@@ -12103,6 +13046,7 @@ Date:	Sat Mar 3 21:39:35 2012 +0100
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 commit 2d6502f67bb207c5a0d6eaba27b2398b74baa28f
+(origin/signal-performance)
 Author: Alexander Larsson <alexl@redhat.com>
 Date:	Sat Mar 3 21:36:10 2012 +0100
 
@@ -13269,7 +14213,7 @@ Date:	Tue Feb 21 11:57:41 2012 +0100
  ++++++++++++++++++++++++++++++++++-----------------------------
  1 file changed, 76 insertions(+), 64 deletions(-)
 
-commit b80e169b146a31a1595ce6342f675cab6536f76a
+commit b80e169b146a31a1595ce6342f675cab6536f76a (tag: 2.31.18)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Tue Feb 21 01:37:09 2012 +0100
 
@@ -14713,7 +15657,7 @@ Date:	Sat Feb 4 22:54:58 2012 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit d6a4369089ad3dd4ab047989ba1ff31904b17eb6
+commit d6a4369089ad3dd4ab047989ba1ff31904b17eb6 (tag: 2.31.16)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Sat Feb 4 18:43:13 2012 -0500
 
@@ -15000,7 +15944,7 @@ Date:	Mon Jan 30 18:47:31 2012 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit d332bdcc583c67e17d2d508225200372f2981ad4
+commit d332bdcc583c67e17d2d508225200372f2981ad4 (tag: 2.31.14)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Jan 30 18:46:18 2012 -0500
 
@@ -15904,7 +16848,7 @@ Date:	Fri Jan 20 15:42:44 2012 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit e4642d58adf802772f3f2e39566aee300d395742
+commit e4642d58adf802772f3f2e39566aee300d395742 (tag: 2.31.12)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri Jan 20 15:10:29 2012 -0500
 
@@ -16217,7 +17161,7 @@ Date:	Mon Jan 16 14:46:26 2012 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 639c5867c7d86cb50d5dde54acaa9ec0fcdd7648
+commit 639c5867c7d86cb50d5dde54acaa9ec0fcdd7648 (tag: 2.31.10)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Jan 16 14:00:18 2012 -0500
 
@@ -16896,7 +17840,7 @@ Date:	Tue Jan 10 00:40:14 2012 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 4a016d82f1246b6bb58e4374f318ab47a5806672
+commit 4a016d82f1246b6bb58e4374f318ab47a5806672 (tag: 2.31.8)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Tue Jan 10 00:39:20 2012 -0500
 
@@ -18255,7 +19199,7 @@ Date:	Mon Dec 19 15:19:19 2011 -0500
  gio/gnetworkmonitornetlink.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit fbe1fb8e4999dc9e7c30a19896e421e8a2c4103b
+commit fbe1fb8e4999dc9e7c30a19896e421e8a2c4103b (tag: 2.31.6)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Mon Dec 19 13:38:21 2011 -0500
 
@@ -19149,7 +20093,7 @@ Date:	Mon Dec 12 20:36:29 2011 +0100
  ++++++++++++++++++++++++++++++++------------------------------
  1 file changed, 3123 insertions(+), 3003 deletions(-)
 
-commit 2f9ab64ac9dc4aeba4a6a297888986d26515d6f8
+commit 2f9ab64ac9dc4aeba4a6a297888986d26515d6f8 (tag: 2.31.4)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Mon Dec 12 13:28:24 2011 -0500
 
@@ -21338,7 +22282,7 @@ Date:	Mon Nov 21 15:21:23 2011 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 36c21d4790044683a042f8d9479ffc5798914b5b
+commit 36c21d4790044683a042f8d9479ffc5798914b5b (tag: 2.31.2)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Mon Nov 21 12:18:32 2011 -0500
 
@@ -21760,7 +22704,7 @@ Date:	Fri Nov 18 15:05:34 2011 -0500
  gio/tests/tls-certificate.c | 36 ++++++++++++++++++++-
  3 files changed, 105 insertions(+), 23 deletions(-)
 
-commit cb74c366783944057492bae1e6b9472e36e2e7f1
+commit cb74c366783944057492bae1e6b9472e36e2e7f1 (stormer/master)
 Author: Nicolas Dufresne <nicolas.dufresne@collabora.co.uk>
 Date:	Thu Nov 17 13:04:04 2011 -0500
 
@@ -23329,7 +24273,7 @@ Date:	Thu Nov 3 17:27:08 2011 +0100
  glib/gthread-win32.c | 9 ++-------
  1 file changed, 2 insertions(+), 7 deletions(-)
 
-commit d2d62ecfcd09f91ed423b66b5b21be602dce2ecd
+commit d2d62ecfcd09f91ed423b66b5b21be602dce2ecd (stefw/master)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Thu Nov 3 01:48:54 2011 -0400
 
@@ -23993,7 +24937,7 @@ Date:	Tue Oct 18 10:48:31 2011 -0400
  gio/gdesktopappinfo.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 9da3dc292c1a0e3e0418eec2b909163ff2b68be8
+commit 9da3dc292c1a0e3e0418eec2b909163ff2b68be8 (tag: 2.31.0)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Wed Oct 19 15:26:25 2011 -0400
 
@@ -32643,7 +33587,7 @@ Date:	Tue Sep 6 10:55:09 2011 -0400
  docs/reference/glib/tmpl/testing.sgml	   |  8 ++++++++
  8 files changed, 74 insertions(+), 30 deletions(-)
 
-commit 9d6b55499f92a1d846f822d2f1aded2137b86999
+commit 9d6b55499f92a1d846f822d2f1aded2137b86999 (tag: 2.29.90)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Mon Sep 5 10:28:54 2011 -0400
 
@@ -33981,7 +34925,7 @@ Date:	Tue Aug 30 11:44:57 2011 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit c6850add98dd0dde66217c47e632a121fee88e80
+commit c6850add98dd0dde66217c47e632a121fee88e80 (tag: 2.29.18)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Tue Aug 30 11:10:40 2011 -0400
 
@@ -35274,7 +36218,7 @@ Date:	Mon Aug 15 21:01:52 2011 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit e17ce3594e9d6d9ed6c9d2fd48a82ddcbb1ffcbc
+commit e17ce3594e9d6d9ed6c9d2fd48a82ddcbb1ffcbc (tag: 2.29.16)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Mon Aug 15 21:01:28 2011 -0400
 
@@ -36829,7 +37773,7 @@ Date:	Fri Jul 22 09:48:34 2011 +0200
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit a6c936c45fd959117e24a4e7b6f01f124963bf72
+commit a6c936c45fd959117e24a4e7b6f01f124963bf72 (tag: 2.29.14)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Fri Jul 22 08:55:35 2011 +0200
 
@@ -37273,7 +38217,7 @@ Date:	Tue Jul 19 23:04:04 2011 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit c073ce3a3b8fb8282b244dd8e8dbb6fa8676e84e
+commit c073ce3a3b8fb8282b244dd8e8dbb6fa8676e84e (tag: 2.29.12)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Tue Jul 19 23:02:05 2011 -0400
 
@@ -38008,7 +38952,7 @@ Date:	Tue Jul 5 11:22:11 2011 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 89df070c1f0893e4a973aa563213dab2d192d83d
+commit 89df070c1f0893e4a973aa563213dab2d192d83d (tag: 2.29.10)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Tue Jul 5 11:21:40 2011 -0400
 
@@ -39496,7 +40440,7 @@ Date:	Mon Jun 13 23:54:59 2011 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 9f11f054eb3f38dd507dadd61706a7390ebf2d0d
+commit 9f11f054eb3f38dd507dadd61706a7390ebf2d0d (tag: 2.29.8)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Jun 13 21:58:33 2011 -0400
 
@@ -40474,7 +41418,7 @@ Date:	Sat Jun 4 20:06:44 2011 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 3e6dc0d8fa256a93623b3614a6bfc0e605f8efcb
+commit 3e6dc0d8fa256a93623b3614a6bfc0e605f8efcb (tag: 2.29.6)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Sat Jun 4 18:48:54 2011 -0400
 
@@ -42126,7 +43070,7 @@ Date:	Sat May 21 11:12:08 2011 -0400
  glib/gkeyfile.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
-commit 120b85a31b061f17608a3b691d412ef17ca93681
+commit 120b85a31b061f17608a3b691d412ef17ca93681 (tag: -)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri May 20 15:07:08 2011 -0400
 
@@ -42891,7 +43835,7 @@ Date:	Wed May 4 21:26:11 2011 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 5b4da74bc75b91a1eac7c9b7eac39bf543ab7b6b
+commit 5b4da74bc75b91a1eac7c9b7eac39bf543ab7b6b (tag: 2.29.4)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Wed May 4 20:45:46 2011 -0400
 
@@ -44743,7 +45687,7 @@ Date:	Wed Apr 13 08:48:10 2011 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 0e55346420e74a562b42d14a136c07a4bbd9d955
+commit 0e55346420e74a562b42d14a136c07a4bbd9d955 (tag: 2.29.2)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Wed Apr 13 08:19:35 2011 -0400
 
@@ -47838,7 +48782,7 @@ Date:	Tue Feb 8 18:22:44 2011 +0100
  ++++++++++++++++++++++++++++++++++----------------------------
  1 file changed, 1203 insertions(+), 967 deletions(-)
 
-commit a6caaebea7261601fb4f9f57bb8aeadf38e5e499
+commit a6caaebea7261601fb4f9f57bb8aeadf38e5e499 (tag: 2.28.0)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Tue Feb 8 10:05:00 2011 -0500
 
@@ -48184,7 +49128,7 @@ Date:	Fri Jan 28 23:47:36 2011 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 83661af46a23a046a87f8d3e4464f5a70676a839
+commit 83661af46a23a046a87f8d3e4464f5a70676a839 (tag: 2.27.93)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri Jan 28 21:09:52 2011 -0500
 
@@ -48437,7 +49381,7 @@ Date:	Sat Jan 22 09:52:33 2011 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit bd8b245f574497755265ec0cee15ebe17bd00a7d
+commit bd8b245f574497755265ec0cee15ebe17bd00a7d (tag: 2.27.92)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Sat Jan 22 00:02:08 2011 -0500
 
@@ -48780,7 +49724,7 @@ Date:	Tue Jan 11 16:13:42 2011 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit dd6baef46fcb7abd561383f2af7bb1b8e3579f5c
+commit dd6baef46fcb7abd561383f2af7bb1b8e3579f5c (tag: 2.27.91)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Tue Jan 11 11:27:45 2011 -0500
 
@@ -48966,7 +49910,7 @@ Date:	Wed Jan 5 20:43:46 2011 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 0b3412b419a322426ae04ca5177546ba68def3d8
+commit 0b3412b419a322426ae04ca5177546ba68def3d8 (tag: 2.27.90)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Wed Jan 5 19:51:44 2011 -0500
 
@@ -49690,7 +50634,7 @@ Date:	Mon Dec 20 16:47:10 2010 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 8f5904ccbcd45d30a7ed6da4f0b8b8f0c221bb99
+commit 8f5904ccbcd45d30a7ed6da4f0b8b8f0c221bb99 (tag: 2.27.5)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Dec 20 14:03:45 2010 -0500
 
@@ -51562,7 +52506,7 @@ Date:	Mon Nov 8 23:06:53 2010 -0500
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit f023d8b9bc6d86482fc020acf46ce965ff94c37b
+commit f023d8b9bc6d86482fc020acf46ce965ff94c37b (tag: 2.27.3)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Nov 8 21:40:17 2010 -0500
 
@@ -52182,7 +53126,7 @@ Date:	Mon Nov 1 00:32:47 2010 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit a50c0ca69961ef4d1a372cc31483de65266f1a52
+commit a50c0ca69961ef4d1a372cc31483de65266f1a52 (tag: 2.27.2)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Sun Oct 31 23:32:48 2010 -0400
 
@@ -52756,7 +53700,7 @@ Date:	Mon Oct 25 09:55:38 2010 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 11a59404d5623d65e0d09c555ef2d4be50e4023b
+commit 11a59404d5623d65e0d09c555ef2d4be50e4023b (tag: 2.27.1)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Oct 25 08:42:36 2010 -0400
 
@@ -54758,7 +55702,7 @@ Date:	Fri Sep 17 20:48:25 2010 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit dda9707377f43c827860dbce8bf09c7b98e2ad14
+commit dda9707377f43c827860dbce8bf09c7b98e2ad14 (tag: 2.27.0)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Fri Sep 17 17:57:19 2010 -0400
 
@@ -57406,7 +58350,7 @@ Date:	Mon Aug 30 20:47:40 2010 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 31a72dd719940ca5b97da9eb36ce5467458ed7f5
+commit 31a72dd719940ca5b97da9eb36ce5467458ed7f5 (tag: 2.25.15)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Aug 30 19:29:09 2010 -0400
 
@@ -59377,7 +60321,7 @@ Date:	Mon Aug 16 16:36:38 2010 -0400
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 503b0744744517ecf1c29eaa83e8e69537ae3547
+commit 503b0744744517ecf1c29eaa83e8e69537ae3547 (tag: 2.25.14)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Aug 16 15:44:40 2010 -0400
 
@@ -60179,7 +61123,7 @@ Date:	Sat Aug 7 18:43:01 2010 +0200
  ++++++++++++++++++++++++++++++++++++++++-----------------------
  1 file changed, 115 insertions(+), 64 deletions(-)
 
-commit 4ac7f8f08433c37cf0a69cdea601514a0c06c1b6
+commit 4ac7f8f08433c37cf0a69cdea601514a0c06c1b6 (tag: 2.25.13)
 Author: Benjamin Otte <otte@redhat.com>
 Date:	Fri Aug 6 23:15:28 2010 +0200
 
@@ -60652,7 +61596,7 @@ Date:	Wed Aug 4 12:24:22 2010 -0400
  gio/gdbusmessage.c | 14 ++++++++------
  1 file changed, 8 insertions(+), 6 deletions(-)
 
-commit 5bd34a820eb79f0765e312215e0a3e0a339ace78
+commit 5bd34a820eb79f0765e312215e0a3e0a339ace78 (danw/master)
 Author: David Zeuthen <davidz@redhat.com>
 Date:	Wed Aug 4 11:26:48 2010 -0400
 
@@ -61893,7 +62837,7 @@ Date:	Thu Jul 29 22:04:43 2010 +0200
  configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 1fd1543bdcc6ee897b1ebd566cbcbfd9d76e386c
+commit 1fd1543bdcc6ee897b1ebd566cbcbfd9d76e386c (tag: 2.25.12)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Thu Jul 29 16:52:34 2010 +0200
 
@@ -63117,7 +64061,7 @@ Date:	Sun Jul 11 12:51:54 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit be247c24c6b532b2acfe52424ffdcc79bdc48bf4
+commit be247c24c6b532b2acfe52424ffdcc79bdc48bf4 (tag: 2.25.11)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Sun Jul 11 12:51:33 2010 -0400
 
@@ -65373,7 +66317,7 @@ Date:	Thu Jun 24 13:32:26 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit cc295f09768d10576deba929ab8b7bc766cd207f
+commit cc295f09768d10576deba929ab8b7bc766cd207f (tag: 2.25.10)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Thu Jun 24 13:18:44 2010 -0400
 
@@ -66517,7 +67461,7 @@ Date:	Thu Jun 17 19:42:46 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 7b1f45c2e8b5f3ba3595c5cf74fbfc70f03b61c0
+commit 7b1f45c2e8b5f3ba3595c5cf74fbfc70f03b61c0 (tag: 2.25.9)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Thu Jun 17 19:08:13 2010 -0400
 
@@ -67963,7 +68907,7 @@ Date:	Tue Jun 8 01:10:17 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 1a963c659cad268a6689d941bd5a06ab5a12abf1
+commit 1a963c659cad268a6689d941bd5a06ab5a12abf1 (tag: 2.25.8)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Tue Jun 8 01:09:06 2010 -0400
 
@@ -69123,7 +70067,7 @@ Date:	Mon May 24 23:03:36 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 2db2d13fdbfe80d89cb4d5fecfa13619909f4ac5
+commit 2db2d13fdbfe80d89cb4d5fecfa13619909f4ac5 (tag: glib-2.25.7)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Mon May 24 23:02:18 2010 -0400
 
@@ -69578,7 +70522,7 @@ Date:	Wed May 19 17:38:17 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit d4648965e4dee14955ade5eb94221ad5da5f45b8
+commit d4648965e4dee14955ade5eb94221ad5da5f45b8 (tag: 2.25.6)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Wed May 19 17:32:42 2010 -0400
 
@@ -70078,7 +71022,7 @@ Date:	Fri May 14 22:30:19 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 5810cce252cc3d42377a0dca9a6d8c0a68eaf031
+commit 5810cce252cc3d42377a0dca9a6d8c0a68eaf031 (tag: 2.25.5)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri May 14 22:28:46 2010 -0400
 
@@ -70457,7 +71401,7 @@ Date:	Fri May 14 11:49:15 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit cff9d83f75b90301909f2c7d46a16e5f618e3e0b
+commit cff9d83f75b90301909f2c7d46a16e5f618e3e0b (tag: 2.25.4)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri May 14 11:25:11 2010 -0400
 
@@ -72662,7 +73606,7 @@ Date:	Fri Apr 23 20:50:27 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit afe3aef7b02e94e1d2b926e131beea2de5f5c96d
+commit afe3aef7b02e94e1d2b926e131beea2de5f5c96d (tag: 2.25.3)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri Apr 23 20:49:02 2010 -0400
 
@@ -73047,7 +73991,7 @@ Date:	Thu Apr 22 22:24:38 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 7c5849abc06a04c0dbaf2902b8104dcec90fa9b6
+commit 7c5849abc06a04c0dbaf2902b8104dcec90fa9b6 (tag: 2.25.2)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Thu Apr 22 22:23:09 2010 -0400
 
@@ -73976,7 +74920,7 @@ Date:	Mon Apr 19 17:33:03 2010 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit cd9b8b563f3dc094b72ebc0c7f55e35f4782aab1
+commit cd9b8b563f3dc094b72ebc0c7f55e35f4782aab1 (tag: 2.25.0)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Apr 19 17:30:42 2010 -0400
 
@@ -75257,7 +76201,7 @@ Date:	Fri Mar 26 15:09:13 2010 -0400
  configure.in | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit ca631653acc1e1db0c3ebb05759d05f8bdc35ba6
+commit ca631653acc1e1db0c3ebb05759d05f8bdc35ba6 (tag: 2.24.0, tag: 2.20.0)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri Mar 26 15:08:00 2010 -0400
 
@@ -75597,7 +76541,7 @@ Date:	Sun Mar 21 20:12:18 2010 -0500
  glib/gvariant-parser.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit 468bbbfce1736259ae75bd27847b5b25332ada5c
+commit 468bbbfce1736259ae75bd27847b5b25332ada5c (tag: 2.23.6)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Sun Mar 21 20:07:45 2010 -0500
 
@@ -76224,7 +77168,7 @@ Date:	Mon Mar 8 11:53:36 2010 -0500
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit c58ce0e60c1a243df6326c26cf7d255d3af4ab2d
+commit c58ce0e60c1a243df6326c26cf7d255d3af4ab2d (tag: 2.23.5)
 Author: Ryan Lortie <desrt@desrt.ca>
 Date:	Mon Mar 8 11:48:14 2010 -0500
 
@@ -77185,7 +78129,7 @@ Date:	Sun Feb 21 21:38:33 2010 -0500
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 7fea53a4a290f1cd2c052320b21ee3405e1ed605
+commit 7fea53a4a290f1cd2c052320b21ee3405e1ed605 (tag: 2.23.4)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Sun Feb 21 21:37:33 2010 -0500
 
@@ -77821,7 +78765,7 @@ Date:	Tue Feb 9 10:35:01 2010 -0500
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 1831ff2d30ee837179d9d79d9dbf36016564e0f0
+commit 1831ff2d30ee837179d9d79d9dbf36016564e0f0 (tag: 2.23.3)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Tue Feb 9 10:20:37 2010 -0500
 
@@ -79023,7 +79967,7 @@ Date:	Mon Jan 25 14:16:09 2010 -0500
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 079c980ecabf42ee9d0a061f9a11b078c6394225
+commit 079c980ecabf42ee9d0a061f9a11b078c6394225 (tag: 2.23.2)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Jan 25 14:14:14 2010 -0500
 
@@ -80079,7 +81023,7 @@ Date:	Mon Dec 21 10:56:03 2009 -0500
  configure.in | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit d7bdc48c2618cbc6b99c161592fd59c92d28d1c8
+commit d7bdc48c2618cbc6b99c161592fd59c92d28d1c8 (tag: 2.23.1)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Dec 21 10:54:11 2009 -0500
 
@@ -80806,7 +81750,7 @@ Date:	Mon Nov 30 00:11:10 2009 -0500
  configure.in | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit 2532707ce420623acaf7f1fc0bd3670bb3a8a86b
+commit 2532707ce420623acaf7f1fc0bd3670bb3a8a86b (tag: 2.23.0)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Nov 30 00:09:36 2009 -0500
 
@@ -82020,7 +82964,7 @@ Date:	Wed Oct 7 10:31:19 2009 -0400
  configure.in | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit f814174371cbc61404012720c49485bc4d66feba
+commit f814174371cbc61404012720c49485bc4d66feba (tag: 2.22.2)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Wed Oct 7 10:29:32 2009 -0400
 
@@ -82781,7 +83725,7 @@ Date:	Wed Sep 23 09:33:48 2009 +0300
  autogen.sh | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
-commit 4c633ff0b58db039a29801d5039cc2756db90bbb
+commit 4c633ff0b58db039a29801d5039cc2756db90bbb (tag: 2.22.0)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Tue Sep 22 16:57:08 2009 -0400
 
@@ -83597,7 +84541,7 @@ Date:	Fri Sep 4 21:20:09 2009 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 296d481c7e5de27175e68ff7645975442a449fc5
+commit 296d481c7e5de27175e68ff7645975442a449fc5 (tag: 2.21.6)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri Sep 4 21:19:02 2009 -0400
 
@@ -84131,7 +85075,7 @@ Date:	Mon Aug 24 14:15:13 2009 -0400
  configure.in | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit 106cd06ff38fef0356961e1d2eaffaa022035b13
+commit 106cd06ff38fef0356961e1d2eaffaa022035b13 (tag: 2.21.5)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Aug 24 14:13:49 2009 -0400
 
@@ -84846,7 +85790,7 @@ Date:	Sat Jul 18 21:09:14 2009 +0800
  +++++++++++++++++++++++++++++-----------------------------
  2 files changed, 1038 insertions(+), 1049 deletions(-)
 
-commit 9c278ded7d9a4db91dbe96aeb13b6cbb7841525b
+commit 9c278ded7d9a4db91dbe96aeb13b6cbb7841525b (tag: 2.21.4)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Fri Jul 17 20:31:28 2009 -0400
 
@@ -85134,7 +86078,7 @@ Date:	Mon Jul 6 00:33:49 2009 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 400959ddbdddaed22cfd7e898a4414730ecb3ec4
+commit 400959ddbdddaed22cfd7e898a4414730ecb3ec4 (tag: 2.21.3)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Jul 6 00:31:47 2009 -0400
 
@@ -86160,7 +87104,7 @@ Date:	Mon Jun 15 13:27:40 2009 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 785787fd6cd4b7c0120ae64ec839cfb0353c4af2
+commit 785787fd6cd4b7c0120ae64ec839cfb0353c4af2 (tag: 2.21.2)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Mon Jun 15 13:25:43 2009 -0400
 
@@ -86881,7 +87825,7 @@ Date:	Thu May 28 23:50:48 2009 -0400
  configure.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 33a2f5a21212a62e96ba8f5691a51d512a8925bd
+commit 33a2f5a21212a62e96ba8f5691a51d512a8925bd (tag: 2.21.1)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Thu May 28 23:44:48 2009 -0400
 
@@ -89066,7 +90010,7 @@ Date:	Thu Apr 9 21:34:49 2009 -0400
  gio/gvolume.c | 14 ++++++++++----
  1 file changed, 10 insertions(+), 4 deletions(-)
 
-commit 6e11246cc828217fd04a23f16b67db11333523f9
+commit 6e11246cc828217fd04a23f16b67db11333523f9 (tag: 2.20.1)
 Author: Matthias Clasen <mclasen@redhat.com>
 Date:	Thu Apr 9 18:47:28 2009 -0400
 
@@ -90134,7 +91078,7 @@ Date:	Fri Mar 13 05:45:53 2009 +0000
  configure.in | 4 ++--
  2 files changed, 6 insertions(+), 2 deletions(-)
 
-commit 5a8a224ff0ca193fe797c45ef54e5ed6466bfbb7
+commit 5a8a224ff0ca193fe797c45ef54e5ed6466bfbb7 (tag: GLIB_2_20_0)
 Author: Matthias Clasen <matthiasc@src.gnome.org>
 Date:	Fri Mar 13 05:44:11 2009 +0000
 

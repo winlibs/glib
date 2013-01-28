@@ -5,6 +5,15 @@
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
+/* The normal alignment of `guint32', in bytes. */
+#define ALIGNOF_GUINT32 4
+
+/* The normal alignment of `guint64', in bytes. */
+#define ALIGNOF_GUINT64 8
+
+/* The normal alignment of `unsigned long', in bytes. */
+#define ALIGNOF_UNSIGNED_LONG 4
+
 /* poll doesn't work on devices */
 #define BROKEN_POLL 1
 
@@ -29,10 +38,10 @@
 #define GETTEXT_PACKAGE "glib20"
 
 /* Define to the GLIB binary age */
-#define GLIB_BINARY_AGE 3400
+#define GLIB_BINARY_AGE 3403
 
 /* Define to the GLIB interface age */
-#define GLIB_INTERFACE_AGE 0
+#define GLIB_INTERFACE_AGE 3
 
 /* Define the location where the catalogs will be installed */
 #define GLIB_LOCALE_DIR "NONE/share/locale"
@@ -41,7 +50,7 @@
 #define GLIB_MAJOR_VERSION 2
 
 /* Define to the GLIB micro version */
-#define GLIB_MICRO_VERSION 0
+#define GLIB_MICRO_VERSION 3
 
 /* Define to the GLIB minor version */
 #define GLIB_MINOR_VERSION 34
@@ -108,6 +117,9 @@
 
 /* Define to 1 if you have the `clock_gettime' function. */
 /* #undef HAVE_CLOCK_GETTIME */
+
+/* define to 1 if Cocoa is available */
+/* #undef HAVE_COCOA */
 
 /* Have nl_langinfo (CODESET) */
 /* #undef HAVE_CODESET */
@@ -200,6 +212,9 @@
 /* Define to 1 if you have the `getpwuid' function. */
 /* #undef HAVE_GETPWUID */
 
+/* Define to 1 if you have the `getresuid' function. */
+/* #undef HAVE_GETRESUID */
+
 /* Define if the GNU gettext() function is already present or preinstalled. */
 #define HAVE_GETTEXT 1
 
@@ -259,6 +274,9 @@
 /* Define if we have struct ip_mreqn */
 /* #undef HAVE_IP_MREQN */
 
+/* Define to 1 if you have the `issetugid' function. */
+/* #undef HAVE_ISSETUGID */
+
 /* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
 /* #undef HAVE_LANGINFO_CODESET */
 
@@ -276,6 +294,9 @@
 
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 /* #undef HAVE_LC_MESSAGES */
+
+/* Define if you have the __libc_enable_secure variable (GNU libc, eglibc) */
+/* #undef HAVE_LIBC_ENABLE_SECURE */
 
 /* Define if libelf is available */
 /* #undef HAVE_LIBELF */
@@ -554,6 +575,9 @@
    */
 /* #undef HAVE_SYS_DIR_H */
 
+/* Define to 1 if you have the <sys/filio.h> header file. */
+/* #undef HAVE_SYS_FILIO_H */
+
 /* Define to 1 if you have the <sys/inotify.h> header file. */
 /* #undef HAVE_SYS_INOTIFY_H */
 
@@ -738,7 +762,7 @@
 #define PACKAGE_NAME "glib"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "glib 2.34.0"
+#define PACKAGE_STRING "glib 2.34.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "glib"
@@ -747,7 +771,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.34.0"
+#define PACKAGE_VERSION "2.34.3"
 
 /* define if posix_memalign() can allocate any size */
 /* #undef POSIX_MEMALIGN_WITH_COMPLIANT_ALLOCS */
@@ -837,6 +861,11 @@
 # ifndef WORDS_BIGENDIAN
 /* #  undef WORDS_BIGENDIAN */
 # endif
+#endif
+
+/* Enable large inode numbers on Mac OS X 10.5.  */
+#ifndef _DARWIN_USE_64_BIT_INODE
+# define _DARWIN_USE_64_BIT_INODE 1
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */

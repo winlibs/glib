@@ -8,7 +8,7 @@
 <link rel="up" href="rn01.html" title="API Reference">
 <link rel="prev" href="GTypeModule.html" title="GTypeModule">
 <link rel="next" href="gobject-Enumeration-and-Flag-Types.html" title="Enumeration and Flag Types">
-<meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -300,7 +300,7 @@ expose floating references in their API.
 </p>
 <p>
 Some object implementations may need to save an objects floating state
-across certain code portions (an example is <a href="http://library.gnome.org/devel/gtk3/GtkMenu.html"><span class="type">GtkMenu</span></a>), to achieve this,
+across certain code portions (an example is <a href="http://developer.gnome.org/gtk2/GtkMenu.html"><span class="type">GtkMenu</span></a>), to achieve this,
 the following sequence can be used:
 </p>
 <p>
@@ -317,7 +317,8 @@ the following sequence can be used:
 6
 7
 8
-9</pre></td>
+9
+10</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="comment">/* save floating state */</span>
 <span class="usertype">gboolean</span><span class="normal"> was_floating </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-is-floating">g_object_is_floating</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span>
 <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-ref-sink">g_object_ref_sink</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span>
@@ -326,7 +327,8 @@ the following sequence can be used:
 <span class="comment">/* restore floating state */</span>
 <span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">was_floating</span><span class="symbol">)</span>
 <span class="normal">  </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-force-floating">g_object_force_floating</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span>
-<span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span><span class="normal"> </span><span class="comment">/* release previously acquired reference */</span></pre></td>
+<span class="keyword">else</span>
+<span class="normal">  </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span><span class="normal"> </span><span class="comment">/* release previously acquired reference */</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -384,7 +386,7 @@ The class structure for the <span class="structname">GObject</span> type.
 <p>
 </p>
 <div class="example">
-<a name="idp14087248"></a><p class="title"><b>Example 1. Implementing singletons using a constructor</b></p>
+<a name="idp14115632"></a><p class="title"><b>Example 1. Implementing singletons using a constructor</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -1368,7 +1370,7 @@ Rename to: g_object_new
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>a new instance of
-<em class="parameter"><code>object_type</code></em>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object][<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+<em class="parameter"><code>object_type</code></em>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.Object][<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -1418,12 +1420,12 @@ Increases the reference count of <em class="parameter"><code>object</code></em>.
 <tbody>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
-<td>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object]</span>
+<td>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.Object]</span>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>the same <em class="parameter"><code>object</code></em>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+<td>the same <em class="parameter"><code>object</code></em>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.Object][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -1444,7 +1446,7 @@ drops to 0, the object is finalized (i.e. its memory is freed).
 </colgroup>
 <tbody><tr>
 <td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
-<td>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object]</span>
+<td>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.Object]</span>
 </td>
 </tr></tbody>
 </table></div>
@@ -1473,13 +1475,13 @@ adds a new normal reference increasing the reference count by one.
 <tbody>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
-<td>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object]</span>
+<td>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.Object]</span>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>
-<em class="parameter"><code>object</code></em>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+<em class="parameter"><code>object</code></em>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.Object][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -1566,7 +1568,7 @@ reference.
 <tbody>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
-<td>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object]</span>
+<td>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a>. <span class="annotation">[<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.Object]</span>
 </td>
 </tr>
 <tr>
@@ -1989,12 +1991,12 @@ equivalent to <code class="literal">g_signal_connect_object (..., G_CONNECT_SWAP
 7
 8</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="normal">menu</span><span class="symbol">-&gt;</span><span class="normal">toplevel </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-connect">g_object_connect</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-new">g_object_new</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">GTK_TYPE_WINDOW</span><span class="symbol">,</span>
-<span class="normal">                           </span><span class="string">"type"</span><span class="symbol">,</span><span class="normal"> <a href="http://library.gnome.org/devel/gtk3/gtk-Standard-Enumerations.html#GTK-WINDOW-POPUP:CAPS">GTK_WINDOW_POPUP</a></span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="string">"type"</span><span class="symbol">,</span><span class="normal"> <a href="http://developer.gnome.org/gtk2/gtk3-Standard-Enumerations.html#GTK-WINDOW-POPUP:CAPS">GTK_WINDOW_POPUP</a></span><span class="symbol">,</span>
 <span class="normal">                           </span><span class="string">"child"</span><span class="symbol">,</span><span class="normal"> menu</span><span class="symbol">,</span>
 <span class="normal">                           <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">),</span>
 <span class="normal">                     </span><span class="string">"signal::event"</span><span class="symbol">,</span><span class="normal"> gtk_menu_window_event</span><span class="symbol">,</span><span class="normal"> menu</span><span class="symbol">,</span>
 <span class="normal">                     </span><span class="string">"signal::size_request"</span><span class="symbol">,</span><span class="normal"> gtk_menu_window_size_request</span><span class="symbol">,</span><span class="normal"> menu</span><span class="symbol">,</span>
-<span class="normal">                     </span><span class="string">"signal::destroy"</span><span class="symbol">,</span><span class="normal"> <a href="http://library.gnome.org/devel/gtk3/GtkWidget.html#gtk-widget-destroyed">gtk_widget_destroyed</a></span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">menu</span><span class="symbol">-&gt;</span><span class="normal">toplevel</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="string">"signal::destroy"</span><span class="symbol">,</span><span class="normal"> <a href="http://developer.gnome.org/gtk2/GtkWidget.html#gtk-widget-destroyed">gtk_widget_destroyed</a></span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">menu</span><span class="symbol">-&gt;</span><span class="normal">toplevel</span><span class="symbol">,</span>
 <span class="normal">                     <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">);</span></pre></td>
       </tr>
     </tbody>
@@ -2126,7 +2128,7 @@ the type, for instance by calling <a href="./../glib/glib/glib-Memory-Allocation
 <p>
 </p>
 <div class="example">
-<a name="idp17931088"></a><p class="title"><b>Example 2. Using g_object_get()</b></p>
+<a name="idp18073840"></a><p class="title"><b>Example 2. Using g_object_get()</b></p>
 <div class="example-contents">
 An example of using <a class="link" href="gobject-The-Base-Object-Type.html#g-object-get" title="g_object_get ()"><code class="function">g_object_get()</code></a> to get the contents
 of three properties - one of type <a class="link" href="gobject-Type-Information.html#G-TYPE-INT:CAPS" title="G_TYPE_INT"><span class="type">G_TYPE_INT</span></a>,
@@ -2257,18 +2259,18 @@ instead, is to store the GParamSpec used with
 <span class="normal">  PROP_LAST</span>
 <span class="cbracket">}</span><span class="symbol">;</span>
 
-<span class="keyword">static</span><span class="normal"> </span><span class="usertype">GParamSpec</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">properties</span><span class="symbol">[</span><span class="normal">PROP_LAST</span><span class="symbol">];</span>
+<span class="keyword">static</span><span class="normal"> </span><span class="usertype">GParamSpec</span><span class="normal"> </span><span class="symbol">*</span><span class="normal"><a href="/usr/share/gtk-doc/html/libbonobo/properties.html">properties</a></span><span class="symbol">[</span><span class="normal">PROP_LAST</span><span class="symbol">];</span>
 
 <span class="keyword">static</span><span class="normal"> </span><span class="type">void</span>
 <span class="function">my_object_class_init</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">MyObjectClass</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">klass</span><span class="symbol">)</span>
 <span class="cbracket">{</span>
-<span class="normal">  properties</span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]</span><span class="normal"> </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-Standard-Parameter-and-Value-Types.html#g-param-spec-int">g_param_spec_int</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"foo"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Foo"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"The foo"</span><span class="symbol">,</span>
+<span class="normal">  <a href="/usr/share/gtk-doc/html/libbonobo/properties.html">properties</a></span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]</span><span class="normal"> </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-Standard-Parameter-and-Value-Types.html#g-param-spec-int">g_param_spec_int</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"foo"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Foo"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"The foo"</span><span class="symbol">,</span>
 <span class="normal">                                           </span><span class="number">0</span><span class="symbol">,</span><span class="normal"> </span><span class="number">100</span><span class="symbol">,</span>
 <span class="normal">                                           </span><span class="number">50</span><span class="symbol">,</span>
 <span class="normal">                                           <a href="gobject-GParamSpec.html#G-PARAM-READWRITE:CAPS">G_PARAM_READWRITE</a></span><span class="symbol">);</span>
 <span class="normal">  </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-class-install-property">g_object_class_install_property</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">gobject_class</span><span class="symbol">,</span>
 <span class="normal">                                   PROP_FOO</span><span class="symbol">,</span>
-<span class="normal">                                   properties</span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]);</span>
+<span class="normal">                                   <a href="/usr/share/gtk-doc/html/libbonobo/properties.html">properties</a></span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]);</span>
 <span class="cbracket">}</span></pre></td>
       </tr>
     </tbody>
@@ -2287,7 +2289,7 @@ and then notify a change on the "foo" property with:
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-notify-by-pspec">g_object_notify_by_pspec</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span><span class="normal"> properties</span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-notify-by-pspec">g_object_notify_by_pspec</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span><span class="normal"> <a href="/usr/share/gtk-doc/html/libbonobo/properties.html">properties</a></span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -3373,7 +3375,7 @@ by using <a class="link" href="gobject-The-Base-Object-Type.html#g-object-unref"
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the object pointed to
-by <em class="parameter"><code>weak_ref</code></em>, or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if it was empty. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object]</span>
+by <em class="parameter"><code>weak_ref</code></em>, or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if it was empty. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> GObject.Object]</span>
 </td>
 </tr>
 </tbody>
@@ -3481,6 +3483,6 @@ detail strings for the notify signal.
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.18.1</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

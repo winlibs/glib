@@ -8,7 +8,7 @@
 <link rel="up" href="ch32s05.html" title="Generating code and docs">
 <link rel="prev" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Cat.html" title="org.gtk.GDBus.Example.ObjectManager.Cat">
 <link rel="next" href="ExampleCat.html" title="ExampleCat">
-<meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -73,8 +73,16 @@ struct              <a class="link" href="ExampleAnimal.html#ExampleAnimalIface"
 <span class="returnvalue">void</span>                <a class="link" href="ExampleAnimal.html#example-animal-emit-jumped" title="example_animal_emit_jumped ()">example_animal_emit_jumped</a>          (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>,
                                                          <em class="parameter"><code><a href="./../glib/glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a> arg_height</code></em>);
 const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="ExampleAnimal.html#example-animal-get-mood" title="example_animal_get_mood ()">example_animal_get_mood</a>             (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);
+const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="ExampleAnimal.html#example-animal-get-foo" title="example_animal_get_foo ()">example_animal_get_foo</a>              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);
+const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="ExampleAnimal.html#example-animal-get-bar" title="example_animal_get_bar ()">example_animal_get_bar</a>              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);
 <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="ExampleAnimal.html#example-animal-dup-mood" title="example_animal_dup_mood ()">example_animal_dup_mood</a>             (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);
+<a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="ExampleAnimal.html#example-animal-dup-foo" title="example_animal_dup_foo ()">example_animal_dup_foo</a>              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);
+<a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="ExampleAnimal.html#example-animal-dup-bar" title="example_animal_dup_bar ()">example_animal_dup_bar</a>              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ExampleAnimal.html#example-animal-set-mood" title="example_animal_set_mood ()">example_animal_set_mood</a>             (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="ExampleAnimal.html#example-animal-set-foo" title="example_animal_set_foo ()">example_animal_set_foo</a>              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="ExampleAnimal.html#example-animal-set-bar" title="example_animal_set_bar ()">example_animal_set_bar</a>              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>,
                                                          <em class="parameter"><code>const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);
 struct              <a class="link" href="ExampleAnimal.html#ExampleAnimalProxy-struct" title="struct ExampleAnimalProxy">ExampleAnimalProxy</a>;
 struct              <a class="link" href="ExampleAnimal.html#ExampleAnimalProxyClass" title="struct ExampleAnimalProxyClass">ExampleAnimalProxyClass</a>;
@@ -156,6 +164,8 @@ ExampleAnimal is implemented by
 <div class="refsect1">
 <a name="ExampleAnimal.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
+  "<a class="link" href="ExampleAnimal.html#ExampleAnimal--bar" title='The "bar" property'>bar</a>"                      <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
+  "<a class="link" href="ExampleAnimal.html#ExampleAnimal--foo" title='The "foo" property'>foo</a>"                      <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
   "<a class="link" href="ExampleAnimal.html#ExampleAnimal--mood" title='The "mood" property'>mood</a>"                     <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
 </pre>
 </div>
@@ -196,11 +206,15 @@ Abstract interface type for the D-Bus interface <a class="link" href="gdbus-org.
     gboolean arg_make_sad,
     gboolean arg_make_happy);
 
+  const gchar * (*get_foo) (ExampleAnimal *object);
+
   const gchar * (*get_mood) (ExampleAnimal *object);
 
   void (*jumped) (
     ExampleAnimal *object,
     gdouble arg_height);
+
+  const gchar * (*get_bar) (ExampleAnimal *object);
 };
 </pre>
 <p>
@@ -221,12 +235,20 @@ Virtual table for the D-Bus interface <a class="link" href="gdbus-org.gtk.GDBus.
 <td>Handler for the <a class="link" href="ExampleAnimal.html#ExampleAnimal-handle-poke" title='The "handle-poke" signal'><span class="type">"handle-poke"</span></a> signal.</td>
 </tr>
 <tr>
+<td><p><span class="term"><em class="structfield"><code><a name="ExampleAnimalIface.get-foo"></a>get_foo</code></em> ()</span></p></td>
+<td>Getter for the <a class="link" href="ExampleAnimal.html#ExampleAnimal--foo" title='The "foo" property'><span class="type">"foo"</span></a> property.</td>
+</tr>
+<tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ExampleAnimalIface.get-mood"></a>get_mood</code></em> ()</span></p></td>
 <td>Getter for the <a class="link" href="ExampleAnimal.html#ExampleAnimal--mood" title='The "mood" property'><span class="type">"mood"</span></a> property.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ExampleAnimalIface.jumped"></a>jumped</code></em> ()</span></p></td>
 <td>Handler for the <a class="link" href="ExampleAnimal.html#ExampleAnimal-jumped" title='The "jumped" signal'><span class="type">"jumped"</span></a> signal.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="structfield"><code><a name="ExampleAnimalIface.get-bar"></a>get_bar</code></em> ()</span></p></td>
+<td>Getter for the <a class="link" href="ExampleAnimal.html#ExampleAnimal--bar" title='The "bar" property'><span class="type">"bar"</span></a> property.</td>
 </tr>
 </tbody>
 </table></div>
@@ -365,7 +387,7 @@ Finishes an operation started with <a class="link" href="ExampleAnimal.html#exam
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>
-<a href="./../glib/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the call succeded, <a href="./../glib/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<a href="http://foldoc.org/skip"><span class="acronym">skip</span></a>]</span>
+<a href="./../glib/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the call succeded, <a href="./../glib/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[skip]</span>
 </td>
 </tr>
 </tbody>
@@ -416,7 +438,7 @@ See <a class="link" href="ExampleAnimal.html#example-animal-call-poke" title="ex
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>
-<a href="./../glib/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the call succeded, <a href="./../glib/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<a href="http://foldoc.org/skip"><span class="acronym">skip</span></a>]</span>
+<a href="./../glib/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the call succeded, <a href="./../glib/glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[skip]</span>
 </td>
 </tr>
 </tbody>
@@ -516,6 +538,76 @@ Since this D-Bus property is readable, it is meaningful to use this function on 
 </div>
 <hr>
 <div class="refsect2">
+<a name="example-animal-get-foo"></a><h3>example_animal_get_foo ()</h3>
+<pre class="programlisting">const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       example_animal_get_foo              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);</pre>
+<p>
+Gets the value of the <a class="link" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Foo" title='The "Foo" property'>"Foo"</a> D-Bus property.
+</p>
+<p>
+Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+</p>
+<p>
+</p>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>The returned value is only valid until the property changes so on the client-side it is only safe to use this function on the thread where <em class="parameter"><code>object</code></em> was constructed. Use <a class="link" href="ExampleAnimal.html#example-animal-dup-foo" title="example_animal_dup_foo ()"><code class="function">example_animal_dup_foo()</code></a> if on another thread.</div>
+<p>
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>A <a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The property value or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the property is not set. Do not free the returned value, it belongs to <em class="parameter"><code>object</code></em>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 2.30</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="example-animal-get-bar"></a><h3>example_animal_get_bar ()</h3>
+<pre class="programlisting">const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       example_animal_get_bar              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);</pre>
+<p>
+Gets the value of the <a class="link" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Bar" title='The "Bar" property'>"Bar"</a> D-Bus property.
+</p>
+<p>
+Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+</p>
+<p>
+</p>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>The returned value is only valid until the property changes so on the client-side it is only safe to use this function on the thread where <em class="parameter"><code>object</code></em> was constructed. Use <a class="link" href="ExampleAnimal.html#example-animal-dup-bar" title="example_animal_dup_bar ()"><code class="function">example_animal_dup_bar()</code></a> if on another thread.</div>
+<p>
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>A <a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The property value or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the property is not set. Do not free the returned value, it belongs to <em class="parameter"><code>object</code></em>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 2.36</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="example-animal-dup-mood"></a><h3>example_animal_dup_mood ()</h3>
 <pre class="programlisting"><a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             example_animal_dup_mood             (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);</pre>
 <p>
@@ -545,6 +637,64 @@ Since this D-Bus property is readable, it is meaningful to use this function on 
 </div>
 <hr>
 <div class="refsect2">
+<a name="example-animal-dup-foo"></a><h3>example_animal_dup_foo ()</h3>
+<pre class="programlisting"><a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             example_animal_dup_foo              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);</pre>
+<p>
+Gets a copy of the <a class="link" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Foo" title='The "Foo" property'>"Foo"</a> D-Bus property.
+</p>
+<p>
+Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>A <a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The property value or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the property is not set. The returned value should be freed with <a href="./../glib/glib/glib-Memory-Allocation.html#g-free"><code class="function">g_free()</code></a>. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 2.30</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="example-animal-dup-bar"></a><h3>example_animal_dup_bar ()</h3>
+<pre class="programlisting"><a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             example_animal_dup_bar              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>);</pre>
+<p>
+Gets a copy of the <a class="link" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Bar" title='The "Bar" property'>"Bar"</a> D-Bus property.
+</p>
+<p>
+Since this D-Bus property is readable, it is meaningful to use this function on both the client- and service-side.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>A <a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The property value or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if the property is not set. The returned value should be freed with <a href="./../glib/glib/glib-Memory-Allocation.html#g-free"><code class="function">g_free()</code></a>. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 2.36</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="example-animal-set-mood"></a><h3>example_animal_set_mood ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                example_animal_set_mood             (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>,
                                                          <em class="parameter"><code>const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);</pre>
@@ -571,6 +721,64 @@ Since this D-Bus property is not writable, it is only meaningful to use this fun
 </tbody>
 </table></div>
 <p class="since">Since 2.30</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="example-animal-set-foo"></a><h3>example_animal_set_foo ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                example_animal_set_foo              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);</pre>
+<p>
+Sets the <a class="link" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Foo" title='The "Foo" property'>"Foo"</a> D-Bus property to <em class="parameter"><code>value</code></em>.
+</p>
+<p>
+Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>A <a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>The value to set.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 2.30</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="example-animal-set-bar"></a><h3>example_animal_set_bar ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                example_animal_set_bar              (<em class="parameter"><code><a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);</pre>
+<p>
+Sets the <a class="link" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Bar" title='The "Bar" property'>"Bar"</a> D-Bus property to <em class="parameter"><code>value</code></em>.
+</p>
+<p>
+Since this D-Bus property is not writable, it is only meaningful to use this function on the service-side.
+</p>
+<div class="variablelist"><table border="0" class="variablelist">
+<colgroup>
+<col align="left" valign="top">
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>A <a class="link" href="ExampleAnimal.html" title="ExampleAnimal"><span class="type">ExampleAnimal</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>The value to set.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 2.36</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -688,7 +896,7 @@ Finishes an operation started with <a class="link" href="ExampleAnimal.html#exam
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>The constructed proxy object or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> ExampleAnimalProxy]</span>
+<td>The constructed proxy object or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> ExampleAnimalProxy]</span>
 </td>
 </tr>
 </tbody>
@@ -748,7 +956,7 @@ See <a class="link" href="ExampleAnimal.html#example-animal-proxy-new" title="ex
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>The constructed proxy object or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> ExampleAnimalProxy]</span>
+<td>The constructed proxy object or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> ExampleAnimalProxy]</span>
 </td>
 </tr>
 </tbody>
@@ -840,7 +1048,7 @@ Finishes an operation started with <a class="link" href="ExampleAnimal.html#exam
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>The constructed proxy object or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> ExampleAnimalProxy]</span>
+<td>The constructed proxy object or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> ExampleAnimalProxy]</span>
 </td>
 </tr>
 </tbody>
@@ -900,7 +1108,7 @@ See <a class="link" href="ExampleAnimal.html#example-animal-proxy-new-for-bus" t
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>The constructed proxy object or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> ExampleAnimalProxy]</span>
+<td>The constructed proxy object or <a href="./../glib/glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if <em class="parameter"><code>error</code></em> is set. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> ExampleAnimalProxy]</span>
 </td>
 </tr>
 </tbody>
@@ -952,7 +1160,7 @@ Creates a skeleton object for the D-Bus interface <a class="link" href="gdbus-or
 </colgroup>
 <tbody><tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>The skeleton object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> ExampleAnimalSkeleton]</span>
+<td>The skeleton object. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type"><span class="acronym">type</span></acronym> ExampleAnimalSkeleton]</span>
 </td>
 </tr></tbody>
 </table></div>
@@ -961,6 +1169,32 @@ Creates a skeleton object for the D-Bus interface <a class="link" href="gdbus-or
 </div>
 <div class="refsect1">
 <a name="ExampleAnimal.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="ExampleAnimal--bar"></a><h3>The <code class="literal">"bar"</code> property</h3>
+<pre class="programlisting">  "bar"                      <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
+<p>
+Represents the D-Bus property <a class="link" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Bar" title='The "Bar" property'>"Bar"</a>.
+</p>
+<p>
+Since the D-Bus property for this <a href="./../gobject/gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> property is readable but not writable, it is meaningful to read from it on both the client- and service-side. It is only meaningful, however, to write to it on the service-side.
+</p>
+<p>Default value: NULL</p>
+<p class="since">Since 2.36</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ExampleAnimal--foo"></a><h3>The <code class="literal">"foo"</code> property</h3>
+<pre class="programlisting">  "foo"                      <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
+<p>
+Represents the D-Bus property <a class="link" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html#gdbus-property-org-gtk-GDBus-Example-ObjectManager-Animal.Foo" title='The "Foo" property'>"Foo"</a>.
+</p>
+<p>
+Since the D-Bus property for this <a href="./../gobject/gobject/gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> property is readable but not writable, it is meaningful to read from it on both the client- and service-side. It is only meaningful, however, to write to it on the service-side.
+</p>
+<p>Default value: NULL</p>
+<p class="since">Since 2.30</p>
+</div>
+<hr>
 <div class="refsect2">
 <a name="ExampleAnimal--mood"></a><h3>The <code class="literal">"mood"</code> property</h3>
 <pre class="programlisting">  "mood"                     <a href="./../glib/glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
@@ -1062,6 +1296,6 @@ On the service-side, this signal can be used with e.g. <a href="./../gobject/gob
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.18.1</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

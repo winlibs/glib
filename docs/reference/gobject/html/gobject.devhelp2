@@ -5,7 +5,7 @@
     <sub name="Introduction" link="pr01.html"/>
     <sub name="Concepts" link="pt01.html">
       <sub name="Background" link="chapter-intro.html">
-        <sub name="Data types and programming" link="chapter-intro.html#idp9895024"/>
+        <sub name="Data types and programming" link="chapter-intro.html#idp6962160"/>
         <sub name="Exporting a C API" link="ch01s02.html"/>
       </sub>
       <sub name="The GLib Dynamic Type System" link="chapter-gtype.html">
@@ -811,10 +811,10 @@
     <keyword type="property" name="The &quot;source-property&quot; property" link="GBinding.html#GBinding--source-property"/>
     <keyword type="property" name="The &quot;target&quot; property" link="GBinding.html#GBinding--target"/>
     <keyword type="property" name="The &quot;target-property&quot; property" link="GBinding.html#GBinding--target-property"/>
-    <keyword type="" name="Production text substitutions" link="glib-mkenums.html#idp6478064"/>
-    <keyword type="" name="Trigraph extensions" link="glib-mkenums.html#idp10551120"/>
-    <keyword type="" name="Marshaller list format" link="glib-genmarshal.html#idp13250448"/>
-    <keyword type="" name="Parameter types" link="glib-genmarshal.html#idp5812480"/>
+    <keyword type="" name="Production text substitutions" link="glib-mkenums.html#idp7777392"/>
+    <keyword type="" name="Trigraph extensions" link="glib-mkenums.html#idp13285888"/>
+    <keyword type="" name="Marshaller list format" link="glib-genmarshal.html#idp6353456"/>
+    <keyword type="" name="Parameter types" link="glib-genmarshal.html#idp4839200"/>
     <keyword type="constant" name="G_TYPE_DEBUG_NONE" link="gobject-Type-Information.html#G-TYPE-DEBUG-NONE:CAPS"/>
     <keyword type="constant" name="G_TYPE_DEBUG_OBJECTS" link="gobject-Type-Information.html#G-TYPE-DEBUG-OBJECTS:CAPS"/>
     <keyword type="constant" name="G_TYPE_DEBUG_SIGNALS" link="gobject-Type-Information.html#G-TYPE-DEBUG-SIGNALS:CAPS"/>

@@ -8,7 +8,7 @@
 <link rel="up" href="ch32.html" title="Migrating to GDBus">
 <link rel="prev" href="ch32s04.html" title="Creating proxies for well-known names">
 <link rel="next" href="gdbus-org.gtk.GDBus.Example.ObjectManager.Animal.html" title="org.gtk.GDBus.Example.ObjectManager.Animal">
-<meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -21,7 +21,7 @@
 </tr></table>
 <div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="idp78300688"></a>Generating code and docs</h2></div></div></div>
+<a name="idp74790800"></a>Generating code and docs</h2></div></div></div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="gdbus-example-gdbus-codegen"></a>Using gdbus-codegen</h3></div></div></div>
@@ -101,7 +101,20 @@
 62
 63
 64
-65</pre></td>
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="symbol">&lt;</span><span class="normal">node</span><span class="symbol">&gt;</span>
 <span class="normal">  </span><span class="symbol">&lt;!--</span><span class="normal"> org</span><span class="symbol">.</span><span class="normal">gtk</span><span class="symbol">.</span><span class="normal">GDBus</span><span class="symbol">.</span><span class="normal">Example</span><span class="symbol">.</span><span class="normal">ObjectManager</span><span class="symbol">.</span><span class="normal">Animal</span><span class="symbol">:</span>
 <span class="normal">       @short_description</span><span class="symbol">:</span><span class="normal"> Example docs generated </span><span class="usertype">by</span><span class="normal"> <a href="gdbus.html">gdbus</a></span><span class="symbol">-</span><span class="normal">codegen</span>
@@ -149,13 +162,26 @@
 <span class="normal">    </span><span class="symbol">&lt;</span><span class="usertype">signal</span><span class="normal"> name</span><span class="symbol">=</span><span class="string">"Jumped"</span><span class="symbol">&gt;</span>
 <span class="normal">      </span><span class="symbol">&lt;</span><span class="usertype">arg</span><span class="normal"> type</span><span class="symbol">=</span><span class="string">"d"</span><span class="normal"> name</span><span class="symbol">=</span><span class="string">"height"</span><span class="symbol">/&gt;</span>
 <span class="normal">    </span><span class="symbol">&lt;/</span><span class="normal">signal</span><span class="symbol">&gt;</span>
+
+<span class="normal">    </span><span class="symbol">&lt;!--</span>
+<span class="label">        Foo:</span>
+<span class="normal">        Property </span><span class="usertype">with</span><span class="normal"> no </span><span class="symbol">&lt;</span><span class="normal">quote</span><span class="symbol">&gt;</span><span class="usertype">since&lt;/quote&gt;</span><span class="normal"> </span><span class="function">annotation</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">should inherit the </span><span class="number">2.30</span><span class="normal"> from its </span><span class="usertype">containing</span><span class="normal"> interface</span><span class="symbol">).</span>
+<span class="normal">      </span><span class="symbol">--&gt;</span>
+<span class="normal">    </span><span class="symbol">&lt;</span><span class="usertype">property</span><span class="normal"> name</span><span class="symbol">=</span><span class="string">"Foo"</span><span class="normal"> type</span><span class="symbol">=</span><span class="string">"s"</span><span class="normal"> access</span><span class="symbol">=</span><span class="string">"read"</span><span class="symbol">/&gt;</span>
+
+<span class="normal">    </span><span class="symbol">&lt;!--</span>
+<span class="label">        Bar:</span>
+<span class="normal">        @since</span><span class="symbol">:</span><span class="normal"> </span><span class="number">2.36</span>
+<span class="normal">        Property with </span><span class="usertype">a</span><span class="normal"> later </span><span class="symbol">&lt;</span><span class="normal">quote</span><span class="symbol">&gt;</span><span class="usertype">since&lt;/quote&gt;</span><span class="normal"> annotation</span><span class="symbol">.</span>
+<span class="normal">      </span><span class="symbol">--&gt;</span>
+<span class="normal">    </span><span class="symbol">&lt;</span><span class="usertype">property</span><span class="normal"> name</span><span class="symbol">=</span><span class="string">"Bar"</span><span class="normal"> type</span><span class="symbol">=</span><span class="string">"s"</span><span class="normal"> access</span><span class="symbol">=</span><span class="string">"read"</span><span class="symbol">/&gt;</span>
 <span class="normal">  </span><span class="symbol">&lt;/</span><span class="normal">interface</span><span class="symbol">&gt;</span>
 
 <span class="normal">  </span><span class="symbol">&lt;!--</span><span class="normal"> org</span><span class="symbol">.</span><span class="normal">gtk</span><span class="symbol">.</span><span class="normal">GDBus</span><span class="symbol">.</span><span class="normal">Example</span><span class="symbol">.</span><span class="normal">ObjectManager</span><span class="symbol">.</span><span class="normal">Cat</span><span class="symbol">:</span>
 <span class="normal">       @short_description</span><span class="symbol">:</span><span class="normal"> More example docs generated </span><span class="usertype">by</span><span class="normal"> <a href="gdbus.html">gdbus</a></span><span class="symbol">-</span><span class="normal">codegen</span>
 
 <span class="normal">       </span><span class="usertype">This</span><span class="normal"> D</span><span class="symbol">-</span><span class="normal">Bus interface is used to describe </span><span class="usertype">a</span><span class="normal"> cat</span><span class="symbol">.</span><span class="normal"> Right now there</span>
-<span class="normal">       are </span><span class="usertype">no</span><span class="normal"> properties</span><span class="symbol">,</span><span class="normal"> methods or signals associated with this</span>
+<span class="normal">       are </span><span class="usertype">no</span><span class="normal"> <a href="/usr/share/gtk-doc/html/libbonobo/properties.html">properties</a></span><span class="symbol">,</span><span class="normal"> methods or signals associated with this</span>
 <span class="normal">       interface so it is </span><span class="usertype">essentially</span><span class="normal"> a </span><span class="symbol">&lt;</span><span class="normal">ulink</span>
 <span class="normal">       url</span><span class="symbol">=</span><span class="string">"http://en.wikipedia.org/wiki/Marker_interface_pattern"</span><span class="symbol">&gt;</span><span class="normal">Marker</span>
 <span class="normal">       Interface</span><span class="symbol">&lt;/</span><span class="normal">ulink</span><span class="symbol">&gt;.</span>
@@ -908,6 +934,6 @@
 </div>
 <div class="footer">
 <hr>
-          Generated by GTK-Doc V1.18.1</div>
+          Generated by GTK-Doc V1.18</div>
 </body>
 </html>

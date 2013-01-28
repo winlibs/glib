@@ -885,18 +885,30 @@ test_non_utf8_printf (void)
       g_free (oldlocale);
       return;
     }
+  if (g_get_charset (NULL))
+    {
+      g_test_message ("locale ja_JP.eucjp may be available, but glib seems to think that it's equivalent to UTF-8, skipping non-UTF-8 tests.");
+      g_test_message ("This is a known issue on Darwin");
+      setlocale (LC_ALL, oldlocale);
+      g_free (oldlocale);
+      return;
+    }
 
   /* These are the outputs that ja_JP.UTF-8 generates; if everything
    * is working then ja_JP.eucjp should generate the same.
    */
   TEST_PRINTF ("%a", "\345\234\237");
   TEST_PRINTF ("%A", "\345\234\237\346\233\234\346\227\245");
+#ifndef HAVE_CARBON /* OSX just returns the number */
   TEST_PRINTF ("%b", "10\346\234\210");
+#endif
   TEST_PRINTF ("%B", "10\346\234\210");
   TEST_PRINTF ("%d", "24");
   TEST_PRINTF_DATE (2009, 1, 1, "%d", "01");
   TEST_PRINTF ("%e", "24"); // fixme
+#ifndef HAVE_CARBON /* OSX just returns the number */
   TEST_PRINTF ("%h", "10\346\234\210");
+#endif
   TEST_PRINTF ("%H", "00");
   TEST_PRINTF_TIME (15, 0, 0, "%H", "15");
   TEST_PRINTF ("%I", "12");
@@ -911,18 +923,22 @@ test_non_utf8_printf (void)
   TEST_PRINTF_TIME (10, 13, 13, "%l", "10");
   TEST_PRINTF ("%m", "10");
   TEST_PRINTF ("%M", "00");
+#ifndef HAVE_CARBON /* OSX returns latin "AM", not japanese */
   TEST_PRINTF ("%p", "\345\215\210\345\211\215");
   TEST_PRINTF_TIME (13, 13, 13, "%p", "\345\215\210\345\276\214");
   TEST_PRINTF ("%P", "\345\215\210\345\211\215");
   TEST_PRINTF_TIME (13, 13, 13, "%P", "\345\215\210\345\276\214");
   TEST_PRINTF ("%r", "\345\215\210\345\211\21512\346\231\20200\345\210\20600\347\247\222");
   TEST_PRINTF_TIME (13, 13, 13, "%r", "\345\215\210\345\276\21401\346\231\20213\345\210\20613\347\247\222");
+#endif
   TEST_PRINTF ("%R", "00:00");
   TEST_PRINTF_TIME (13, 13, 31, "%R", "13:13");
   TEST_PRINTF ("%S", "00");
   TEST_PRINTF ("%t", "	");
   TEST_PRINTF ("%u", "6");
+#ifndef HAVE_CARBON /* OSX returns YYYY/MM/DD in ASCII */
   TEST_PRINTF ("%x", "2009\345\271\26410\346\234\21024\346\227\245");
+#endif
   TEST_PRINTF ("%X", "00\346\231\20200\345\210\20600\347\247\222");
   TEST_PRINTF_TIME (13, 14, 15, "%X", "13\346\231\20214\345\210\20615\347\247\222");
   TEST_PRINTF ("%y", "09");
@@ -1185,12 +1201,13 @@ test_z (void)
 {
   GTimeZone *tz;
   GDateTime *dt;
+  gchar *p;
 
   g_test_bug ("642935");
 
   tz = g_time_zone_new ("-08:00");
   dt = g_date_time_new (tz, 0, 0, 0, 0, 0, 0);
-  gchar *p = g_date_time_format (dt, "%z");
+  p = g_date_time_format (dt, "%z");
   g_assert_cmpstr (p, ==, "-0800");
   g_date_time_unref (dt);
   g_time_zone_unref (tz);

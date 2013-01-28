@@ -31,8 +31,8 @@ m4_define(glib_configure_ac)
 
 m4_define([glib_major_version], [2])
 m4_define([glib_minor_version], [34])
-m4_define([glib_micro_version], [0])
-m4_define([glib_interface_age], [0])
+m4_define([glib_micro_version], [3])
+m4_define([glib_interface_age], [3])
 m4_define([glib_binary_age],
           [m4_eval(100 * glib_minor_version + glib_micro_version)])
 m4_define([glib_version],
@@ -1219,7 +1219,7 @@ AC_FUNC_SNPRINTF_C99
 
 # Check if bcopy can be used for overlapping copies, if memmove isn't found.
 # The check is borrowed from the PERL Configure script.
-AS_IF([test "$ac_cv_func_memmove" != "yes"],
+AS_IF([test "$ac_cv_func_memmove" != "yes"], [
   AC_CACHE_CHECK(whether bcopy can handle overlapping copies,
     glib_cv_working_bcopy,[AC_TRY_RUN([
       int main() {
