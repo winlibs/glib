@@ -24,7 +24,7 @@
 #define G_DEFINE_DESTRUCTOR(_func) static void __attribute__((destructor)) _func (void);
 
 #elif defined (_MSC_VER) && (_MSC_VER >= 1500)
-/* Visual studio 2008 and later has _Pragma */
+/* Visual Studio 2008 and later has _pragma */
 
 #define G_HAS_CONSTRUCTORS 1
 
@@ -44,7 +44,7 @@
 
 #define G_HAS_CONSTRUCTORS 1
 
-/* Pre Visual studio 2008 must use #pragma section */
+/* Pre Visual Studio 2008 must use #pragma section */
 #define G_DEFINE_CONSTRUCTOR_NEEDS_PRAGMA 1
 #define G_DEFINE_DESTRUCTOR_NEEDS_PRAGMA 1
 
@@ -64,7 +64,7 @@
 
 #elif defined(__SUNPRO_C)
 
-/* This is not tested, but i believe it should work, based on:
+/* This is not tested, but I believe it should work, based on:
  * http://opensource.apple.com/source/OpenSSL098/OpenSSL098-35/src/fips/fips_premain.c
  */
 
