@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -27,23 +27,23 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -86,7 +86,7 @@
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>zlib1.lib;$(WindowsNetworkingLibs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib_a.lib;$(WindowsNetworkingLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).pdb</ProgramDatabaseFile>
@@ -110,7 +110,7 @@
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>zlib1.lib;$(WindowsNetworkingLibs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib_a.lib;$(WindowsNetworkingLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).pdb</ProgramDatabaseFile>
@@ -139,7 +139,7 @@
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>zlib1.lib;$(WindowsNetworkingLibs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib_a.lib;$(WindowsNetworkingLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).pdb</ProgramDatabaseFile>
@@ -163,7 +163,7 @@
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>zlib1.lib;$(WindowsNetworkingLibs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib_a.lib;$(WindowsNetworkingLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(GlibDllPrefix)$(ProjectName)$(GlibDllSuffix).pdb</ProgramDatabaseFile>
@@ -286,7 +286,6 @@
     <ClCompile Include="..\..\..\gio\gmenumodel.c" />
     <ClCompile Include="..\..\..\gio\gmount.c" />
     <ClCompile Include="..\..\..\gio\gmountoperation.c" />
-    <ClCompile Include="..\..\..\gio\gnativesocketaddress.c" />
     <ClCompile Include="..\..\..\gio\gnativevolumemonitor.c" />
     <ClCompile Include="..\..\..\gio\gnetworkaddress.c" />
     <ClCompile Include="..\..\..\gio\gnetworking.c" />
@@ -365,7 +364,6 @@
     <ClCompile Include="..\..\..\gio\gwin32inputstream.c" />
     <ClCompile Include="..\..\..\gio\gwin32mount.c" />
     <ClCompile Include="..\..\..\gio\gwin32outputstream.c" />
-    <ClCompile Include="..\..\..\gio\gwin32registrykey.c" />
     <ClCompile Include="..\..\..\gio\gwin32volumemonitor.c" />
     <ClCompile Include="..\..\..\gio\gzlibcompressor.c" />
     <ClCompile Include="..\..\..\gio\gzlibdecompressor.c" />

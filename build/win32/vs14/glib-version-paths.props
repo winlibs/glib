@@ -2,13 +2,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="UserMacros">
     <VSVer>12</VSVer>
-    <GlibEtcInstallRoot>..\..\..\..\vs$(VSVer)\$(Platform)</GlibEtcInstallRoot>
+    <GlibEtcInstallRoot>D:\php_core_deps\pack\vc14\x86\glib-2.45.1</GlibEtcInstallRoot>
     <CopyDir>$(GlibEtcInstallRoot)</CopyDir>
     <ApiVersion>2.0</ApiVersion>
     <GlibLibtoolCompatibleDllPrefix>lib</GlibLibtoolCompatibleDllPrefix>
-    <GlibLibtoolCompatibleDllSuffix>-$(ApiVersion)-0</GlibLibtoolCompatibleDllSuffix>
+    <GlibLibtoolCompatibleDllSuffix>-$(ApiVersion)</GlibLibtoolCompatibleDllSuffix>
     <GlibSeparateVSDllPrefix />
-    <GlibSeparateVSDllSuffix>-2-vs$(VSVer)</GlibSeparateVSDllSuffix>
+    <GlibSeparateVSDllSuffix>-2</GlibSeparateVSDllSuffix>
     <GlibDllPrefix>$(GlibSeparateVSDllPrefix)</GlibDllPrefix>
     <GlibDllSuffix>$(GlibSeparateVSDllSuffix)</GlibDllSuffix>
     <PythonPath>c:\python27</PythonPath>
