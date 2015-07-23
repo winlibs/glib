@@ -77,8 +77,9 @@ typedef unsigned __int64 guint64;
 typedef signed long long gssize;
 typedef unsigned long long gsize;
 #define G_GSIZE_MODIFIER "I64"
-#define G_GSSIZE_FORMAT "I64d"
+#define G_GSSIZE_MODIFIER "I64"
 #define G_GSIZE_FORMAT "I64u"
+#define G_GSSIZE_FORMAT "I64d"
 
 #define G_MAXSIZE	G_MAXUINT64
 #define G_MINSSIZE	G_MININT64
@@ -93,8 +94,9 @@ typedef unsigned long long gsize;
 typedef signed int gssize;
 typedef unsigned int gsize;
 #define G_GSIZE_MODIFIER ""
-#define G_GSSIZE_FORMAT "i"
+#define G_GSSIZE_MODIFIER ""
 #define G_GSIZE_FORMAT "u"
+#define G_GSSIZE_FORMAT "i"
 
 #define G_MAXSIZE	G_MAXUINT
 #define G_MINSSIZE	G_MININT
@@ -148,17 +150,15 @@ typedef unsigned __int64 guintptr;
 
 #endif
 
-#ifdef NeXT /* @#%@! NeXTStep */
-# define g_ATEXIT(proc)	(!atexit (proc))
-#else
-# define g_ATEXIT(proc)	(atexit (proc))
-#endif
+#ifndef G_DISABLE_DEPRECATED
+#define g_ATEXIT(proc)	(atexit (proc))
 
 #define g_memmove(dest,src,len) G_STMT_START { memmove ((dest), (src), (len)); } G_STMT_END
+#endif
 
 #define GLIB_MAJOR_VERSION 2
-#define GLIB_MINOR_VERSION 34
-#define GLIB_MICRO_VERSION 3
+#define GLIB_MINOR_VERSION 45
+#define GLIB_MICRO_VERSION 4
 
 #define G_OS_WIN32
 #define G_PLATFORM_WIN32

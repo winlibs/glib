@@ -13,9 +13,7 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <string.h>
@@ -144,6 +142,24 @@ grind_utf8_to_ucs4_fast_sized (const char *str, gsize len)
   return 0;
 }
 
+static int
+grind_utf8_validate (const char *str, gsize len)
+{
+  int i;
+  for (i = 0; i < NUM_ITERATIONS; i++)
+    g_utf8_validate (str, -1, NULL);
+  return 0;
+}
+
+static int
+grind_utf8_validate_sized (const char *str, gsize len)
+{
+  int i;
+  for (i = 0; i < NUM_ITERATIONS; i++)
+    g_utf8_validate (str, len, NULL);
+  return 0;
+}
+
 static void
 perform_for (GrindFunc grind_func, const char *str, const char *label)
 {
@@ -194,6 +210,8 @@ main (int argc, char **argv)
       g_test_add_data_func ("/utf8/perf/utf8_to_ucs4-sized", grind_utf8_to_ucs4_sized, perform);
       g_test_add_data_func ("/utf8/perf/utf8_to_ucs4_fast", grind_utf8_to_ucs4_fast, perform);
       g_test_add_data_func ("/utf8/perf/utf8_to_ucs4_fast-sized", grind_utf8_to_ucs4_fast_sized, perform);
+      g_test_add_data_func ("/utf8/perf/utf8_validate", grind_utf8_validate, perform);
+      g_test_add_data_func ("/utf8/perf/utf8_validate-sized", grind_utf8_validate_sized, perform);
     }
 
   return g_test_run ();

@@ -2,22 +2,22 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Signals</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<title>Signals: GObject Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="GObject Reference Manual">
 <link rel="up" href="chapter-signal.html" title="The GObject messaging system">
 <link rel="prev" href="chapter-signal.html" title="The GObject messaging system">
 <link rel="next" href="rn01.html" title="API Reference">
-<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
-<td><a accesskey="p" href="chapter-signal.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="chapter-signal.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">GObject Reference Manual</th>
-<td><a accesskey="n" href="rn01.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chapter-signal.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chapter-signal.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="rn01.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="sect1">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
@@ -42,30 +42,55 @@
       connected to this signal on this type instance will be invoked. All the closures
       connected to such a signal represent callbacks whose signature looks like:
 </p>
-<pre class="programlisting">
-return_type function_callback (gpointer instance, ... , gpointer user_data);
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">return_type</span><span class="normal"> </span><span class="function">function_callback</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">gpointer</span><span class="normal"> instance</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">...</span><span class="normal"> </span><span class="symbol">,</span><span class="normal"> </span><span class="usertype">gpointer</span><span class="normal"> user_data</span><span class="symbol">);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
     </p>
 <div class="sect2">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="signal-registration"></a>Signal registration</h3></div></div></div>
 <p>
-		To register a new signal on an existing type, we can use any of <code class="function"><a class="link" href="gobject-Signals.html#g-signal-newv" title="g_signal_newv ()">g_signal_newv</a></code>,
-		<code class="function"><a class="link" href="gobject-Signals.html#g-signal-new-valist" title="g_signal_new_valist ()">g_signal_new_valist</a></code> or <code class="function"><a class="link" href="gobject-Signals.html#g-signal-new" title="g_signal_new ()">g_signal_new</a></code> functions:
+		To register a new signal on an existing type, we can use any of <code class="function"><a class="link" href="gobject-Signals.html#g-signal-newv" title="g_signal_newv ()">g_signal_newv</a></code>,
+		<code class="function"><a class="link" href="gobject-Signals.html#g-signal-new-valist" title="g_signal_new_valist ()">g_signal_new_valist</a></code> or <code class="function"><a class="link" href="gobject-Signals.html#g-signal-new" title="g_signal_new ()">g_signal_new</a></code> functions:
 </p>
-<pre class="programlisting">
-guint g_signal_newv (const gchar        *signal_name,
-                     GType               itype,
-                     GSignalFlags        signal_flags,
-                     GClosure           *class_closure,
-                     GSignalAccumulator  accumulator,
-                     gpointer            accu_data,
-                     GSignalCMarshaller  c_marshaller,
-                     GType               return_type,
-                     guint               n_params,
-                     GType              *param_types);
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">guint</span><span class="normal"> </span><span class="function"><a href="gobject-Signals.html#g-signal-newv">g_signal_newv</a></span><span class="normal"> </span><span class="symbol">(</span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal">        </span><span class="symbol">*</span><span class="normal">signal_name</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">GType</span><span class="normal">               itype</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">GSignalFlags</span><span class="normal">        signal_flags</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">GClosure</span><span class="normal">           </span><span class="symbol">*</span><span class="normal">class_closure</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">GSignalAccumulator</span><span class="normal">  accumulator</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">gpointer</span><span class="normal">            accu_data</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">GSignalCMarshaller</span><span class="normal">  c_marshaller</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">GType</span><span class="normal">               return_type</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">guint</span><span class="normal">               n_params</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">GType</span><span class="normal">              </span><span class="symbol">*</span><span class="normal">param_types</span><span class="symbol">);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
 		The number of parameters to these functions is a bit intimidating but they are relatively
 		simple:
@@ -133,7 +158,7 @@ guint g_signal_newv (const gchar        *signal_name,
 		  of a given signal on all the instances of the type which supports that signal.
 			</p></li>
 <li class="listitem"><p>
-		  You can use <code class="function"><a class="link" href="gobject-Signals.html#g-signal-override-class-closure" title="g_signal_override_class_closure ()">g_signal_override_class_closure</a></code> which
+		  You can use <code class="function"><a class="link" href="gobject-Signals.html#g-signal-override-class-closure" title="g_signal_override_class_closure ()">g_signal_override_class_closure</a></code> which
 		  overrides the class_closure of a given type. It is possible to call this function
 		  only on a derived type of the type on which the signal was registered.
 		  This function is of use only to language bindings.
@@ -149,23 +174,34 @@ guint g_signal_newv (const gchar        *signal_name,
 		emission hooks are invoked whenever a given signal is emitted whatever the instance on 
 		which it is emitted. Emission hooks are used for example to get all mouse_clicked
 		emissions in an application to be able to emit the small mouse click sound.
-		Emission hooks are connected with <code class="function"><a class="link" href="gobject-Signals.html#g-signal-add-emission-hook" title="g_signal_add_emission_hook ()">g_signal_add_emission_hook</a></code>
-		and removed with <code class="function"><a class="link" href="gobject-Signals.html#g-signal-remove-emission-hook" title="g_signal_remove_emission_hook ()">g_signal_remove_emission_hook</a></code>.
+		Emission hooks are connected with <code class="function"><a class="link" href="gobject-Signals.html#g-signal-add-emission-hook" title="g_signal_add_emission_hook ()">g_signal_add_emission_hook</a></code>
+		and removed with <code class="function"><a class="link" href="gobject-Signals.html#g-signal-remove-emission-hook" title="g_signal_remove_emission_hook ()">g_signal_remove_emission_hook</a></code>.
 	  </p>
 </div>
 <div class="sect2">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="signal-emission"></a>Signal emission</h3></div></div></div>
 <p>
-		Signal emission is done through the use of the <code class="function"><a class="link" href="gobject-Signals.html#g-signal-emit" title="g_signal_emit ()">g_signal_emit</a></code> family 
+		Signal emission is done through the use of the <code class="function"><a class="link" href="gobject-Signals.html#g-signal-emit" title="g_signal_emit ()">g_signal_emit</a></code> family 
 		of functions.
 </p>
-<pre class="programlisting">
-void g_signal_emitv (const GValue *instance_and_params,
-                     guint         signal_id,
-                     GQuark        detail,
-                     GValue       *return_value);
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="type">void</span><span class="normal"> </span><span class="function"><a href="gobject-Signals.html#g-signal-emitv">g_signal_emitv</a></span><span class="normal"> </span><span class="symbol">(</span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">GValue</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">instance_and_params</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">guint</span><span class="normal">         signal_id</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">GQuark</span><span class="normal">        detail</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="usertype">GValue</span><span class="normal">       </span><span class="symbol">*</span><span class="normal">return_value</span><span class="symbol">);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
 		</p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
@@ -190,7 +226,7 @@ void g_signal_emitv (const GValue *instance_and_params,
 			no accumulator was specified. If an accumulator was specified during signal creation,
 			this accumulator is used to calculate the return_value as a function of the return
 			values of all the closures invoked during emission. 
-			<a href="#ftn.idp10740144" class="footnote"><sup class="footnote"><a name="idp10740144"></a>[8]</sup></a>
+			<a href="#ftn.id-1.3.5.3.7.2.3.4.1.1" class="footnote" name="id-1.3.5.3.7.2.3.4.1.1"><sup class="footnote">[8]</sup></a>
 			If no closure is invoked during
 			emission, the return_value is nonetheless initialized to zero/null.
 			</p></li>
@@ -216,7 +252,7 @@ void g_signal_emitv (const GValue *instance_and_params,
 <li class="listitem"><p>
 			<span class="emphasis"><em>HANDLER_RUN_FIRST</em></span>: if any closure were connected
 			with the <code class="function"><a class="link" href="gobject-Signals.html#g-signal-connect" title="g_signal_connect()">g_signal_connect</a></code> family of 
-			functions, and if they are not blocked (with the <code class="function"><a class="link" href="gobject-Signals.html#g-signal-handler-block" title="g_signal_handler_block ()">g_signal_handler_block</a></code>
+			functions, and if they are not blocked (with the <code class="function"><a class="link" href="gobject-Signals.html#g-signal-handler-block" title="g_signal_handler_block ()">g_signal_handler_block</a></code>
 			family of functions) they are run here, from first to last connected.
 			Jump to <span class="emphasis"><em>RUN_LAST</em></span> state.
 			</p></li>
@@ -244,7 +280,7 @@ void g_signal_emitv (const GValue *instance_and_params,
 <p>
 		If, at any point during emission (except in RUN_CLEANUP state), one of the
 		closures or emission hook stops the signal emission with
-		<code class="function"><a class="link" href="gobject-Signals.html#g-signal-stop-emission" title="g_signal_stop_emission ()">g_signal_stop_emission</a></code>,
+		<code class="function"><a class="link" href="gobject-Signals.html#g-signal-stop-emission" title="g_signal_stop_emission ()">g_signal_stop_emission</a></code>,
 		emission jumps to CLEANUP state.
 	  </p>
 <p>
@@ -260,7 +296,7 @@ void g_signal_emitv (const GValue *instance_and_params,
 	  </p>
 <p>
 		If no accumulator function was provided, the value returned by the last handler
-		run will be returned by <code class="function"><a class="link" href="gobject-Signals.html#g-signal-emit" title="g_signal_emit ()">g_signal_emit</a></code>.
+		run will be returned by <code class="function"><a class="link" href="gobject-Signals.html#g-signal-emit" title="g_signal_emit ()">g_signal_emit</a></code>.
 	  </p>
 </div>
 <div class="sect2">
@@ -272,31 +308,60 @@ void g_signal_emitv (const GValue *instance_and_params,
 	  </p>
 <p>
 	    Of the three main connection functions,
-		only one has an explicit detail parameter as a <a href="./../glib/glib/glib-Quarks.html#GQuark"><span class="type">GQuark</span></a>
-		<a href="#ftn.idp10764688" class="footnote"><sup class="footnote"><a name="idp10764688"></a>[9]</sup></a>:
+		only one has an explicit detail parameter as a <a href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark"><span class="type">GQuark</span></a>
+		<a href="#ftn.id-1.3.5.3.8.3.2" class="footnote" name="id-1.3.5.3.8.3.2"><sup class="footnote">[9]</sup></a>:
 </p>
-<pre class="programlisting">
-gulong     g_signal_connect_closure_by_id          (gpointer          instance,
-                           guint          signal_id,
-                           GQuark          detail,
-                           GClosure         *closure,
-                           gboolean          after);
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">gulong</span><span class="normal">     </span><span class="function"><a href="gobject-Signals.html#g-signal-connect-closure-by-id">g_signal_connect_closure_by_id</a></span><span class="normal">          </span><span class="symbol">(</span><span class="usertype">gpointer</span><span class="normal">          instance</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">guint</span><span class="normal">          signal_id</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">GQuark</span><span class="normal">          detail</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">GClosure</span><span class="normal">         </span><span class="symbol">*</span><span class="normal">closure</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">gboolean</span><span class="normal">          after</span><span class="symbol">);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
         The two other functions hide the detail parameter in the signal name identification:
 </p>
-<pre class="programlisting">
-gulong     g_signal_connect_closure          (gpointer          instance,
-                           const gchar       *detailed_signal,
-                           GClosure         *closure,
-                           gboolean          after);
-gulong     g_signal_connect_data              (gpointer          instance,
-                           const gchar     *detailed_signal,
-                           GCallback      c_handler,
-                           gpointer          data,
-                           GClosureNotify      destroy_data,
-                           GConnectFlags      connect_flags);
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">gulong</span><span class="normal">     </span><span class="function"><a href="gobject-Signals.html#g-signal-connect-closure">g_signal_connect_closure</a></span><span class="normal">          </span><span class="symbol">(</span><span class="usertype">gpointer</span><span class="normal">          instance</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal">       </span><span class="symbol">*</span><span class="normal">detailed_signal</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">GClosure</span><span class="normal">         </span><span class="symbol">*</span><span class="normal">closure</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">gboolean</span><span class="normal">          after</span><span class="symbol">);</span>
+<span class="usertype">gulong</span><span class="normal">     </span><span class="function"><a href="gobject-Signals.html#g-signal-connect-data">g_signal_connect_data</a></span><span class="normal">              </span><span class="symbol">(</span><span class="usertype">gpointer</span><span class="normal">          instance</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal">     </span><span class="symbol">*</span><span class="normal">detailed_signal</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">GCallback</span><span class="normal">      c_handler</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">gpointer</span><span class="normal">          data</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">GClosureNotify</span><span class="normal">      destroy_data</span><span class="symbol">,</span>
+<span class="normal">                           </span><span class="usertype">GConnectFlags</span><span class="normal">      connect_flags</span><span class="symbol">);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
 		Their detailed_signal parameter is a string which identifies the name of the signal
 		to connect to. However, the format of this string is structured to look like 
@@ -307,30 +372,59 @@ gulong     g_signal_connect_data              (gpointer          instance,
 	  </p>
 <p>
 		Of the four main signal emission functions, three have an explicit detail parameter as a 
-		<a href="./../glib/glib/glib-Quarks.html#GQuark"><span class="type">GQuark</span></a> again:
+		<a href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#GQuark"><span class="type">GQuark</span></a> again:
 </p>
-<pre class="programlisting">
-void                  g_signal_emitv        (const GValue       *instance_and_params,
-                         guint               signal_id,
-                         GQuark              detail,
-                         GValue             *return_value);
-void                  g_signal_emit_valist  (gpointer            instance,
-                         guint               signal_id,
-                         GQuark              detail,
-                         va_list             var_args);
-void                  g_signal_emit         (gpointer            instance,
-                         guint               signal_id,
-                         GQuark              detail,
-                         ...);
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="type">void</span><span class="normal">                  </span><span class="function"><a href="gobject-Signals.html#g-signal-emitv">g_signal_emitv</a></span><span class="normal">        </span><span class="symbol">(</span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">GValue</span><span class="normal">       </span><span class="symbol">*</span><span class="normal">instance_and_params</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="usertype">guint</span><span class="normal">               signal_id</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="usertype">GQuark</span><span class="normal">              detail</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="usertype">GValue</span><span class="normal">             </span><span class="symbol">*</span><span class="normal">return_value</span><span class="symbol">);</span>
+<span class="type">void</span><span class="normal">                  </span><span class="function"><a href="gobject-Signals.html#g-signal-emit-valist">g_signal_emit_valist</a></span><span class="normal">  </span><span class="symbol">(</span><span class="usertype">gpointer</span><span class="normal">            instance</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="usertype">guint</span><span class="normal">               signal_id</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="usertype">GQuark</span><span class="normal">              detail</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="usertype">va_list</span><span class="normal">             var_args</span><span class="symbol">);</span>
+<span class="type">void</span><span class="normal">                  </span><span class="function"><a href="gobject-Signals.html#g-signal-emit">g_signal_emit</a></span><span class="normal">         </span><span class="symbol">(</span><span class="usertype">gpointer</span><span class="normal">            instance</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="usertype">guint</span><span class="normal">               signal_id</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="usertype">GQuark</span><span class="normal">              detail</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="symbol">...);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
         The fourth function hides it in its signal name parameter:
 </p>
-<pre class="programlisting">
-void                  g_signal_emit_by_name (gpointer            instance,
-                         const gchar        *detailed_signal,
-                         ...);
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="type">void</span><span class="normal">                  </span><span class="function"><a href="gobject-Signals.html#g-signal-emit-by-name">g_signal_emit_by_name</a></span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">gpointer</span><span class="normal">            instance</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal">        </span><span class="symbol">*</span><span class="normal">detailed_signal</span><span class="symbol">,</span>
+<span class="normal">                         </span><span class="symbol">...);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
         The format of the detailed_signal parameter is exactly the same as the format used by
         the <code class="function"><a class="link" href="gobject-Signals.html#g-signal-connect" title="g_signal_connect()">g_signal_connect</a></code> functions: <span class="emphasis"><em>signal_name::detail_name</em></span>.
@@ -356,8 +450,8 @@ void                  g_signal_emit_by_name (gpointer            instance,
 	  </p>
 </div>
 <div class="footnotes">
-<br><hr style="width:100; align:left;">
-<div id="ftn.idp10740144" class="footnote"><p><a href="#idp10740144" class="para"><sup class="para">[8] </sup></a>
+<br><hr style="width:100; text-align:left;margin-left: 0">
+<div id="ftn.id-1.3.5.3.7.2.3.4.1.1" class="footnote"><p><a href="#id-1.3.5.3.7.2.3.4.1.1" class="para"><sup class="para">[8] </sup></a>
 			  James (again!!) gives a few non-trivial examples of accumulators:
 			  <span class="quote">“<span class="quote">
 				For instance, you may have an accumulator that ignores NULL returns from 
@@ -365,14 +459,13 @@ void                  g_signal_emit_by_name (gpointer            instance,
 				to return the list of values returned by the closures.
 			  </span>”</span>
 			</p></div>
-<div id="ftn.idp10764688" class="footnote"><p><a href="#idp10764688" class="para"><sup class="para">[9] </sup></a>A GQuark is an integer which uniquely represents a string. It is possible to transform
+<div id="ftn.id-1.3.5.3.8.3.2" class="footnote"><p><a href="#id-1.3.5.3.8.3.2" class="para"><sup class="para">[9] </sup></a>A GQuark is an integer which uniquely represents a string. It is possible to transform
 		   back and forth between the integer and string representations with the functions 
-		   <code class="function"><a href="./../glib/glib/glib-Quarks.html#g-quark-from-string">g_quark_from_string</a></code> and <code class="function"><a href="./../glib/glib/glib-Quarks.html#g-quark-to-string">g_quark_to_string</a></code>.
+		   <code class="function"><a href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#g-quark-from-string">g_quark_from_string</a></code> and <code class="function"><a href="https://developer.gnome.org/glib/unstable/glib-Quarks.html#g-quark-to-string">g_quark_to_string</a></code>.
 		  </p></div>
 </div>
 </div>
 <div class="footer">
-<hr>
-          Generated by GTK-Doc V1.18</div>
+<hr>Generated by GTK-Doc V1.24.1</div>
 </body>
 </html>

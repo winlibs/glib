@@ -1,8 +1,8 @@
 '\" t
 .\"     Title: glib-genmarshal
 .\"    Author: Tim Janik
-.\" Generator: DocBook XSL Stylesheets v1.77.1 <http://docbook.sf.net/>
-.\"      Date: 11/24/2012
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 07/20/2015
 .\"    Manual: User Commands
 .\"    Source: GObject
 .\"  Language: English
@@ -42,17 +42,7 @@ takes a list of marshallers to generate as input\&. The marshaller list is eithe
 .SS "Marshaller list format"
 .PP
 The marshaller lists are processed line by line, a line can contain a comment in the form of
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-# this is a comment
-.fi
-.if n \{\
-.RE
-.\}
-.sp
+.sp .if n \{\ .RS 4 .\} .nf # this is a comment .fi .if n \{\ .RE .\}
 or a marshaller specification of the form
 .sp
 .if n \{\
@@ -214,6 +204,13 @@ Specify marshaller prefix\&. The default prefix is
 Skip source location remarks in generated comments\&.
 .RE
 .PP
+\fB\-\-stdinc\fR
+.RS 4
+Use the standard marshallers of the GObject library, and include
+gmarshal\&.h
+in generated header files\&.
+.RE
+.PP
 \fB\-\-nostdinc\fR
 .RS 4
 Do not use the standard marshallers of the GObject library, and skip
@@ -335,5 +332,4 @@ g_closure_set_marshal (cc_baz, g_cclosure_user_marshal_FLOAT__BOOLEAN_UCHAR);
 .\}
 .SH "SEE ALSO"
 .PP
-
 \fBglib-mkenums\fR(1)

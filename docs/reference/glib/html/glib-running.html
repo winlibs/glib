@@ -2,22 +2,22 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Running GLib Applications</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<title>Running GLib Applications: GLib Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="GLib Reference Manual">
 <link rel="up" href="glib.html" title="GLib Overview">
 <link rel="prev" href="glib-compiling.html" title="Compiling GLib Applications">
 <link rel="next" href="glib-changes.html" title="Changes to GLib">
-<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
-<td><a accesskey="p" href="glib-compiling.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="glib.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">GLib Reference Manual</th>
-<td><a accesskey="n" href="glib-changes.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="glib.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="glib-compiling.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="glib-changes.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="glib-running"></a><div class="titlepage"></div>
@@ -28,12 +28,12 @@
 How to run and debug your GLib application
 </p>
 </td>
-<td valign="top" align="right"></td>
+<td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
 <div class="refsect1">
-<a name="idp8553408"></a><h2>Running and debugging GLib Applications</h2>
+<a name="id-1.2.7.3"></a><h2>Running and debugging GLib Applications</h2>
 <div class="refsect2">
-<a name="idp9961280"></a><h3>Environment variables</h3>
+<a name="id-1.2.7.3.2"></a><h3>Environment variables</h3>
 <p>
   The runtime behaviour of GLib applications can be influenced by a
   number of environment variables.
@@ -163,7 +163,7 @@ How to run and debug your GLib application
 <td>
 <p>Using this option (present since GLib 2.13) engages
           extra code which performs sanity checks on the released memory
-          slices. Invalid slice adresses or slice sizes will be reported and
+          slices. Invalid slice addresses or slice sizes will be reported and
           lead to a program halt. This option is for debugging scenarios.
           In particular, client packages sporting their own test suite should
           <span class="emphasis"><em>always enable this option when running tests</em></span>.
@@ -234,50 +234,6 @@ the system default ANSI code-page. Strings in this character set are
 returned by functions like <code class="function">strftime()</code>.
 </p>
 </div>
-<hr>
-<div class="refsect2">
-<a name="idp7375152"></a><h3>Traps and traces</h3>
-<p>
-
-
-
-Some code portions contain trap variables that can be set during debugging
-time if GLib has been configured with <code class="option">--enable-debug=yes</code>.
-Such traps lead to immediate code halts to examine the current program state
-and backtrace.
-</p>
-<p>
-Currently, the following trap variables exist:
-</p>
-<pre class="programlisting">
-static volatile gulong g_trap_free_size;
-static volatile gulong g_trap_realloc_size;
-static volatile gulong g_trap_malloc_size;
-</pre>
-<p>
-If set to a size &gt; 0, <a class="link" href="glib-Memory-Allocation.html#g-free" title="g_free ()">g_free</a>(),
-<a class="link" href="glib-Memory-Allocation.html#g-realloc" title="g_realloc ()">g_realloc</a>() and
-<a class="link" href="glib-Memory-Allocation.html#g-malloc" title="g_malloc ()">g_malloc</a>() will be intercepted if the size
-matches the size of the corresponding memory block. This will only work with
-<code class="literal">g_mem_set_vtable (glib_mem_profiler_table)</code> upon startup
-though, because memory profiling is required to match on the memory block sizes.
-</p>
-<p>
-Note that many modern debuggers support conditional breakpoints, which achieve
-pretty much the same. E.g. in gdb, you can do
-</p>
-<pre class="programlisting">
-break g_malloc
-condition 1 n_bytes == 20
-</pre>
-<p>
-to break only on g_malloc() calls where the size of the allocated memory block
-is 20.
-</p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="idp9472240"></a><h3>Gdb debugging macros</h3>
 <p>
 glib ships with a set of python macros for the gdb debugger. These includes pretty
 printers for lists, hashtables and gobject types. It also has a backtrace filter
@@ -305,10 +261,9 @@ gforeach i in some_list_variable: print *(GtkWidget *)l
 <p>
 Which would print the contents of each widget in a list of widgets.
 </p>
-</div>
 <hr>
 <div class="refsect2">
-<a name="idp9476416"></a><h3>SystemTap</h3>
+<a name="id-1.2.7.3.8"></a><h3>SystemTap</h3>
 <p>
 <a class="ulink" href="http://sourceware.org/systemtap/" target="_top">SystemTap</a> is a dynamic whole-system
 analysis toolkit.  GLib ships with a file <code class="filename">glib.stp</code> which defines a
@@ -319,7 +274,7 @@ are in your shared SystemTap scripts directory.
 </div>
 <hr>
 <div class="refsect2">
-<a name="idp9489696"></a><h3>Memory statistics</h3>
+<a name="id-1.2.7.3.9"></a><h3>Memory statistics</h3>
 <p>
 g_mem_profile() will output a summary g_malloc() memory usage, if memory
 profiling has been enabled by calling
@@ -334,7 +289,6 @@ output details about the memory usage of the slice allocator.
 </div>
 </div>
 <div class="footer">
-<hr>
-          Generated by GTK-Doc V1.18</div>
+<hr>Generated by GTK-Doc V1.24.1</div>
 </body>
 </html>

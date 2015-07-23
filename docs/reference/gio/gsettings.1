@@ -1,8 +1,8 @@
 '\" t
 .\"     Title: gsettings
 .\"    Author: Ryan Lortie
-.\" Generator: DocBook XSL Stylesheets v1.77.1 <http://docbook.sf.net/>
-.\"      Date: 11/24/2012
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 07/20/2015
 .\"    Manual: User Commands
 .\"    Source: GIO
 .\"  Language: English
@@ -73,6 +73,8 @@ When setting a key, you also need specify a
 \fIVALUE\fR
 The format for the value is that of a serialized
 \fBGVariant\fR, so e\&.g\&. a string must include explicit quotes: "\*(Aqfoo\*(Aq"\&. This format is also used when printing out values\&.
+.PP
+Note that gsettings needs a D\-Bus session bus connection to write changes to the dconf database\&.
 .SH "COMMANDS"
 .PP
 \fBget\fR

@@ -2,22 +2,22 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>GVariant Text Format</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<title>GVariant Text Format: GLib Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="GLib Reference Manual">
 <link rel="up" href="glib-data-types.html" title="GLib Data Types">
 <link rel="prev" href="gvariant-format-strings.html" title="GVariant Format Strings">
 <link rel="next" href="deprecated.html" title="Deprecated APIs">
-<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
-<td><a accesskey="p" href="gvariant-format-strings.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="glib-data-types.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">GLib Reference Manual</th>
-<td><a accesskey="n" href="deprecated.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="glib-data-types.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="gvariant-format-strings.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="deprecated.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="gvariant-text"></a><div class="titlepage"></div>
@@ -26,14 +26,14 @@
 <h2><span class="refentrytitle">GVariant Text Format</span></h2>
 <p>GVariant Text Format — textual representation of GVariants</p>
 </td>
-<td valign="top" align="right"></td>
+<td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
 <div class="refsect1">
-<a name="idp32203504"></a><h2>GVariant Text Format</h2>
+<a name="id-1.6.21.3"></a><h2>GVariant Text Format</h2>
 <p>
    This page attempts to document the GVariant text format as produced by
-   <a class="link" href="glib-GVariant.html#g-variant-print" title="g_variant_print ()"><code class="function">g_variant_print()</code></a> and parsed by the
-   <a class="link" href="glib-GVariant.html#g-variant-parse" title="g_variant_parse ()"><code class="function">g_variant_parse()</code></a> family of functions.  In most
+   <a class="link" href="glib-GVariant.html#g-variant-print" title="g_variant_print ()"><code class="function">g_variant_print()</code></a> and parsed by the
+   <a class="link" href="glib-GVariant.html#g-variant-parse" title="g_variant_parse ()"><code class="function">g_variant_parse()</code></a> family of functions.  In most
    cases the style closely resembles the formatting of literals in Python but there are some additions and
    exceptions.
   </p>
@@ -110,7 +110,7 @@
   </p>
 </div>
 <div class="refsect1">
-<a name="idp30460832"></a><h2>Syntax Summary</h2>
+<a name="id-1.6.21.4"></a><h2>Syntax Summary</h2>
 <p>
    The following table describes the rough meaning of symbols that may appear inside GVariant text format.
    Each symbol is described in detail in its own section, including usage examples.
@@ -600,7 +600,7 @@
    </p>
 <p>
     Bytestrings support the full range of escapes that you would expect (ie: those supported by
-    <a class="link" href="glib-String-Utility-Functions.html#g-strcompress" title="g_strcompress ()"><code class="function">g_strcompress()</code></a>.  This includes the normal control
+    <a class="link" href="glib-String-Utility-Functions.html#g-strcompress" title="g_strcompress ()"><code class="function">g_strcompress()</code></a>.  This includes the normal control
     sequence escapes (as mentioned in the section on strings) as well as octal and hexidecimal escapes of the
     forms <code class="literal">\0nnn</code> and <code class="literal">\xnn</code>.
    </p>
@@ -617,7 +617,7 @@
 <a name="gvariant-text-positional"></a><h3>Positional Parameters</h3>
 <p>
     Positional parameters are not a part of the normal GVariant text format, but they are mentioned here because
-    they can be used with <a class="link" href="glib-GVariant.html#g-variant-new-parsed" title="g_variant_new_parsed ()"><code class="function">g_variant_new_parsed()</code></a>.
+    they can be used with <a class="link" href="glib-GVariant.html#g-variant-new-parsed" title="g_variant_new_parsed ()"><code class="function">g_variant_new_parsed()</code></a>.
    </p>
 <p>
     A positional parameter is indicated with a <code class="literal">%</code> followed by any valid
@@ -661,7 +661,6 @@
 </div>
 </div>
 <div class="footer">
-<hr>
-          Generated by GTK-Doc V1.18</div>
+<hr>Generated by GTK-Doc V1.24.1</div>
 </body>
 </html>

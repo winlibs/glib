@@ -2,22 +2,22 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>gdbus</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<title>gdbus: GIO Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="GIO Reference Manual">
 <link rel="up" href="tools.html" title="GIO Tools">
 <link rel="prev" href="glib-compile-resources.html" title="glib-compile-resources">
 <link rel="next" href="gdbus-codegen.html" title="gdbus-codegen">
-<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
-<td><a accesskey="p" href="glib-compile-resources.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="tools.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">GIO Reference Manual</th>
-<td><a accesskey="n" href="gdbus-codegen.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="tools.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="glib-compile-resources.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="gdbus-codegen.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div lang="en" class="refentry">
 <a name="gdbus"></a><div class="titlepage"></div>
@@ -26,7 +26,7 @@
 <h2><span class="refentrytitle">gdbus</span></h2>
 <p>gdbus — Tool for working with D-Bus objects</p>
 </td>
-<td valign="top" align="right"></td>
+<td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
 <div class="refsynopsisdiv">
 <h2>Synopsis</h2>
@@ -37,13 +37,13 @@
 <div class="cmdsynopsis"><p><code class="command">gdbus</code>   help </p></div>
 </div>
 <div class="refsect1">
-<a name="idp15352752"></a><h2>Description</h2>
+<a name="id-1.4.26.6.5"></a><h2>Description</h2>
 <p>
     <span class="command"><strong>gdbus</strong></span> is a simple tool for working with D-Bus objects.
   </p>
 </div>
 <div class="refsect1">
-<a name="idp8857520"></a><h2>Commands</h2>
+<a name="id-1.4.26.6.6"></a><h2>Commands</h2>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">
@@ -77,9 +77,9 @@
 <td><p>
           Invokes a method on a remote object.  Each argument to pass to the
           method must be specified as a serialized
-          <a href="./../glib/glib/glib-GVariant.html#GVariant"><span class="type">GVariant</span></a> except that strings do
+          <a href="https://developer.gnome.org/glib/unstable/glib-GVariant.html#GVariant"><span class="type">GVariant</span></a> except that strings do
           not need explicit quotes. The return values are printed out as
-          serialized <a href="./../glib/glib/glib-GVariant.html#GVariant"><span class="type">GVariant</span></a>
+          serialized <a href="https://developer.gnome.org/glib/unstable/glib-GVariant.html#GVariant"><span class="type">GVariant</span></a>
           values.
         </p></td>
 </tr>
@@ -87,7 +87,7 @@
 <td><p><span class="term"><code class="option">emit</code></span></p></td>
 <td><p>
           Emits a signal. Each argument to include in the signal must be specified as a serialized
-          <a href="./../glib/glib/glib-GVariant.html#GVariant"><span class="type">GVariant</span></a> except that strings do
+          <a href="https://developer.gnome.org/glib/unstable/glib-GVariant.html#GVariant"><span class="type">GVariant</span></a> except that strings do
           not need explicit quotes.
         </p></td>
 </tr>
@@ -101,7 +101,7 @@
 </table></div>
 </div>
 <div class="refsect1">
-<a name="idp42963008"></a><h2>Bash Completion</h2>
+<a name="id-1.4.26.6.7"></a><h2>Bash Completion</h2>
 <p>
     <span class="command"><strong>gdbus</strong></span> ships with a bash completion script to
     complete commands, destinations, bus names, object paths and
@@ -109,7 +109,7 @@
   </p>
 </div>
 <div class="refsect1">
-<a name="idp38913680"></a><h2>Examples</h2>
+<a name="id-1.4.26.6.8"></a><h2>Examples</h2>
   This shows how to introspect an object - note that the value of each
   property is displayed:
 <pre class="programlisting">
@@ -279,7 +279,7 @@ $ gdbus emit --session --object-path /bar --signal org.bar.Bar someString --dest
 </pre>
 </div>
 <div class="refsect1">
-<a name="idp11152864"></a><h2>Bugs</h2>
+<a name="id-1.4.26.6.9"></a><h2>Bugs</h2>
 <p>
     Please send bug reports to either the distribution bug tracker
     or the upstream bug tracker at
@@ -287,14 +287,13 @@ $ gdbus emit --session --object-path /bar --signal org.bar.Bar someString --dest
   </p>
 </div>
 <div class="refsect1">
-<a name="idp11411456"></a><h2>See Also</h2>
+<a name="id-1.4.26.6.10"></a><h2>See Also</h2>
 <p>
     <span class="citerefentry"><span class="refentrytitle">dbus-send</span>(1)</span>
   </p>
 </div>
 </div>
 <div class="footer">
-<hr>
-          Generated by GTK-Doc V1.18</div>
+<hr>Generated by GTK-Doc V1.24.1</div>
 </body>
 </html>

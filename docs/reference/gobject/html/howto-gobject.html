@@ -2,36 +2,36 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>How to define and implement a new GObject</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<title>How to define and implement a new GObject: GObject Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="GObject Reference Manual">
 <link rel="up" href="pt02.html" title="Part IV. Tutorial">
 <link rel="prev" href="pt02.html" title="Part IV. Tutorial">
 <link rel="next" href="howto-gobject-code.html" title="Boilerplate code">
-<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
-<td><a accesskey="p" href="pt02.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="pt02.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">GObject Reference Manual</th>
-<td><a accesskey="n" href="howto-gobject-code.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="pt02.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="pt02.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="howto-gobject-code.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="chapter">
 <div class="titlepage"><div><div><h2 class="title">
 <a name="howto-gobject"></a>How to define and implement a new GObject</h2></div></div></div>
-<div class="toc"><dl>
+<div class="toc"><dl class="toc">
 <dt><span class="sect1"><a href="howto-gobject.html#howto-gobject-header">Boilerplate header code</a></span></dt>
 <dt><span class="sect1"><a href="howto-gobject-code.html">Boilerplate code</a></span></dt>
 <dt><span class="sect1"><a href="howto-gobject-construction.html">Object Construction</a></span></dt>
 <dt><span class="sect1"><a href="howto-gobject-destruction.html">Object Destruction</a></span></dt>
 <dt><span class="sect1"><a href="howto-gobject-methods.html">Object methods</a></span></dt>
 <dd><dl>
-<dt><span class="sect2"><a href="howto-gobject-methods.html#idp21998160">Non-virtual public methods</a></span></dt>
-<dt><span class="sect2"><a href="howto-gobject-methods.html#idp22001152">Virtual public methods</a></span></dt>
-<dt><span class="sect2"><a href="howto-gobject-methods.html#idp22011248">Virtual private Methods</a></span></dt>
+<dt><span class="sect2"><a href="howto-gobject-methods.html#id-1.6.3.7.3">Non-virtual public methods</a></span></dt>
+<dt><span class="sect2"><a href="howto-gobject-methods.html#id-1.6.3.7.4">Virtual public methods</a></span></dt>
+<dt><span class="sect2"><a href="howto-gobject-methods.html#id-1.6.3.7.5">Virtual private Methods</a></span></dt>
 </dl></dd>
 <dt><span class="sect1"><a href="howto-gobject-chainup.html">Chaining up</a></span></dt>
 </dl></div>
@@ -60,9 +60,15 @@
         grumpy (not a good thing)</p></li>
 <li class="listitem"><p>You must assess the fact that these conventions might
         have been designed by both smart and experienced people: maybe they
-        were at least partly right. Try  to put your ego aside.</p></li>
+        were at least partly right. Try to put your ego aside.</p></li>
 </ul></div>
 <p>
+      It is, nevertheless, important to note that these rules generally apply
+      to code that is meant to be called by third parties; it is perfectly
+      possible to write a valid, self-contained GObject types without most of
+      the boilerplate used in this tutorial; most of the boilerplate is also
+      not strictly required if you plan to use the GObject types only through
+      language bindings based on introspection.
     </p>
 <p>
       Pick a name convention for your headers and source code and stick to it:
@@ -94,162 +100,123 @@
     </p>
 <p>
       The basic conventions for any header which exposes a GType are described
-      in <a class="xref" href="gtype-conventions.html" title="Conventions">the section called “Conventions”</a>. Most GObject-based code also
-      obeys one of of the following conventions: pick one and stick to it.
-      </p>
-<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
-<li class="listitem">
+      in <a class="xref" href="gtype-conventions.html" title="Conventions">the section called “Conventions”</a>.
+    </p>
 <p>
             If you want to declare a type named bar with prefix maman, name the type instance
             <code class="function">MamanBar</code> and its class <code class="function">MamanBarClass</code>
             (name is case-sensitive). It is customary to declare them with code similar to the 
             following:
 </p>
-<pre class="programlisting">
-/*
- * Copyright/Licensing information.
- */
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="comment">/*</span>
+<span class="comment"> * Copyright/Licensing information.</span>
+<span class="comment"> */</span>
 
-/* inclusion guard */
-#ifndef __MAMAN_BAR_H__
-#define __MAMAN_BAR_H__
+<span class="comment">/* inclusion guard */</span>
+<span class="preproc">#ifndef</span><span class="normal"> __MAMAN_BAR_H__</span>
+<span class="preproc">#define</span><span class="normal"> __MAMAN_BAR_H__</span>
 
-#include &lt;glib-object.h&gt;
-/*
- * Potentially, include other headers on which this header depends.
- */
+<span class="preproc">#include</span><span class="normal"> </span><span class="string">&lt;glib-object.h&gt;</span>
+<span class="comment">/*</span>
+<span class="comment"> * Potentially, include other headers on which this header depends.</span>
+<span class="comment"> */</span>
 
-/*
- * Type macros.
- */
-#define MAMAN_TYPE_BAR                  (maman_bar_get_type ())
-#define MAMAN_BAR(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), MAMAN_TYPE_BAR, MamanBar))
-#define MAMAN_IS_BAR(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MAMAN_TYPE_BAR))
-#define MAMAN_BAR_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), MAMAN_TYPE_BAR, MamanBarClass))
-#define MAMAN_IS_BAR_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), MAMAN_TYPE_BAR))
-#define MAMAN_BAR_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), MAMAN_TYPE_BAR, MamanBarClass))
+<span class="comment">/*</span>
+<span class="comment"> * Type macros.</span>
+<span class="comment"> */</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_TYPE_BAR</span><span class="normal">                  </span><span class="symbol">(</span><span class="function">maman_bar_get_type</span><span class="normal"> </span><span class="symbol">())</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_BAR</span><span class="symbol">(</span><span class="normal">obj</span><span class="symbol">)</span><span class="normal">                  </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-CHECK-INSTANCE-CAST:CAPS">G_TYPE_CHECK_INSTANCE_CAST</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">obj</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">,</span><span class="normal"> MamanBar</span><span class="symbol">))</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_IS_BAR</span><span class="symbol">(</span><span class="normal">obj</span><span class="symbol">)</span><span class="normal">               </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-CHECK-INSTANCE-TYPE:CAPS">G_TYPE_CHECK_INSTANCE_TYPE</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">obj</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">))</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_BAR_CLASS</span><span class="symbol">(</span><span class="normal">klass</span><span class="symbol">)</span><span class="normal">          </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-CHECK-CLASS-CAST:CAPS">G_TYPE_CHECK_CLASS_CAST</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">klass</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">,</span><span class="normal"> MamanBarClass</span><span class="symbol">))</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_IS_BAR_CLASS</span><span class="symbol">(</span><span class="normal">klass</span><span class="symbol">)</span><span class="normal">       </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-CHECK-CLASS-TYPE:CAPS">G_TYPE_CHECK_CLASS_TYPE</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">klass</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">))</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_BAR_GET_CLASS</span><span class="symbol">(</span><span class="normal">obj</span><span class="symbol">)</span><span class="normal">        </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-INSTANCE-GET-CLASS:CAPS">G_TYPE_INSTANCE_GET_CLASS</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">obj</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">,</span><span class="normal"> MamanBarClass</span><span class="symbol">))</span>
 
-typedef struct _MamanBar        MamanBar;
-typedef struct _MamanBarClass   MamanBarClass;
+<span class="keyword">typedef</span><span class="normal"> </span><span class="keyword">struct</span><span class="normal"> </span><span class="classname">_MamanBar</span><span class="normal">        MamanBar</span><span class="symbol">;</span>
+<span class="keyword">typedef</span><span class="normal"> </span><span class="keyword">struct</span><span class="normal"> </span><span class="classname">_MamanBarClass</span><span class="normal">   MamanBarClass</span><span class="symbol">;</span>
 
-struct _MamanBar
-{
-  GObject parent_instance;
+<span class="keyword">struct</span><span class="normal"> </span><span class="classname">_MamanBar</span>
+<span class="cbracket">{</span>
+<span class="normal">  </span><span class="comment">/* Parent instance structure */</span>
+<span class="normal">  </span><span class="usertype">GObject</span><span class="normal"> parent_instance</span><span class="symbol">;</span>
 
-  /* instance members */
-};
+<span class="normal">  </span><span class="comment">/* instance members */</span>
+<span class="cbracket">}</span><span class="symbol">;</span>
 
-struct _MamanBarClass
-{
-  GObjectClass parent_class;
+<span class="keyword">struct</span><span class="normal"> </span><span class="classname">_MamanBarClass</span>
+<span class="cbracket">{</span>
+<span class="normal">  </span><span class="comment">/* Parent class structure */</span>
+<span class="normal">  </span><span class="usertype">GObjectClass</span><span class="normal"> parent_class</span><span class="symbol">;</span>
 
-  /* class members */
-};
+<span class="normal">  </span><span class="comment">/* class members */</span>
+<span class="cbracket">}</span><span class="symbol">;</span>
 
-/* used by MAMAN_TYPE_BAR */
-GType maman_bar_get_type (void);
+<span class="comment">/* used by MAMAN_TYPE_BAR */</span>
+<span class="usertype">GType</span><span class="normal"> </span><span class="function">maman_bar_get_type</span><span class="normal"> </span><span class="symbol">(</span><span class="type">void</span><span class="symbol">);</span>
 
-/*
- * Method definitions.
- */
+<span class="comment">/*</span>
+<span class="comment"> * Method definitions.</span>
+<span class="comment"> */</span>
 
-#endif /* __MAMAN_BAR_H__ */
-</pre>
-<p>
-          </p>
-</li>
-<li class="listitem">
-<p>
-            Most GTK+ types declare their private fields in the public header
-            with a /* private */ comment, relying on their user's intelligence
-            not to try to play with these fields. Fields not marked private
-            are considered public by default. The /* protected */ comment
-            (same semantics as those of C++) is also used, mainly in the GType
-            library, in code written by Tim Janik.
-</p>
-<pre class="programlisting">
-struct _MamanBar
-{
-  GObject parent_instance;
-
-  /*&lt; private &gt;*/
-  int hsize;
-};
-</pre>
-<p>
-          </p>
-</li>
-<li class="listitem">
-<p>
-            All of Nautilus code and a lot of GNOME libraries use private
-            indirection members, as described by Herb Sutter in his Pimpl
-            articles(see <a class="ulink" href="http://www.gotw.ca/gotw/024.htm" target="_top">Compilation Firewalls</a>
-            and <a class="ulink" href="http://www.gotw.ca/gotw/028.htm" target="_top">The Fast Pimpl Idiom</a>:
-            he summarizes the different issues better than I will).
-</p>
-<pre class="programlisting">
-typedef struct _MamanBarPrivate MamanBarPrivate;
-
-struct _MamanBar
-{
-  GObject parent_instance;
-    
-  /*&lt; private &gt;*/
-  MamanBarPrivate *priv;
-};
-</pre>
-<p>
-            </p>
-<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Note</h3>
-<p>Do not call this <code class="varname">private</code>, as
-            that is a registered c++ keyword.</p>
+<span class="preproc">#endif</span><span class="normal"> </span><span class="comment">/* __MAMAN_BAR_H__ */</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
 </div>
-<p>
 
-            The private structure is then defined in the .c file, using the
-            g_type_class_add_private() function to notify the presence of
-            a private memory area for each instance and it can either
-            be retrieved using <code class="function">G_TYPE_INSTANCE_GET_PRIVATE()</code>
-            each time is needed, or assigned to the <code class="literal">priv</code>
-            member of the instance structure inside the object's
-            <code class="function">init</code> function.
-</p>
-<pre class="programlisting">
-#define MAMAN_BAR_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), MAMAN_TYPE_BAR, MamanBarPrivate))
-
-struct _MamanBarPrivate
-{
-  int hsize;
-};
-
-static void
-maman_bar_class_init (MamanBarClass *klass)
-{
-  g_type_class_add_private (klass, sizeof (MamanBarPrivate));
-}
-
-static void
-maman_bar_init (MamanBar *self)
-{
-  MamanBarPrivate *priv;
-
-  self-&gt;priv = priv = MAMAN_BAR_GET_PRIVATE (self);
-
-  priv-&gt;hsize = 42;
-}
-</pre>
-<p>
-          </p>
-</li>
-<li class="listitem"><p>
-            You don't need to free or allocate the private structure, only the
-            objects or pointers that it may contain. Another advantage of this
-            to the previous version is that is lessens memory fragmentation,
-            as the public and private parts of the instance memory are
-            allocated at once.
-          </p></li>
-</ul></div>
 <p>
     </p>
 <p>
@@ -277,7 +244,6 @@ maman_bar_init (MamanBar *self)
 </div>
 </div>
 <div class="footer">
-<hr>
-          Generated by GTK-Doc V1.18</div>
+<hr>Generated by GTK-Doc V1.24.1</div>
 </body>
 </html>

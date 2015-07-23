@@ -204,6 +204,65 @@ test_async_queue_timed (void)
   g_assert_cmpint (diff, >=, G_USEC_PER_SEC / 10);
   g_assert_cmpint (diff, <, G_USEC_PER_SEC);
 
+  start = end;
+  g_get_current_time (&tv);
+  g_time_val_add (&tv, G_USEC_PER_SEC / 10);
+  g_async_queue_lock (q);
+  val = g_async_queue_timed_pop_unlocked (q, &tv);
+  g_async_queue_unlock (q);
+  g_assert (val == NULL);
+
+  end = g_get_monotonic_time ();
+  diff = end - start;
+  g_assert_cmpint (diff, >=, G_USEC_PER_SEC / 10);
+  g_assert_cmpint (diff, <, G_USEC_PER_SEC);
+
+  g_async_queue_unref (q);
+}
+
+static void
+test_async_queue_remove (void)
+{
+  GAsyncQueue *q;
+
+  q = g_async_queue_new ();
+
+  g_async_queue_push (q, GINT_TO_POINTER (10));
+  g_async_queue_push (q, GINT_TO_POINTER (2));
+  g_async_queue_push (q, GINT_TO_POINTER (7));
+  g_async_queue_push (q, GINT_TO_POINTER (1));
+
+  g_async_queue_remove (q, GINT_TO_POINTER (7));
+
+  g_assert_cmpint (GPOINTER_TO_INT (g_async_queue_pop (q)), ==, 10);
+  g_assert_cmpint (GPOINTER_TO_INT (g_async_queue_pop (q)), ==, 2);
+  g_assert_cmpint (GPOINTER_TO_INT (g_async_queue_pop (q)), ==, 1);
+
+  g_assert (g_async_queue_try_pop (q) == NULL);
+
+  g_async_queue_unref (q);
+}
+
+static void
+test_async_queue_push_front (void)
+{
+  GAsyncQueue *q;
+
+  q = g_async_queue_new ();
+
+  g_async_queue_push (q, GINT_TO_POINTER (10));
+  g_async_queue_push (q, GINT_TO_POINTER (2));
+  g_async_queue_push (q, GINT_TO_POINTER (7));
+
+  g_async_queue_push_front (q, GINT_TO_POINTER (1));
+
+  g_assert_cmpint (GPOINTER_TO_INT (g_async_queue_pop (q)), ==, 1);
+  g_assert_cmpint (GPOINTER_TO_INT (g_async_queue_pop (q)), ==, 10);
+  g_assert_cmpint (GPOINTER_TO_INT (g_async_queue_pop (q)), ==, 2);
+  g_assert_cmpint (GPOINTER_TO_INT (g_async_queue_pop (q)), ==, 7);
+
+  g_assert (g_async_queue_try_pop (q) == NULL);
+
   g_async_queue_unref (q);
 }
 
@@ -216,6 +275,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/asyncqueue/destroy", test_async_queue_destroy);
   g_test_add_func ("/asyncqueue/threads", test_async_queue_threads);
   g_test_add_func ("/asyncqueue/timed", test_async_queue_timed);
+  g_test_add_func ("/asyncqueue/remove", test_async_queue_remove);
+  g_test_add_func ("/asyncqueue/push_front", test_async_queue_push_front);
 
   return g_test_run ();
 }

@@ -2,22 +2,22 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>glib-mkenums</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<title>glib-mkenums: GObject Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="GObject Reference Manual">
 <link rel="up" href="rn02.html" title="Tools Reference">
 <link rel="prev" href="rn02.html" title="Tools Reference">
 <link rel="next" href="glib-genmarshal.html" title="glib-genmarshal">
-<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
-<td><a accesskey="p" href="rn02.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="rn02.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">GObject Reference Manual</th>
-<td><a accesskey="n" href="glib-genmarshal.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="rn02.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="rn02.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="glib-genmarshal.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div lang="en" class="refentry">
 <a name="glib-mkenums"></a><div class="titlepage"></div>
@@ -26,14 +26,14 @@
 <h2><span class="refentrytitle">glib-mkenums</span></h2>
 <p>glib-mkenums — C language enum description generation utility</p>
 </td>
-<td valign="top" align="right"></td>
+<td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
 <div class="refsynopsisdiv">
 <h2>Synopsis</h2>
 <div class="cmdsynopsis"><p><code class="command">glib-mkenums</code>  [OPTION...] [FILE...]</p></div>
 </div>
 <div class="refsect1">
-<a name="idp10503248"></a><h2>Description</h2>
+<a name="id-1.5.2.5"></a><h2>Description</h2>
 <p><span class="command"><strong>glib-mkenums</strong></span> is a small perl-script utility that
 parses C code to extract enum definitions and produces enum descriptions based
 on text templates specified by the user. Most frequently this script is used to
@@ -46,19 +46,31 @@ substitutions are performed on the text templates for keywords enclosed
 in @ characters.
 </p>
 <div class="refsect2">
-<a name="idp7777392"></a><h3>Production text substitutions</h3>
+<a name="id-1.5.2.5.4"></a><h3>Production text substitutions</h3>
 <p>
 Certain keywords enclosed in @ characters will be substituted in the
 emitted text. For the substitution examples of the keywords below,
 the following example enum definition is assumed:
 </p>
-<pre class="programlisting">
-typedef enum
-{
-  PREFIX_THE_XVALUE    = 1 &lt;&lt; 3,
-  PREFIX_ANOTHER_VALUE = 1 &lt;&lt; 4
-} PrefixTheXEnum;
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="keyword">typedef</span><span class="normal"> </span><span class="keyword">enum</span>
+<span class="cbracket">{</span>
+<span class="normal">  PREFIX_THE_XVALUE    </span><span class="symbol">=</span><span class="normal"> </span><span class="number">1</span><span class="normal"> </span><span class="symbol">&lt;&lt;</span><span class="normal"> </span><span class="number">3</span><span class="symbol">,</span>
+<span class="normal">  PREFIX_ANOTHER_VALUE </span><span class="symbol">=</span><span class="normal"> </span><span class="number">1</span><span class="normal"> </span><span class="symbol">&lt;&lt;</span><span class="normal"> </span><span class="number">4</span>
+<span class="cbracket">}</span><span class="normal"> PrefixTheXEnum</span><span class="symbol">;</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
 </p>
 <div class="variablelist"><table border="0" class="variablelist">
@@ -94,6 +106,12 @@ The enum name with words uppercase and word-separated by underscores
 <td><p>
 The enum name with words uppercase and word-separated by underscores,
 prefix stripped (e.g. THE_XENUM).
+</p></td>
+</tr>
+<tr>
+<td><p><span class="term">@ENUMPREFIX@</span></p></td>
+<td><p>
+The prefix of the enum name (e.g. PREFIX).
 </p></td>
 </tr>
 <tr>
@@ -163,7 +181,7 @@ The base name of the input file currently being processed (e.g. foo.h). (Since: 
 </div>
 <hr>
 <div class="refsect2">
-<a name="idp13285888"></a><h3>Trigraph extensions</h3>
+<a name="id-1.5.2.5.5"></a><h3>Trigraph extensions</h3>
 <p>
 Some C comments are treated specially in the parsed enum definitions,
 such comments start out with the trigraph sequence <code class="literal">/*&lt;</code>
@@ -181,25 +199,43 @@ The former causes the value to be skipped, and the latter can be used to
 specify the otherwise auto-generated nickname.
 Examples:
 </p>
-<pre class="programlisting">
-typedef enum /*&lt; skip &gt;*/
-{
-  PREFIX_FOO
-} PrefixThisEnumWillBeSkipped;
-typedef enum /*&lt; flags,prefix=PREFIX &gt;*/
-{
-  PREFIX_THE_ZEROTH_VALUE,	/*&lt; skip &gt;*/
-  PREFIX_THE_FIRST_VALUE,
-  PREFIX_THE_SECOND_VALUE,
-  PREFIX_THE_THIRD_VALUE,	/*&lt; nick=the-last-value &gt;*/
-} PrefixTheFlagsEnum;
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="keyword">typedef</span><span class="normal"> </span><span class="keyword">enum</span><span class="normal"> </span><span class="comment">/*&lt; skip &gt;*/</span>
+<span class="cbracket">{</span>
+<span class="normal">  PREFIX_FOO</span>
+<span class="cbracket">}</span><span class="normal"> PrefixThisEnumWillBeSkipped</span><span class="symbol">;</span>
+<span class="keyword">typedef</span><span class="normal"> </span><span class="keyword">enum</span><span class="normal"> </span><span class="comment">/*&lt; flags,prefix=PREFIX &gt;*/</span>
+<span class="cbracket">{</span>
+<span class="normal">  PREFIX_THE_ZEROTH_VALUE</span><span class="symbol">,</span><span class="normal">  </span><span class="comment">/*&lt; skip &gt;*/</span>
+<span class="normal">  PREFIX_THE_FIRST_VALUE</span><span class="symbol">,</span>
+<span class="normal">  PREFIX_THE_SECOND_VALUE</span><span class="symbol">,</span>
+<span class="normal">  PREFIX_THE_THIRD_VALUE</span><span class="symbol">,</span><span class="normal">   </span><span class="comment">/*&lt; nick=the-last-value &gt;*/</span>
+<span class="cbracket">}</span><span class="normal"> PrefixTheFlagsEnum</span><span class="symbol">;</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
 </p>
 </div>
 </div>
 <div class="refsect1">
-<a name="idp14613568"></a><h2>Options</h2>
+<a name="id-1.5.2.6"></a><h2>Options</h2>
 <div class="variablelist"><table border="0" class="variablelist">
 <colgroup>
 <col align="left" valign="top">
@@ -267,10 +303,19 @@ Template for auto-generated comments, the default (for C code generations) is
 Read templates from the given file. The templates are enclosed in
 specially-formatted C comments
 </p>
-<pre class="programlisting">
-/*** BEGIN section ***/
-/*** END section ***/
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="comment">/*** BEGIN section ***/</span>
+<span class="comment">/*** END section ***/</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
 where section may be <code class="literal">file-header</code>,
 <code class="literal">file-production</code>, <code class="literal">file-tail</code>,
@@ -318,14 +363,13 @@ Print version and exit.
 </table></div>
 </div>
 <div class="refsect1">
-<a name="idp9466880"></a><h2>See also</h2>
+<a name="id-1.5.2.7"></a><h2>See also</h2>
 <p>
 <span class="citerefentry"><span class="refentrytitle">glib-genmarshal</span>(1)</span>
 </p>
 </div>
 </div>
 <div class="footer">
-<hr>
-          Generated by GTK-Doc V1.18</div>
+<hr>Generated by GTK-Doc V1.24.1</div>
 </body>
 </html>

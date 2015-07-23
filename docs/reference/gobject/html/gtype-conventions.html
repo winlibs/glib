@@ -2,22 +2,22 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Conventions</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<title>Conventions: GObject Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="GObject Reference Manual">
 <link rel="up" href="chapter-gtype.html" title="The GLib Dynamic Type System">
 <link rel="prev" href="chapter-gtype.html" title="The GLib Dynamic Type System">
 <link rel="next" href="gtype-non-instantiable.html" title="Non-instantiable non-classed fundamental types">
-<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
-<td><a accesskey="p" href="chapter-gtype.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="chapter-gtype.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">GObject Reference Manual</th>
-<td><a accesskey="n" href="gtype-non-instantiable.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="chapter-gtype.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="chapter-gtype.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="gtype-non-instantiable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="sect1">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
@@ -34,7 +34,7 @@
           </p></li>
 <li class="listitem"><p>Use prefixing to avoid namespace conflicts with other projects.
             If your library (or application) is named <span class="emphasis"><em>Maman</em></span>,
-            <a href="#ftn.idp9327808" class="footnote"><sup class="footnote"><a name="idp9327808"></a>[3]</sup></a>
+            <a href="#ftn.id-1.3.3.7.2.1.2.1.2" class="footnote" name="id-1.3.3.7.2.1.2.1.2"><sup class="footnote">[3]</sup></a>
             
             prefix all your function names with <span class="emphasis"><em>maman_</em></span>.
             For example: <code class="function">maman_object_method</code>.
@@ -51,7 +51,7 @@
             returns a pointer of type <span class="type">PrefixObject</span>. This macro is used to enforce
             static type safety by doing explicit casts wherever needed. It also enforces
             dynamic type safety by doing runtime checks. It is possible to disable the dynamic
-            type checks in production builds (see <a href="./../glib/glib/glib-building.html">building glib</a>).
+            type checks in production builds (see <a href="https://developer.gnome.org/glib/unstable/glib-building.html">building glib</a>).
             For example, we would create 
             <code class="function">MAMAN_BAR (obj)</code> to keep the previous example.
           </p></li>
@@ -82,41 +82,71 @@
         macros are provided in <code class="filename">gtype.h</code>. For the example we used above, we would 
         write the following trivial code to declare the macros:
 </p>
-<pre class="programlisting">
-#define MAMAN_TYPE_BAR                  (maman_bar_get_type ())
-#define MAMAN_BAR(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), MAMAN_TYPE_BAR, MamanBar))
-#define MAMAN_BAR_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), MAMAN_TYPE_BAR, MamanBarClass))
-#define MAMAN_IS_BAR(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MAMAN_TYPE_BAR))
-#define MAMAN_IS_BAR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), MAMAN_TYPE_BAR))
-#define MAMAN_BAR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), MAMAN_TYPE_BAR, MamanBarClass))
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_TYPE_BAR</span><span class="normal">                  </span><span class="symbol">(</span><span class="function">maman_bar_get_type</span><span class="normal"> </span><span class="symbol">())</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_BAR</span><span class="symbol">(</span><span class="normal">obj</span><span class="symbol">)</span><span class="normal">                  </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-CHECK-INSTANCE-CAST:CAPS">G_TYPE_CHECK_INSTANCE_CAST</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">obj</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">,</span><span class="normal"> MamanBar</span><span class="symbol">))</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_BAR_CLASS</span><span class="symbol">(</span><span class="normal">klass</span><span class="symbol">)</span><span class="normal">          </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-CHECK-CLASS-CAST:CAPS">G_TYPE_CHECK_CLASS_CAST</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">klass</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">,</span><span class="normal"> MamanBarClass</span><span class="symbol">))</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_IS_BAR</span><span class="symbol">(</span><span class="normal">obj</span><span class="symbol">)</span><span class="normal">          </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-CHECK-INSTANCE-TYPE:CAPS">G_TYPE_CHECK_INSTANCE_TYPE</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">obj</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">))</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_IS_BAR_CLASS</span><span class="symbol">(</span><span class="normal">klass</span><span class="symbol">)</span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-CHECK-CLASS-TYPE:CAPS">G_TYPE_CHECK_CLASS_TYPE</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">klass</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">))</span>
+<span class="preproc">#define</span><span class="normal"> </span><span class="function">MAMAN_BAR_GET_CLASS</span><span class="symbol">(</span><span class="normal">obj</span><span class="symbol">)</span><span class="normal">  </span><span class="symbol">(</span><span class="function"><a href="gobject-Type-Information.html#G-TYPE-INSTANCE-GET-CLASS:CAPS">G_TYPE_INSTANCE_GET_CLASS</a></span><span class="normal"> </span><span class="symbol">((</span><span class="normal">obj</span><span class="symbol">),</span><span class="normal"> MAMAN_TYPE_BAR</span><span class="symbol">,</span><span class="normal"> MamanBarClass</span><span class="symbol">))</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
         </p>
-<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Note</h3>
-<p>Stick to the naming <code class="varname">klass</code> as <code class="varname">class</code> is a registered c++ keyword.</p>
-</div>
+<div class="note"><p>Stick to the naming <code class="varname">klass</code> as <code class="varname">class</code> is a registered c++ keyword.</p></div>
 <p>
       </p>
 <p>
         The following code shows how to implement the <code class="function">maman_bar_get_type</code>
         function:
 </p>
-<pre class="programlisting">
-GType maman_bar_get_type (void)
-{
-  static GType type = 0;
-  if (type == 0) {
-    const GTypeInfo info = {
-      /* You fill this structure. */
-    };
-    type = g_type_register_static (G_TYPE_OBJECT,
-                                   "MamanBarType",
-                                   &amp;info, 0);
-  }
-  return type;
-}
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">GType</span><span class="normal"> </span><span class="function">maman_bar_get_type</span><span class="normal"> </span><span class="symbol">(</span><span class="type">void</span><span class="symbol">)</span>
+<span class="cbracket">{</span>
+<span class="normal">  </span><span class="keyword">static</span><span class="normal"> </span><span class="usertype">GType</span><span class="normal"> type </span><span class="symbol">=</span><span class="normal"> </span><span class="number">0</span><span class="symbol">;</span>
+<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">type </span><span class="symbol">==</span><span class="normal"> </span><span class="number">0</span><span class="symbol">)</span><span class="normal"> </span><span class="cbracket">{</span>
+<span class="normal">    </span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">GTypeInfo</span><span class="normal"> info </span><span class="symbol">=</span><span class="normal"> </span><span class="cbracket">{</span>
+<span class="normal">      </span><span class="comment">/* You fill this structure. */</span>
+<span class="normal">    </span><span class="cbracket">}</span><span class="symbol">;</span>
+<span class="normal">    type </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-Type-Information.html#g-type-register-static">g_type_register_static</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal"><a href="gobject-Type-Information.html#G-TYPE-OBJECT:CAPS">G_TYPE_OBJECT</a></span><span class="symbol">,</span>
+<span class="normal">                                   </span><span class="string">"MamanBarType"</span><span class="symbol">,</span>
+<span class="normal">                                   </span><span class="symbol">&amp;</span><span class="normal">info</span><span class="symbol">,</span><span class="normal"> </span><span class="number">0</span><span class="symbol">);</span>
+<span class="normal">  </span><span class="cbracket">}</span>
+<span class="normal">  </span><span class="keyword">return</span><span class="normal"> type</span><span class="symbol">;</span>
+<span class="cbracket">}</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
       </p>
 <p>
@@ -124,21 +154,28 @@ GType maman_bar_get_type (void)
         <code class="function"><a class="link" href="gobject-Type-Information.html#G-DEFINE-TYPE:CAPS" title="G_DEFINE_TYPE()">G_DEFINE_TYPE</a></code>
 	macro to define a class:
 </p>
-<pre class="programlisting">
-G_DEFINE_TYPE (MamanBar, maman_bar, G_TYPE_OBJECT)
-</pre>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-Type-Information.html#G-DEFINE-TYPE:CAPS">G_DEFINE_TYPE</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">MamanBar</span><span class="symbol">,</span><span class="normal"> maman_bar</span><span class="symbol">,</span><span class="normal"> <a href="gobject-Type-Information.html#G-TYPE-OBJECT:CAPS">G_TYPE_OBJECT</a></span><span class="symbol">)</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>
       </p>
 <div class="footnotes">
-<br><hr style="width:100; align:left;">
-<div id="ftn.idp9327808" class="footnote"><p><a href="#idp9327808" class="para"><sup class="para">[3] </sup></a>
+<br><hr style="width:100; text-align:left;margin-left: 0">
+<div id="ftn.id-1.3.3.7.2.1.2.1.2" class="footnote"><p><a href="#id-1.3.3.7.2.1.2.1.2" class="para"><sup class="para">[3] </sup></a>
                 <span class="emphasis"><em>Maman</em></span> is the French word for <span class="emphasis"><em>mum</em></span>
                 or <span class="emphasis"><em>mother</em></span> - nothing more and nothing less.
               </p></div>
 </div>
 </div>
 <div class="footer">
-<hr>
-          Generated by GTK-Doc V1.18</div>
+<hr>Generated by GTK-Doc V1.24.1</div>
 </body>
 </html>

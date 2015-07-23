@@ -2,22 +2,22 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Compiling the GLib package</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<title>Compiling the GLib package: GLib Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="GLib Reference Manual">
 <link rel="up" href="glib.html" title="GLib Overview">
 <link rel="prev" href="glib.html" title="GLib Overview">
 <link rel="next" href="glib-cross-compiling.html" title="Cross-compiling the GLib package">
-<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
-<td><a accesskey="p" href="glib.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="glib.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
-<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">GLib Reference Manual</th>
-<td><a accesskey="n" href="glib-cross-compiling.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="glib.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="glib.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="glib-cross-compiling.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="glib-building"></a><div class="titlepage"></div>
@@ -26,7 +26,7 @@
 <h2><span class="refentrytitle">Compiling the GLib package</span></h2>
 <p>Compiling the GLib Package — How to compile GLib itself</p>
 </td>
-<td valign="top" align="right"></td>
+<td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
 <div class="refsect1">
 <a name="building"></a><h2>Building the Library on UNIX</h2>
@@ -58,7 +58,7 @@
     </p>
 <p>
       The GTK+ documentation contains
-      <a class="ulink" href="http://library.gnome.org/devel/gtk3/gtk-building.html" target="_top">further details</a>
+      <a class="ulink" href="../gtk/gtk-building.html" target="_top">further details</a>
       about the build process and ways to influence it.
     </p>
 </div>
@@ -66,11 +66,12 @@
 <a name="dependencies"></a><h2>Dependencies</h2>
 <p>
       Before you can compile the GLib library, you need to have
-      various other tools and libraries installed on your
-      system. The two tools needed during the build process (as
-      differentiated from the tools used in when creating GLib
-      mentioned above such as <span class="application">autoconf</span>)
-      are <span class="command"><strong>pkg-config</strong></span> and GNU make.
+      various other tools and libraries installed on your system.
+      Beyond a C compiler (which must implement C90, but does not need
+      to implement C99), the two tools needed during the build process
+      (as differentiated from the tools used in when creating GLib
+      mentioned above such as <span class="application">autoconf</span>) are
+      <span class="command"><strong>pkg-config</strong></span> and GNU make.
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem"><p>
@@ -87,17 +88,19 @@
           site.</a>
         </p></li>
 <li class="listitem"><p>
-          The GTK+ makefiles will mostly work with different versions
-          of <span class="command"><strong>make</strong></span>, however, there tends to be
-          a few incompatibilities, so the GTK+ team recommends
-          installing <a class="ulink" href="http://www.gnu.org/software/make" target="_top">GNU
-          make</a> if you don't already have it on your system
-          and using it. (It may be called <span class="command"><strong>gmake</strong></span>
-          rather than <span class="command"><strong>make</strong></span>.)
+          The GLib Makefiles make use of several features specific to
+          <a class="ulink" href="http://www.gnu.org/software/make" target="_top">GNU
+          make</a>, and will not build correctly with other
+          versions of <span class="command"><strong>make</strong></span>. You will need to
+          install it if you don't already have it on your system. (It
+          may be called <span class="command"><strong>gmake</strong></span> rather than
+          <span class="command"><strong>make</strong></span>.)
         </p></li>
 </ul></div>
 <p>
-      GLib depends on a number of other libraries.
+      A UNIX build of GLib requires that the system implements at
+      least the original 1990 version of POSIX. Beyond this, it
+      depends on a number of other libraries.
     </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -335,7 +338,7 @@
         include an implementation of the printf() family.
       
         These options can be used to explicitly control whether
-        an implementation fo the printf() family should be included or not.
+        an implementation of the printf() family should be included or not.
       </p>
 <p><b><code class="systemitem">--disable-Bsymbolic</code> and
         <code class="systemitem">--enable-Bsymbolic</code>. </b>
@@ -401,8 +404,8 @@
         the <span class="command"><strong>configure</strong></span> script will also check for
         the presence of SystemTap.
       </p>
-<p><b><code class="systemitem">--enable-gcov</code> and
-        <code class="systemitem">--disable-gcov</code>. </b>
+<p><b><code class="systemitem">--enable-coverage</code> and
+        <code class="systemitem">--disable-coverage</code>. </b>
         Enable the generation of coverage reports for the GLib tests.
         This requires the lcov frontend to gcov from the
         <a class="ulink" href="http://ltp.sourceforge.net" target="_top">Linux Test Project</a>.
@@ -421,10 +424,14 @@
         runtime libraries are installed into <code class="filename">/lib</code> rather
         than <code class="filename">/usr/lib</code>.
       </p>
+<p><b><code class="systemitem">--with-python</code>. </b>
+        Allows specifying the Python interpreter to use, either as an absolute path,
+        or as a program name. GLib can be built with Python 2 (at least version 2.5)
+        or Python 3.
+      </p>
 </div>
 </div>
 <div class="footer">
-<hr>
-          Generated by GTK-Doc V1.18</div>
+<hr>Generated by GTK-Doc V1.24.1</div>
 </body>
 </html>
