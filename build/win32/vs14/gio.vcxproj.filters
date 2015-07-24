@@ -123,6 +123,7 @@
     <ClCompile Include="..\..\..\gio\gmenumodel.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gmount.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gmountoperation.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\gio\gnativesocketaddress.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gnativevolumemonitor.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gnetworkaddress.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gnetworking.c"><Filter>Source Files</Filter></ClCompile>
@@ -201,6 +202,7 @@
     <ClCompile Include="..\..\..\gio\gwin32inputstream.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gwin32mount.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gwin32outputstream.c"><Filter>Source Files</Filter></ClCompile>
+    <ClCompile Include="..\..\..\gio\gwin32registrykey.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gwin32volumemonitor.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gzlibcompressor.c"><Filter>Source Files</Filter></ClCompile>
     <ClCompile Include="..\..\..\gio\gzlibdecompressor.c"><Filter>Source Files</Filter></ClCompile>
