@@ -96,8 +96,10 @@
 #include <locale.h>
 #include <errno.h>
 #include <sys/types.h>
+#ifndef _WIN32
 #include <sys/socket.h>
 #include <sys/un.h>
+#endif
 
 #include "glib-init.h"
 #include "galloca.h"
