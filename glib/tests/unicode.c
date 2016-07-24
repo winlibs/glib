@@ -276,11 +276,17 @@ test_unichar_script (void)
     { G_UNICODE_SCRIPT_SIDDHAM,                0x11580 },
     { G_UNICODE_SCRIPT_TIRHUTA,                0x11480 },
     { G_UNICODE_SCRIPT_WARANG_CITI,            0x118A0 },
+    { G_UNICODE_SCRIPT_CHEROKEE,               0x0AB71 },
+    { G_UNICODE_SCRIPT_HATRAN,                 0x108E0 },
+    { G_UNICODE_SCRIPT_OLD_HUNGARIAN,          0x10C80 },
+    { G_UNICODE_SCRIPT_MULTANI,                0x11280 },
+    { G_UNICODE_SCRIPT_AHOM,                   0x11700 },
+    { G_UNICODE_SCRIPT_CUNEIFORM,              0x12480 },
+    { G_UNICODE_SCRIPT_ANATOLIAN_HIEROGLYPHS,  0x14400 },
+    { G_UNICODE_SCRIPT_SIGNWRITING,            0x1D800 },
   };
   for (i = 0; i < G_N_ELEMENTS (examples); i++)
-    {
-      g_assert_cmpint (g_unichar_get_script (examples[i].c), ==, examples[i].script);
-    }
+    g_assert_cmpint (g_unichar_get_script (examples[i].c), ==, examples[i].script);
 }
 
 static void
@@ -441,6 +447,8 @@ test_wide (void)
     {   0xFFFC, NOT_WIDE },
     {  0x10000, NOT_WIDE },
     {  0xE0001, NOT_WIDE },
+    {  0x2FFFE, NOT_WIDE },
+    {  0x3FFFE, NOT_WIDE },
 
     /* Narrow */
     {   0x0020, NOT_WIDE },
@@ -852,6 +860,14 @@ test_iso15924 (void)
     { G_UNICODE_SCRIPT_SIDDHAM,                "Sidd" },
     { G_UNICODE_SCRIPT_TIRHUTA,                "Tirh" },
     { G_UNICODE_SCRIPT_WARANG_CITI,            "Wara" },
+
+    /* Unicode 8.0 additions */
+    { G_UNICODE_SCRIPT_AHOM,                   "Ahom" },
+    { G_UNICODE_SCRIPT_ANATOLIAN_HIEROGLYPHS,  "Hluw" },
+    { G_UNICODE_SCRIPT_HATRAN,                 "Hatr" },
+    { G_UNICODE_SCRIPT_MULTANI,                "Mult" },
+    { G_UNICODE_SCRIPT_OLD_HUNGARIAN,          "Hung" },
+    { G_UNICODE_SCRIPT_SIGNWRITING,            "Sgnw" },
   };
   guint i;
 

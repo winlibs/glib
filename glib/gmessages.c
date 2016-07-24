@@ -43,6 +43,47 @@
  * generally considered undefined after one of these checks fails.
  * They are not intended for normal control flow, only to give a
  * perhaps-helpful warning before giving up.
+ *
+ * Structured logging output is supported using g_log_structured(). This differs
+ * from the traditional g_log() API in that log messages are handled as a
+ * collection of key–value pairs representing individual pieces of information,
+ * rather than as a single string containing all the information in an arbitrary
+ * format.
+ *
+ * The support for structured logging was motivated by the following needs (some
+ * of which were supported previously; others weren’t):
+ *  * Support for multiple logging levels.
+ *  * Structured log support with the ability to add `MESSAGE_ID`s (see
+ *    g_log_structured()).
+ *  * Moving the responsibility for filtering log messages from the program to
+ *    the log viewer — instead of libraries and programs installing log handlers
+ *    (with g_log_set_handler()) which filter messages before output, all log
+ *    messages are outputted, and the log viewer program (such as `journalctl`)
+ *    must filter them. This is based on the idea that bugs are sometimes hard
+ *    to reproduce, so it is better to log everything possible and then use
+ *    tools to analyse the logs than it is to not be able to reproduce a bug to
+ *    get additional log data. Code which uses logging in performance-critical
+ *    sections should compile out the g_log_structured() calls in
+ *    release builds, and compile them in in debugging builds.
+ *  * A single writer function which handles all log messages in a process, from
+ *    all libraries and program code; rather than multiple log handlers with
+ *    poorly defined interactions between them. This allows a program to easily
+ *    change its logging policy by changing the writer function, for example to
+ *    log to an additional location or to change what logging output fallbacks
+ *    are used. The log writer functions provided by GLib are exposed publicly
+ *    so they can be used from programs’ log writers. This allows log writer
+ *    policy and implementation to be kept separate.
+ *  * If a library wants to add standard information to all of its log messages
+ *    (such as library state) or to redact private data (such as passwords or
+ *    network credentials), it should use a wrapper function around its
+ *    g_log_structured() calls or implement that in the single log writer
+ *    function.
+ *  * If a program wants to pass context data from a g_log_structured() call to
+ *    its log writer function so that, for example, it can use the correct
+ *    server connection to submit logs to, that user data can be passed as a
+ *    zero-length #GLogField to g_log_structured_array().
+ *  * Color output needed to be supported on the terminal, to make reading
+ *    through logs easier.
  */
 
 #include "config.h"
@@ -54,8 +95,12 @@
 #include <signal.h>
 #include <locale.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 
 #include "glib-init.h"
+#include "galloca.h"
 #include "gbacktrace.h"
 #include "gcharset.h"
 #include "gconvert.h"
@@ -77,6 +122,12 @@
 #include <io.h>
 #  define _WIN32_WINDOWS 0x0401 /* to get IsDebuggerPresent */
 #  include <windows.h>
+#endif
+
+#ifdef HAVE_LIBSYSTEMD
+#define SD_JOURNAL_SUPPRESS_LOCATION 1
+#include <sys/uio.h>
+#include <systemd/sd-journal.h>
 #endif
 
 
@@ -139,7 +190,8 @@
  * @G_LOG_FLAG_FATAL: internal flag
  * @G_LOG_LEVEL_ERROR: log level for errors, see g_error().
  *     This level is also used for messages produced by g_assert().
- * @G_LOG_LEVEL_CRITICAL: log level for critical messages, see g_critical().
+ * @G_LOG_LEVEL_CRITICAL: log level for critical warning messages, see
+ *     g_critical().
  *     This level is also used for messages produced by g_return_if_fail()
  *     and g_return_val_if_fail().
  * @G_LOG_LEVEL_WARNING: log level for warnings, see g_warning()
@@ -180,6 +232,10 @@
  *
  * A convenience function/macro to log a warning message.
  *
+ * This is not intended for end user error reporting. Use of #GError is
+ * preferred for that instead, as it allows calling functions to perform actions
+ * conditional on the type of error.
+ *
  * You can make warnings fatal at runtime by setting the `G_DEBUG`
  * environment variable (see
  * [Running GLib Applications](glib-running.html)).
@@ -216,6 +272,10 @@
  *     into the format string (as with printf())
  *
  * A convenience function/macro to log an error message.
+ *
+ * This is not intended for end user error reporting. Use of #GError is
+ * preferred for that instead, as it allows calling functions to perform actions
+ * conditional on the type of error.
  *
  * Error messages are always fatal, resulting in a call to
  * abort() to terminate the application. This function will
@@ -290,10 +350,14 @@ static GLogDomain    *g_log_domains = NULL;
 static GPrintFunc     glib_print_func = NULL;
 static GPrintFunc     glib_printerr_func = NULL;
 static GPrivate       g_log_depth;
+static GPrivate       g_log_structured_depth;
 static GLogFunc       default_log_func = g_log_default_handler;
 static gpointer       default_log_data = NULL;
 static GTestLogFatalFunc fatal_log_func = NULL;
 static gpointer          fatal_log_data;
+static GLogWriterFunc log_writer_func = g_log_writer_default;
+static gpointer       log_writer_user_data = NULL;
+static GDestroyNotify log_writer_user_data_free = NULL;
 
 /* --- functions --- */
 
@@ -302,6 +366,8 @@ static void _g_log_abort (gboolean breakpoint);
 static void
 _g_log_abort (gboolean breakpoint)
 {
+  gboolean debugger_present;
+
   if (g_test_subprocess ())
     {
       /* If this is a test case subprocess then it probably caused
@@ -312,10 +378,17 @@ _g_log_abort (gboolean breakpoint)
       _exit (1);
     }
 
-  if (breakpoint)
+#ifdef G_OS_WIN32
+  debugger_present = IsDebuggerPresent ();
+#else
+  /* Assume GDB is attached. */
+  debugger_present = TRUE;
+#endif /* !G_OS_WIN32 */
+
+  if (debugger_present && breakpoint)
     G_BREAKPOINT ();
   else
-    abort ();
+    g_abort ();
 }
 
 #ifdef G_OS_WIN32
@@ -352,13 +425,22 @@ dowrite (int          fd,
 #endif
 
 static void
-write_string (int          fd,
+write_string (FILE        *stream,
 	      const gchar *string)
 {
-  int res;
-  do 
-    res = write (fd, string, strlen (string));
-  while (G_UNLIKELY (res == -1 && errno == EINTR));
+  fputs (string, stream);
+}
+
+static void
+write_string_sized (FILE        *stream,
+                    const gchar *string,
+                    gssize       length)
+{
+  /* Is it nul-terminated? */
+  if (length < 0)
+    write_string (stream, string);
+  else
+    fwrite (string, 1, length, stream);
 }
 
 static GLogDomain*
@@ -460,6 +542,14 @@ g_log_domain_get_handler_L (GLogDomain	*domain,
  * the `G_DEBUG` environment variable (see
  * [Running GLib Applications](glib-running.html)).
  *
+ * Libraries should not call this function, as it affects all messages logged
+ * by a process, including those from other libraries.
+ *
+ * Structured log messages (using g_log_structured() and
+ * g_log_structured_array()) are fatal only if the default log writer is used;
+ * otherwise it is up to the writer function to determine which log messages
+ * are fatal.
+ *
  * Returns: the old fatal mask
  */
 GLogLevelFlags
@@ -492,6 +582,11 @@ g_log_set_always_fatal (GLogLevelFlags fatal_mask)
  * Sets the log levels which are fatal in the given domain.
  * %G_LOG_LEVEL_ERROR is always fatal.
  *
+ * This has no effect on structured log messages (using g_log_structured() or
+ * g_log_structured_array()). To change the fatal behaviour for specific log
+ * messages, programs must install a custom log writer function using
+ * g_log_set_writer_func().
+ *
  * Returns: the old fatal mask for the log domain
  */
 GLogLevelFlags
@@ -503,7 +598,7 @@ g_log_set_fatal_mask (const gchar   *log_domain,
   
   if (!log_domain)
     log_domain = "";
-  
+
   /* force errors to be fatal */
   fatal_mask |= G_LOG_LEVEL_ERROR;
   /* remove bogus flag */
@@ -679,6 +774,11 @@ g_log_set_default_handler (GLogFunc log_func,
  * function which needs the special behavior.
  *
  * This handler has no effect on g_error messages.
+ *
+ * This handler also has no effect on structured log messages (using
+ * g_log_structured() or g_log_structured_array()). To change the fatal
+ * behaviour for specific log messages, programs must install a custom log
+ * writer function using g_log_set_writer_func().
  *
  * Since: 2.22
  **/
@@ -873,48 +973,58 @@ format_unsigned (gchar  *buf,
 /* these are filtered by G_MESSAGES_DEBUG by the default log handler */
 #define INFO_LEVELS (G_LOG_LEVEL_INFO | G_LOG_LEVEL_DEBUG)
 
-static int
+static const gchar *log_level_to_color (GLogLevelFlags log_level,
+                                        gboolean       use_color);
+static const gchar *color_reset        (gboolean       use_color);
+
+static FILE *
 mklevel_prefix (gchar          level_prefix[STRING_BUFFER_SIZE],
-		GLogLevelFlags log_level)
+                GLogLevelFlags log_level,
+                gboolean       use_color)
 {
   gboolean to_stdout = TRUE;
 
   /* we may not call _any_ GLib functions here */
 
+  strcpy (level_prefix, log_level_to_color (log_level, use_color));
+
   switch (log_level & G_LOG_LEVEL_MASK)
     {
     case G_LOG_LEVEL_ERROR:
-      strcpy (level_prefix, "ERROR");
+      strcat (level_prefix, "ERROR");
       to_stdout = FALSE;
       break;
     case G_LOG_LEVEL_CRITICAL:
-      strcpy (level_prefix, "CRITICAL");
+      strcat (level_prefix, "CRITICAL");
       to_stdout = FALSE;
       break;
     case G_LOG_LEVEL_WARNING:
-      strcpy (level_prefix, "WARNING");
+      strcat (level_prefix, "WARNING");
       to_stdout = FALSE;
       break;
     case G_LOG_LEVEL_MESSAGE:
-      strcpy (level_prefix, "Message");
+      strcat (level_prefix, "Message");
       to_stdout = FALSE;
       break;
     case G_LOG_LEVEL_INFO:
-      strcpy (level_prefix, "INFO");
+      strcat (level_prefix, "INFO");
       break;
     case G_LOG_LEVEL_DEBUG:
-      strcpy (level_prefix, "DEBUG");
+      strcat (level_prefix, "DEBUG");
       break;
     default:
       if (log_level)
 	{
-	  strcpy (level_prefix, "LOG-");
+	  strcat (level_prefix, "LOG-");
 	  format_unsigned (level_prefix + 4, log_level & G_LOG_LEVEL_MASK, 16);
 	}
       else
-	strcpy (level_prefix, "LOG");
+	strcat (level_prefix, "LOG");
       break;
     }
+
+  strcat (level_prefix, color_reset (use_color));
+
   if (log_level & G_LOG_FLAG_RECURSION)
     strcat (level_prefix, " (recursed)");
   if (log_level & ALERT_LEVELS)
@@ -924,7 +1034,7 @@ mklevel_prefix (gchar          level_prefix[STRING_BUFFER_SIZE],
   if ((log_level & G_LOG_FLAG_FATAL) != 0 && !g_test_initialized ())
     win32_keep_fatal_message = TRUE;
 #endif
-  return to_stdout ? 1 : 2;
+  return to_stdout ? stdout : stderr;
 }
 
 typedef struct {
@@ -937,7 +1047,8 @@ static GSList *expected_messages = NULL;
 
 /**
  * g_logv:
- * @log_domain: the log domain
+ * @log_domain: (nullable): the log domain, or %NULL for the default ""
+ * application domain
  * @log_level: the log level
  * @format: the message format. See the printf() documentation
  * @args: the parameters to insert into the format string
@@ -1000,7 +1111,7 @@ g_logv (const gchar   *log_domain,
           gchar level_prefix[STRING_BUFFER_SIZE];
           gchar *expected_message;
 
-          mklevel_prefix (level_prefix, expected->log_level);
+          mklevel_prefix (level_prefix, expected->log_level, FALSE);
           expected_message = g_strdup_printf ("Did not see expected message %s-%s: %s",
                                               expected->log_domain ? expected->log_domain : "**",
                                               level_prefix, expected->pattern);
@@ -1068,10 +1179,9 @@ g_logv (const gchar   *log_domain,
                   MessageBox (NULL, locale_msg, NULL,
                               MB_ICONERROR|MB_SETFOREGROUND);
                 }
-	      _g_log_abort (IsDebuggerPresent () && !(test_level & G_LOG_FLAG_RECURSION));
-#else
-	      _g_log_abort (!(test_level & G_LOG_FLAG_RECURSION));
 #endif /* !G_OS_WIN32 */
+
+              _g_log_abort (!(test_level & G_LOG_FLAG_RECURSION));
 	    }
 	  
 	  depth--;
@@ -1084,7 +1194,8 @@ g_logv (const gchar   *log_domain,
 
 /**
  * g_log:
- * @log_domain: the log domain, usually #G_LOG_DOMAIN
+ * @log_domain: (nullable): the log domain, usually #G_LOG_DOMAIN, or %NULL
+ * for the default
  * @log_level: the log level, either from #GLogLevelFlags
  *     or a user-defined level
  * @format: the message format. See the printf() documentation
@@ -1112,6 +1223,838 @@ g_log (const gchar   *log_domain,
   va_end (args);
 }
 
+/* Return value must be 1 byte long (plus nul byte).
+ * Reference: http://man7.org/linux/man-pages/man3/syslog.3.html#DESCRIPTION
+ */
+static const gchar *
+log_level_to_priority (GLogLevelFlags log_level)
+{
+  if (log_level & G_LOG_LEVEL_ERROR)
+    return "3";
+  else if (log_level & G_LOG_LEVEL_CRITICAL)
+    return "4";
+  else if (log_level & G_LOG_LEVEL_WARNING)
+    return "4";
+  else if (log_level & G_LOG_LEVEL_MESSAGE)
+    return "5";
+  else if (log_level & G_LOG_LEVEL_INFO)
+    return "6";
+  else if (log_level & G_LOG_LEVEL_DEBUG)
+    return "7";
+
+  /* Default to LOG_NOTICE for custom log levels. */
+  return "5";
+}
+
+static FILE *
+log_level_to_file (GLogLevelFlags log_level)
+{
+  if (log_level & (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL |
+                   G_LOG_LEVEL_WARNING | G_LOG_LEVEL_MESSAGE))
+    return stderr;
+  else
+    return stdout;
+}
+
+static const gchar *
+log_level_to_color (GLogLevelFlags log_level,
+                    gboolean       use_color)
+{
+  /* we may not call _any_ GLib functions here */
+
+  if (!use_color)
+    return "";
+
+  if (log_level & G_LOG_LEVEL_ERROR)
+    return "\033[1;31m";
+  else if (log_level & G_LOG_LEVEL_CRITICAL)
+    return "\033[1;35m";
+  else if (log_level & G_LOG_LEVEL_WARNING)
+    return "\033[1;33m";
+  else if (log_level & G_LOG_LEVEL_MESSAGE)
+    return "\033[1;32m";
+  else if (log_level & G_LOG_LEVEL_INFO)
+    return "\033[1;32m";
+  else if (log_level & G_LOG_LEVEL_DEBUG)
+    return "\033[1;32m";
+
+  /* No color for custom log levels. */
+  return "";
+}
+
+static const gchar *
+color_reset (gboolean use_color)
+{
+  /* we may not call _any_ GLib functions here */
+
+  if (!use_color)
+    return "";
+
+  return "\033[0m";
+}
+
+/**
+ * g_log_structured:
+ * @log_domain: log domain, usually %G_LOG_DOMAIN
+ * @log_level: log level, either from #GLogLevelFlags, or a user-defined
+ *    level
+ * @...: key-value pairs of structured data to add to the log entry, followed
+ *    by the key "MESSAGE", followed by a printf()-style message format,
+ *    followed by parameters to insert in the format string
+ *
+ * Log a message with structured data. The message will be passed through to
+ * the log writer set by the application using g_log_set_writer_func(). If the
+ * message is fatal (i.e. its log level is %G_LOG_LEVEL_ERROR), the program will
+ * be aborted at the end of this function.
+ *
+ * The structured data is provided as key–value pairs, where keys are UTF-8
+ * strings, and values are arbitrary pointers — typically pointing to UTF-8
+ * strings, but that is not a requirement. To pass binary (non-nul-terminated)
+ * structured data, use g_log_structured_array(). The keys for structured data
+ * should follow the [systemd journal
+ * fields](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html)
+ * specification. It is suggested that custom keys are namespaced according to
+ * the code which sets them. For example, custom keys from GLib all have a
+ * `GLIB_` prefix.
+ *
+ * The @log_domain will be converted into a `GLIB_DOMAIN` field. @log_level will
+ * be converted into a
+ * [`PRIORITY`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#PRIORITY=)
+ * field. The format string will have its placeholders substituted for the provided
+ * values and be converted into a
+ * [`MESSAGE`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#MESSAGE=)
+ * field.
+ *
+ * Other fields you may commonly want to pass into this function:
+ *
+ *  * [`MESSAGE_ID`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#MESSAGE_ID=)
+ *  * [`CODE_FILE`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#CODE_FILE=)
+ *  * [`CODE_LINE`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#CODE_LINE=)
+ *  * [`CODE_FUNC`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#CODE_FUNC=)
+ *  * [`ERRNO`](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#ERRNO=)
+ *
+ * Note that `CODE_FILE`, `CODE_LINE` and `CODE_FUNC` are automatically set by
+ * the logging macros, G_DEBUG_HERE(), g_message(), g_warning(), g_critical(),
+ * g_error(), etc, if the symbols `G_LOG_USE_STRUCTURED` is defined before including
+ * glib.h.
+ *
+ * For example:
+ * |[<!-- language="C" -->
+ * g_log_structured (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG,
+ *                   "MESSAGE_ID", "06d4df59e6c24647bfe69d2c27ef0b4e",
+ *                   "MY_APPLICATION_CUSTOM_FIELD", "some debug string",
+ *                   "MESSAGE", "This is a debug message about pointer %p and integer %u.",
+ *                   some_pointer, some_integer);
+ * ]|
+ *
+ * Note that each `MESSAGE_ID` must be [uniquely and randomly
+ * generated](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html#MESSAGE_ID=).
+ * If adding a `MESSAGE_ID`, consider shipping a [message
+ * catalog](https://www.freedesktop.org/wiki/Software/systemd/catalog/) with
+ * your software.
+ *
+ * To pass a user data pointer to the log writer function which is specific to
+ * this logging call, you must use g_log_structured_array() and pass the pointer
+ * as a field with #GLogField.length set to zero, otherwise it will be
+ * interpreted as a string.
+ *
+ * For example:
+ * |[<!-- language="C" -->
+ * const GLogField fields[] = {
+ *   { "MESSAGE", "This is a debug message.", -1 },
+ *   { "MESSAGE_ID", "fcfb2e1e65c3494386b74878f1abf893", -1 },
+ *   { "MY_APPLICATION_CUSTOM_FIELD", "some debug string", -1 },
+ *   { "MY_APPLICATION_STATE", state_object, 0 },
+ * };
+ * g_log_structured_array (G_LOG_LEVEL_DEBUG, fields, G_N_ELEMENTS (fields));
+ * ]|
+ *
+ * Note also that, even if no structured fields are specified, the key-value
+ * part of the argument list must be %NULL-terminated.
+ *
+ * The default writer function for `stdout` and `stderr` will automatically
+ * append a new-line character after the message, so you should not add one
+ * manually to the format string.
+ *
+ * Since: 2.50
+ */
+void
+g_log_structured (const gchar    *log_domain,
+                  GLogLevelFlags  log_level,
+                  ...)
+{
+  va_list args;
+  gchar buffer[1025], *message_allocated = NULL;
+  const char *format;
+  const gchar *message;
+  gpointer p;
+  gsize n_fields, i;
+  GLogField stack_fields[16];
+  GLogField *fields = stack_fields;
+  GLogField *fields_allocated = NULL;
+  GArray *array = NULL;
+
+  va_start (args, log_level);
+
+  for (p = va_arg (args, gchar *), i = 3;
+       strcmp (p, "MESSAGE") != 0;
+       p = va_arg (args, gchar *), i++)
+    {
+      GLogField field;
+      const gchar *key = p;
+      gconstpointer value = va_arg (args, gpointer);
+
+      field.key = key;
+      field.value = value;
+      field.length = -1;
+
+      if (i < 16)
+        stack_fields[i] = field;
+      else
+        {
+          /* Don't allow dynamic allocation, since we're likely
+           * in an out-of-memory situation. For lack of a better solution,
+           * just ignore further key-value pairs.
+           */
+          if (log_level & G_LOG_FLAG_RECURSION)
+            continue;
+
+          if (i == 16)
+            {
+              array = g_array_sized_new (FALSE, FALSE, sizeof (GLogField), 32);
+              g_array_append_vals (array, stack_fields, 16);
+            }
+
+          g_array_append_val (array, field);
+        }
+    }
+
+  n_fields = i;
+
+  if (array)
+    fields = fields_allocated = (GLogField *) g_array_free (array, FALSE);
+
+  format = va_arg (args, gchar *);
+
+  if (log_level & G_LOG_FLAG_RECURSION)
+    {
+      /* we use a stack buffer of fixed size, since we're likely
+       * in an out-of-memory situation
+       */
+      gsize size G_GNUC_UNUSED;
+
+      size = _g_vsnprintf (buffer, sizeof (buffer), format, args);
+      message = buffer;
+    }
+  else
+    {
+      message = message_allocated = g_strdup_vprintf (format, args);
+    }
+
+  /* Add MESSAGE, PRIORITY and GLIB_DOMAIN. */
+  fields[0].key = "MESSAGE";
+  fields[0].value = message;
+  fields[0].length = -1;
+
+  fields[1].key = "PRIORITY";
+  fields[1].value = log_level_to_priority (log_level);
+  fields[1].length = 1;
+
+  fields[2].key = "GLIB_DOMAIN";
+  fields[2].value = log_domain;
+  fields[2].length = -1;
+
+  /* Log it. */
+  g_log_structured_array (log_level, fields, n_fields);
+
+  g_free (fields_allocated);
+  g_free (message_allocated);
+
+  va_end (args);
+}
+
+static GLogWriterOutput _g_log_writer_fallback (GLogLevelFlags   log_level,
+                                                const GLogField *fields,
+                                                gsize            n_fields,
+                                                gpointer         user_data);
+
+/**
+ * g_log_structured_array:
+ * @log_level: log level, either from #GLogLevelFlags, or a user-defined
+ *    level
+ * @fields: (array length=n_fields): key–value pairs of structured data to add
+ *    to the log message
+ * @n_fields: number of elements in the @fields array
+ *
+ * Log a message with structured data. The message will be passed through to the
+ * log writer set by the application using g_log_set_writer_func(). If the
+ * message is fatal (i.e. its log level is %G_LOG_LEVEL_ERROR), the program will
+ * be aborted at the end of this function.
+ *
+ * See g_log_structured() for more documentation.
+ *
+ * This assumes that @log_level is already present in @fields (typically as the
+ * `PRIORITY` field).
+ *
+ * Since: 2.50
+ */
+void
+g_log_structured_array (GLogLevelFlags   log_level,
+                        const GLogField *fields,
+                        gsize            n_fields)
+{
+  GLogWriterFunc writer_func;
+  gpointer writer_user_data;
+  gboolean recursion;
+  guint depth;
+
+  if (n_fields == 0)
+    return;
+
+  /* Check for recursion and look up the writer function. */
+  depth = GPOINTER_TO_UINT (g_private_get (&g_log_structured_depth));
+  recursion = (depth > 0);
+
+  g_mutex_lock (&g_messages_lock);
+
+  writer_func = recursion ? _g_log_writer_fallback : log_writer_func;
+  writer_user_data = log_writer_user_data;
+
+  g_mutex_unlock (&g_messages_lock);
+
+  /* Write the log entry. */
+  g_private_set (&g_log_structured_depth, GUINT_TO_POINTER (++depth));
+
+  g_assert (writer_func != NULL);
+  writer_func (log_level, fields, n_fields, writer_user_data);
+
+  g_private_set (&g_log_structured_depth, GUINT_TO_POINTER (--depth));
+
+  /* Abort if the message was fatal. */
+  if (log_level & G_LOG_FATAL_MASK)
+    _g_log_abort (!(log_level & G_LOG_FLAG_RECURSION));
+}
+
+/**
+ * g_log_set_writer_func:
+ * @func: log writer function, which must not be %NULL
+ * @user_data: (closure func): user data to pass to @func
+ * @user_data_free: (destroy func): function to free @user_data once it’s
+ *    finished with, if non-%NULL
+ *
+ * Set a writer function which will be called to format and write out each log
+ * message. Each program should set a writer function, or the default writer
+ * (g_log_writer_default()) will be used.
+ *
+ * Libraries **must not** call this function — only programs are allowed to
+ * install a writer function, as there must be a single, central point where
+ * log messages are formatted and outputted.
+ *
+ * There can only be one writer function. It is an error to set more than one.
+ *
+ * Since: 2.50
+ */
+void
+g_log_set_writer_func (GLogWriterFunc func,
+                       gpointer       user_data,
+                       GDestroyNotify user_data_free)
+{
+  g_return_if_fail (func != NULL);
+  g_return_if_fail (log_writer_func == g_log_writer_default);
+
+  g_mutex_lock (&g_messages_lock);
+  log_writer_func = func;
+  log_writer_user_data = user_data;
+  log_writer_user_data_free = user_data_free;
+  g_mutex_unlock (&g_messages_lock);
+}
+
+/**
+ * g_log_writer_supports_color:
+ * @output_fd: output file descriptor to check
+ *
+ * Check whether the given @output_fd file descriptor supports ANSI color
+ * escape sequences. If so, they can safely be used when formatting log
+ * messages.
+ *
+ * Returns: %TRUE if ANSI color escapes are supported, %FALSE otherwise
+ * Since: 2.50
+ */
+gboolean
+g_log_writer_supports_color (gint output_fd)
+{
+  g_return_val_if_fail (output_fd >= 0, FALSE);
+
+  /* FIXME: This check could easily be expanded in future to be more robust
+   * against different types of terminal, which still vary in their color
+   * support. cmd.exe on Windows, for example, does not support ANSI colors;
+   * but bash on Windows does.
+   *
+   * On UNIX systems, we probably want to use the functions from terminfo to
+   * work out whether colors are supported.
+   *
+   * Some examples:
+   *  - https://github.com/chalk/supports-color/blob/9434c93918301a6b47faa01999482adfbf1b715c/index.js#L61
+   *  - http://stackoverflow.com/questions/16755142/how-to-make-win32-console-recognize-ansi-vt100-escape-sequences
+   *  - http://blog.mmediasys.com/2010/11/24/we-all-love-colors/
+   *  - http://unix.stackexchange.com/questions/198794/where-does-the-term-environment-variable-default-get-set
+   */
+  return isatty (output_fd);
+}
+
+/**
+ * g_log_writer_is_journald:
+ * @output_fd: output file descriptor to check
+ *
+ * Check whether the given @output_fd file descriptor is a connection to the
+ * systemd journal, or something else (like a log file or `stdout` or
+ * `stderr`).
+ *
+ * Returns: %TRUE if @output_fd points to the journal, %FALSE otherwise
+ * Since: 2.50
+ */
+gboolean
+g_log_writer_is_journald (gint output_fd)
+{
+#ifdef HAVE_LIBSYSTEMD
+  /* FIXME: Use the new journal API for detecting whether we’re writing to the
+   * journal. See: https://github.com/systemd/systemd/issues/2473
+   */
+  static gsize initialized;
+  static gboolean fd_is_journal = FALSE;
+
+  g_return_val_if_fail (output_fd >= 0, FALSE);
+
+  if (g_once_init_enter (&initialized))
+    {
+      struct sockaddr_storage addr;
+      socklen_t addr_len = sizeof(addr);
+      int err = getpeername (output_fd, (struct sockaddr *) &addr, &addr_len);
+      if (err == 0 && addr.ss_family == AF_UNIX)
+        fd_is_journal = g_str_has_prefix (((struct sockaddr_un *)&addr)->sun_path,
+                                          "/run/systemd/journal/");
+      g_once_init_leave (&initialized, TRUE);
+    }
+
+  return fd_is_journal;
+#else /* if !HAVE_LIBSYSTEMD */
+  return FALSE;
+#endif
+}
+
+static void escape_string (GString *string);
+
+/**
+ * g_log_writer_format_fields:
+ * @log_level: log level, either from #GLogLevelFlags, or a user-defined
+ *    level
+ * @fields: (array length=n_fields): key–value pairs of structured data forming
+ *    the log message
+ * @n_fields: number of elements in the @fields array
+ * @use_color: %TRUE to use ANSI color escape sequences when formatting the
+ *    message, %FALSE to not
+ *
+ * Format a structured log message as a string suitable for outputting to the
+ * terminal (or elsewhere). This will include the values of all fields it knows
+ * how to interpret, which includes `MESSAGE` and `GLIB_DOMAIN` (see the
+ * documentation for g_log_structured()). It does not include values from
+ * unknown fields.
+ *
+ * The returned string does **not** have a trailing new-line character. It is
+ * encoded in the character set of the current locale, which is not necessarily
+ * UTF-8.
+ *
+ * Returns: (transfer full): string containing the formatted log message, in
+ *    the character set of the current locale
+ * Since: 2.50
+ */
+gchar *
+g_log_writer_format_fields (GLogLevelFlags   log_level,
+                            const GLogField *fields,
+                            gsize            n_fields,
+                            gboolean         use_color)
+{
+  gsize i;
+  const gchar *message = NULL;
+  const gchar *log_domain = NULL;
+  gchar level_prefix[STRING_BUFFER_SIZE];
+  GString *gstring;
+
+  /* Extract some common fields. */
+  for (i = 0; (message == NULL || log_domain == NULL) && i < n_fields; i++)
+    {
+      const GLogField *field = &fields[i];
+
+      if (g_strcmp0 (field->key, "MESSAGE") == 0)
+        message = field->value;
+      else if (g_strcmp0 (field->key, "GLIB_DOMAIN") == 0)
+        log_domain = field->value;
+    }
+
+  /* Format things. */
+  mklevel_prefix (level_prefix, log_level, use_color);
+
+  gstring = g_string_new (NULL);
+  if (log_level & ALERT_LEVELS)
+    g_string_append (gstring, "\n");
+  if (!log_domain)
+    g_string_append (gstring, "** ");
+
+  if ((g_log_msg_prefix & (log_level & G_LOG_LEVEL_MASK)) ==
+      (log_level & G_LOG_LEVEL_MASK))
+    {
+      const gchar *prg_name = g_get_prgname ();
+      gulong pid = getpid ();
+
+      if (prg_name == NULL)
+        g_string_append_printf (gstring, "(process:%lu): ", pid);
+      else
+        g_string_append_printf (gstring, "(%s:%lu): ", prg_name, pid);
+    }
+
+  if (log_domain != NULL)
+    {
+      g_string_append (gstring, log_domain);
+      g_string_append_c (gstring, '-');
+    }
+  g_string_append (gstring, level_prefix);
+
+  g_string_append (gstring, ": ");
+  if (message == NULL)
+    {
+      g_string_append (gstring, "(NULL) message");
+    }
+  else
+    {
+      GString *msg;
+      const gchar *charset;
+
+      msg = g_string_new (message);
+      escape_string (msg);
+
+      if (g_get_charset (&charset))
+        {
+          /* charset is UTF-8 already */
+          g_string_append (gstring, msg->str);
+        }
+      else
+        {
+          gchar *lstring = strdup_convert (msg->str, charset);
+          g_string_append (gstring, lstring);
+          g_free (lstring);
+        }
+
+      g_string_free (msg, TRUE);
+    }
+
+  return g_string_free (gstring, FALSE);
+}
+
+/**
+ * g_log_writer_journald:
+ * @log_level: log level, either from #GLogLevelFlags, or a user-defined
+ *    level
+ * @fields: (array length=n_fields): key–value pairs of structured data forming
+ *    the log message
+ * @n_fields: number of elements in the @fields array
+ * @user_data: user data passed to g_log_set_writer_func()
+ *
+ * Format a structured log message and send it to the systemd journal as a set
+ * of key–value pairs. All fields are sent to the journal, but if a field has
+ * length zero (indicating program-specific data) then only its key will be
+ * sent.
+ *
+ * This is suitable for use as a #GLogWriterFunc.
+ *
+ * If GLib has been compiled without systemd support, this function is still
+ * defined, but will always return %G_LOG_WRITER_UNHANDLED.
+ *
+ * Returns: %G_LOG_WRITER_HANDLED on success, %G_LOG_WRITER_UNHANDLED otherwise
+ * Since: 2.50
+ */
+GLogWriterOutput
+g_log_writer_journald (GLogLevelFlags   log_level,
+                       const GLogField *fields,
+                       gsize            n_fields,
+                       gpointer         user_data)
+{
+#ifdef HAVE_LIBSYSTEMD
+  gsize i;
+  struct iovec *pairs;
+  gint retval;
+
+  g_return_val_if_fail (fields != NULL, G_LOG_WRITER_UNHANDLED);
+  g_return_val_if_fail (n_fields > 0, G_LOG_WRITER_UNHANDLED);
+
+  /* According to systemd.journal-fields(7), the journal allows fields in any
+   * format (including arbitrary binary), but expects text fields to be UTF-8.
+   * This is great, because we require input strings to be in UTF-8, so no
+   * conversion is necessary and we don’t need to care about the current
+   * locale’s character set.
+   */
+
+  pairs = g_alloca (sizeof (struct iovec) * n_fields);
+
+  for (i = 0; i < n_fields; i++)
+    {
+      guint8 *buf = NULL;
+      gsize key_length;
+      gsize value_length;
+
+      /* Build the iovec for this field. */
+      key_length = strlen (fields[i].key);
+      value_length =
+          (fields[i].length < 0) ? strlen (fields[i].value) : fields[i].length;
+
+      buf = g_malloc (key_length + 1 + value_length + 1);
+      pairs[i].iov_base = buf;
+      pairs[i].iov_len = key_length + 1 + value_length;
+
+      strncpy ((char *) buf, fields[i].key, key_length);
+      buf[key_length] = '=';
+      memcpy ((char *) buf + key_length + 1, fields[i].value, value_length);
+      buf[key_length + 1 + value_length] = '\0';
+    }
+
+  retval = sd_journal_sendv (pairs, n_fields);
+
+  for (i = 0; i < n_fields; i++)
+    g_free (pairs[i].iov_base);
+
+  return (retval == 0) ? G_LOG_WRITER_HANDLED : G_LOG_WRITER_UNHANDLED;
+#else /* if !HAVE_LIBSYSTEMD */
+  return G_LOG_WRITER_UNHANDLED;
+#endif
+}
+
+/**
+ * g_log_writer_standard_streams:
+ * @log_level: log level, either from #GLogLevelFlags, or a user-defined
+ *    level
+ * @fields: (array length=n_fields): key–value pairs of structured data forming
+ *    the log message
+ * @n_fields: number of elements in the @fields array
+ * @user_data: user data passed to g_log_set_writer_func()
+ *
+ * Format a structured log message and print it to either `stdout` or `stderr`,
+ * depending on its log level. %G_LOG_LEVEL_INFO and %G_LOG_LEVEL_DEBUG messages
+ * are sent to `stdout`; all other log levels are sent to `stderr`. Only fields
+ * which are understood by this function are included in the formatted string
+ * which is printed.
+ *
+ * If the output stream supports ANSI color escape sequences, they will be used
+ * in the output.
+ *
+ * A trailing new-line character is added to the log message when it is printed.
+ *
+ * This is suitable for use as a #GLogWriterFunc.
+ *
+ * Returns: %G_LOG_WRITER_HANDLED on success, %G_LOG_WRITER_UNHANDLED otherwise
+ * Since: 2.50
+ */
+GLogWriterOutput
+g_log_writer_standard_streams (GLogLevelFlags   log_level,
+                               const GLogField *fields,
+                               gsize            n_fields,
+                               gpointer         user_data)
+{
+  FILE *stream;
+  gchar *out = NULL;  /* in the current locale’s character set */
+
+  g_return_val_if_fail (fields != NULL, G_LOG_WRITER_UNHANDLED);
+  g_return_val_if_fail (n_fields > 0, G_LOG_WRITER_UNHANDLED);
+
+  stream = log_level_to_file (log_level);
+  out = g_log_writer_format_fields (log_level, fields, n_fields,
+                                    g_log_writer_supports_color (fileno (stream)));
+  _g_fprintf (stream, "%s\n", out);
+  g_free (out);
+
+  return G_LOG_WRITER_HANDLED;
+}
+
+/* The old g_log() API is implemented in terms of the new structured log API.
+ * However, some of the checks do not line up between the two APIs: the
+ * structured API only handles fatalness of messages for log levels; the old API
+ * handles it per-domain as well. Consequently, we need to disable fatalness
+ * handling in the structured log API when called from the old g_log() API.
+ *
+ * We can guarantee that g_log_default_handler() will pass GLIB_OLD_LOG_API as
+ * the first field to g_log_structured_array(), if that is the case.
+ */
+static gboolean
+log_is_old_api (const GLogField *fields,
+                gsize            n_fields)
+{
+  return (n_fields >= 1 &&
+          g_strcmp0 (fields[0].key, "GLIB_OLD_LOG_API") == 0 &&
+          g_strcmp0 (fields[0].value, "1") == 0);
+}
+
+/**
+ * g_log_writer_default:
+ * @log_level: log level, either from #GLogLevelFlags, or a user-defined
+ *    level
+ * @fields: (array length=n_fields): key–value pairs of structured data forming
+ *    the log message
+ * @n_fields: number of elements in the @fields array
+ * @user_data: user data passed to g_log_set_writer_func()
+ *
+ * Format a structured log message and output it to the default log destination
+ * for the platform. On Linux, this is typically the systemd journal, falling
+ * back to `stdout` or `stderr` if running from the terminal or if output is
+ * being redirected to a file.
+ *
+ * Support for other platform-specific logging mechanisms may be added in
+ * future. Distributors of GLib may modify this function to impose their own
+ * (documented) platform-specific log writing policies.
+ *
+ * This is suitable for use as a #GLogWriterFunc, and is the default writer used
+ * if no other is set using g_log_set_writer_func().
+ *
+ * Returns: %G_LOG_WRITER_HANDLED on success, %G_LOG_WRITER_UNHANDLED otherwise
+ * Since: 2.50
+ */
+GLogWriterOutput
+g_log_writer_default (GLogLevelFlags   log_level,
+                      const GLogField *fields,
+                      gsize            n_fields,
+                      gpointer         user_data)
+{
+  g_return_val_if_fail (fields != NULL, G_LOG_WRITER_UNHANDLED);
+  g_return_val_if_fail (n_fields > 0, G_LOG_WRITER_UNHANDLED);
+
+  /* Disable debug message output unless specified in G_MESSAGES_DEBUG. */
+  if (!(log_level & DEFAULT_LEVELS) && !(log_level >> G_LOG_LEVEL_USER_SHIFT))
+    {
+      const gchar *domains, *log_domain = NULL;
+      gsize i;
+
+      domains = g_getenv ("G_MESSAGES_DEBUG");
+
+      if ((log_level & INFO_LEVELS) == 0 ||
+          domains == NULL)
+        return G_LOG_WRITER_HANDLED;
+
+      for (i = 0; i < n_fields; i++)
+        {
+          if (g_strcmp0 (fields[i].key, "GLIB_DOMAIN") == 0)
+            {
+              log_domain = fields[i].value;
+              break;
+            }
+        }
+
+      if (strcmp (domains, "all") != 0 &&
+          (log_domain == NULL || !strstr (domains, log_domain)))
+        return G_LOG_WRITER_HANDLED;
+    }
+
+  /* Mark messages as fatal if they have a level set in
+   * g_log_set_always_fatal().
+   */
+  if ((log_level & g_log_always_fatal) && !log_is_old_api (fields, n_fields))
+    log_level |= G_LOG_FLAG_FATAL;
+
+  /* Try logging to the systemd journal as first choice. */
+  if (g_log_writer_is_journald (fileno (stderr)) &&
+      g_log_writer_journald (log_level, fields, n_fields, user_data) ==
+      G_LOG_WRITER_HANDLED)
+    goto handled;
+
+  /* FIXME: Add support for the Windows log. */
+
+  if (g_log_writer_standard_streams (log_level, fields, n_fields, user_data) ==
+      G_LOG_WRITER_HANDLED)
+    goto handled;
+
+  return G_LOG_WRITER_UNHANDLED;
+
+handled:
+  /* Abort if the message was fatal. */
+  if (log_level & G_LOG_FLAG_FATAL)
+    {
+#ifdef G_OS_WIN32
+      if (!g_test_initialized ())
+        {
+          gchar *locale_msg = NULL;
+
+          locale_msg = g_locale_from_utf8 (fatal_msg_buf, -1, NULL, NULL, NULL);
+          MessageBox (NULL, locale_msg, NULL,
+                      MB_ICONERROR | MB_SETFOREGROUND);
+          g_free (locale_msg);
+        }
+#endif /* !G_OS_WIN32 */
+
+      _g_log_abort (!(log_level & G_LOG_FLAG_RECURSION));
+    }
+
+  return G_LOG_WRITER_HANDLED;
+}
+
+static GLogWriterOutput
+_g_log_writer_fallback (GLogLevelFlags   log_level,
+                        const GLogField *fields,
+                        gsize            n_fields,
+                        gpointer         user_data)
+{
+  FILE *stream;
+  gsize i;
+
+  /* we cannot call _any_ GLib functions in this fallback handler,
+   * which is why we skip UTF-8 conversion, etc.
+   * since we either recursed or ran out of memory, we're in a pretty
+   * pathologic situation anyways, what we can do is giving the
+   * the process ID unconditionally however.
+   */
+
+  stream = log_level_to_file (log_level);
+
+  for (i = 0; i < n_fields; i++)
+    {
+      const GLogField *field = &fields[i];
+
+      /* Only print fields we definitely recognise, otherwise we could end up
+       * printing a random non-string pointer provided by the user to be
+       * interpreted by their writer function.
+       */
+      if (strcmp (field->key, "MESSAGE") != 0 &&
+          strcmp (field->key, "MESSAGE_ID") != 0 &&
+          strcmp (field->key, "PRIORITY") != 0 &&
+          strcmp (field->key, "CODE_FILE") != 0 &&
+          strcmp (field->key, "CODE_LINE") != 0 &&
+          strcmp (field->key, "CODE_FUNC") != 0 &&
+          strcmp (field->key, "ERRNO") != 0 &&
+          strcmp (field->key, "SYSLOG_FACILITY") != 0 &&
+          strcmp (field->key, "SYSLOG_IDENTIFIER") != 0 &&
+          strcmp (field->key, "SYSLOG_PID") != 0 &&
+          strcmp (field->key, "GLIB_DOMAIN") != 0)
+        continue;
+
+      write_string (stream, field->key);
+      write_string (stream, "=");
+      write_string_sized (stream, field->value, field->length);
+    }
+
+#ifndef G_OS_WIN32
+  {
+    gchar pid_string[FORMAT_UNSIGNED_BUFSIZE];
+
+    format_unsigned (pid_string, getpid (), 10);
+    write_string (stream, "_PID=");
+    write_string (stream, pid_string);
+  }
+#endif
+
+  return G_LOG_WRITER_HANDLED;
+}
+
+/**
+ * g_return_if_fail_warning: (skip)
+ * @log_domain: (nullable):
+ * @pretty_function:
+ * @expression: (nullable):
+ */
 void
 g_return_if_fail_warning (const char *log_domain,
 			  const char *pretty_function,
@@ -1124,6 +2067,14 @@ g_return_if_fail_warning (const char *log_domain,
 	 expression);
 }
 
+/**
+ * g_warn_message: (skip)
+ * @domain: (nullable):
+ * @file:
+ * @line:
+ * @func:
+ * @warnexpr: (nullable):
+ */
 void
 g_warn_message (const char     *domain,
                 const char     *file,
@@ -1168,7 +2119,7 @@ g_assert_warning (const char *log_domain,
 	   line,
 	   pretty_function);
   _g_log_abort (FALSE);
-  abort ();
+  g_abort ();
 }
 
 /**
@@ -1243,7 +2194,7 @@ g_test_assert_expected_messages_internal (const char     *domain,
 
       expected = expected_messages->data;
 
-      mklevel_prefix (level_prefix, expected->log_level);
+      mklevel_prefix (level_prefix, expected->log_level, FALSE);
       message = g_strdup_printf ("Did not see expected message %s-%s: %s",
                                  expected->log_domain ? expected->log_domain : "**",
                                  level_prefix, expected->pattern);
@@ -1274,7 +2225,7 @@ _g_log_fallback_handler (const gchar   *log_domain,
 #ifndef G_OS_WIN32
   gchar pid_string[FORMAT_UNSIGNED_BUFSIZE];
 #endif
-  int fd;
+  FILE *stream;
 
   /* we cannot call _any_ GLib functions in this fallback handler,
    * which is why we skip UTF-8 conversion, etc.
@@ -1283,7 +2234,7 @@ _g_log_fallback_handler (const gchar   *log_domain,
    * the process ID unconditionally however.
    */
 
-  fd = mklevel_prefix (level_prefix, log_level);
+  stream = mklevel_prefix (level_prefix, log_level, FALSE);
   if (!message)
     message = "(NULL) message";
 
@@ -1292,24 +2243,24 @@ _g_log_fallback_handler (const gchar   *log_domain,
 #endif
 
   if (log_domain)
-    write_string (fd, "\n");
+    write_string (stream, "\n");
   else
-    write_string (fd, "\n** ");
+    write_string (stream, "\n** ");
 
 #ifndef G_OS_WIN32
-  write_string (fd, "(process:");
-  write_string (fd, pid_string);
-  write_string (fd, "): ");
+  write_string (stream, "(process:");
+  write_string (stream, pid_string);
+  write_string (stream, "): ");
 #endif
 
   if (log_domain)
     {
-      write_string (fd, log_domain);
-      write_string (fd, "-");
+      write_string (stream, log_domain);
+      write_string (stream, "-");
     }
-  write_string (fd, level_prefix);
-  write_string (fd, ": ");
-  write_string (fd, message);
+  write_string (stream, level_prefix);
+  write_string (stream, ": ");
+  write_string (stream, message);
 }
 
 static void
@@ -1374,10 +2325,11 @@ escape_string (GString *string)
 
 /**
  * g_log_default_handler:
- * @log_domain: the log domain of the message
+ * @log_domain: (nullable): the log domain of the message, or %NULL for the
+ * default "" application domain
  * @log_level: the level of the message
- * @message: the message
- * @unused_data: data passed from g_log() which is unused
+ * @message: (nullable): the message
+ * @unused_data: (nullable): data passed from g_log() which is unused
  *
  * The default log handler set up by GLib; g_log_set_default_handler()
  * allows to install an alternate default log handler.
@@ -1408,10 +2360,8 @@ g_log_default_handler (const gchar   *log_domain,
 		       const gchar   *message,
 		       gpointer	      unused_data)
 {
-  gchar level_prefix[STRING_BUFFER_SIZE], *string;
-  GString *gstring;
-  int fd;
   const gchar *domains;
+  GLogField fields[4];
 
   if ((log_level & DEFAULT_LEVELS) || (log_level >> G_LOG_LEVEL_USER_SHIFT))
     goto emit;
@@ -1430,59 +2380,28 @@ g_log_default_handler (const gchar   *log_domain,
       return;
     }
 
-  fd = mklevel_prefix (level_prefix, log_level);
+  fields[0].key = "GLIB_OLD_LOG_API";
+  fields[0].value = "1";
+  fields[0].length = -1;
 
-  gstring = g_string_new (NULL);
-  if (log_level & ALERT_LEVELS)
-    g_string_append (gstring, "\n");
-  if (!log_domain)
-    g_string_append (gstring, "** ");
+  fields[1].key = "MESSAGE";
+  fields[1].value = message;
+  fields[1].length = -1;
 
-  if ((g_log_msg_prefix & (log_level & G_LOG_LEVEL_MASK)) == (log_level & G_LOG_LEVEL_MASK))
-    {
-      const gchar *prg_name = g_get_prgname ();
-      
-      if (!prg_name)
-	g_string_append_printf (gstring, "(process:%lu): ", (gulong)getpid ());
-      else
-	g_string_append_printf (gstring, "(%s:%lu): ", prg_name, (gulong)getpid ());
-    }
+  fields[2].key = "PRIORITY";
+  fields[2].value = log_level_to_priority (log_level);
+  fields[2].length = 1;
 
-  if (log_domain)
-    {
-      g_string_append (gstring, log_domain);
-      g_string_append_c (gstring, '-');
-    }
-  g_string_append (gstring, level_prefix);
+  fields[3].key = "GLIB_DOMAIN";
+  fields[3].value = log_domain;
+  fields[3].length = -1;
 
-  g_string_append (gstring, ": ");
-  if (!message)
-    g_string_append (gstring, "(NULL) message");
-  else
-    {
-      GString *msg;
-      const gchar *charset;
-
-      msg = g_string_new (message);
-      escape_string (msg);
-
-      if (g_get_charset (&charset))
-	g_string_append (gstring, msg->str);	/* charset is UTF-8 already */
-      else
-	{
-	  string = strdup_convert (msg->str, charset);
-	  g_string_append (gstring, string);
-	  g_free (string);
-	}
-
-      g_string_free (msg, TRUE);
-    }
-  g_string_append (gstring, "\n");
-
-  string = g_string_free (gstring, FALSE);
-
-  write_string (fd, string);
-  g_free (string);
+  /* Print out via the structured log API, but drop any fatal flags since we
+   * have already handled them. The fatal handling in the structured logging
+   * API is more coarse-grained than in the old g_log() API, so we don't want
+   * to use it here.
+   */
+  g_log_structured_array (log_level & ~G_LOG_FLAG_FATAL, fields, 4);
 }
 
 /**

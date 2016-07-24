@@ -2165,6 +2165,24 @@ test_max_lookbehind (void)
   g_regex_unref (regex);
 }
 
+static gboolean
+pcre_ge (guint64 major, guint64 minor)
+{
+    const char *version;
+    gchar *ptr;
+    guint64 pcre_major, pcre_minor;
+
+    /* e.g. 8.35 2014-04-04 */
+    version = pcre_version ();
+
+    pcre_major = g_ascii_strtoull (version, &ptr, 10);
+    /* ptr points to ".MINOR (release date)" */
+    g_assert (ptr[0] == '.');
+    pcre_minor = g_ascii_strtoull (ptr + 1, NULL, 10);
+
+    return (pcre_major > major) || (pcre_major == major && pcre_minor >= minor);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -2261,7 +2279,25 @@ main (int argc, char *argv[])
   TEST_NEW_FAIL ("^(?(0)f|b)oo", 0, G_REGEX_ERROR_INVALID_CONDITION);
   TEST_NEW_FAIL ("(?<=\\C)X", 0, G_REGEX_ERROR_SINGLE_BYTE_MATCH_IN_LOOKBEHIND);
   TEST_NEW_FAIL ("(?!\\w)(?R)", 0, G_REGEX_ERROR_INFINITE_LOOP);
-  TEST_NEW_FAIL ("(?(?<ab))", 0, G_REGEX_ERROR_MISSING_SUBPATTERN_NAME_TERMINATOR);
+  if (pcre_ge (8, 37))
+    {
+      /* The expected errors changed here. */
+      TEST_NEW_FAIL ("(?(?<ab))", 0, G_REGEX_ERROR_ASSERTION_EXPECTED);
+    }
+  else
+    {
+      TEST_NEW_FAIL ("(?(?<ab))", 0, G_REGEX_ERROR_MISSING_SUBPATTERN_NAME_TERMINATOR);
+    }
+
+  if (pcre_ge (8, 35))
+    {
+      /* The expected errors changed here. */
+      TEST_NEW_FAIL ("(?P<sub>foo)\\g<sub", 0, G_REGEX_ERROR_MISSING_SUBPATTERN_NAME_TERMINATOR);
+    }
+  else
+    {
+      TEST_NEW_FAIL ("(?P<sub>foo)\\g<sub", 0, G_REGEX_ERROR_MISSING_BACK_REFERENCE);
+    }
   TEST_NEW_FAIL ("(?P<x>eks)(?P<x>eccs)", 0, G_REGEX_ERROR_DUPLICATE_SUBPATTERN_NAME);
 #if 0
   TEST_NEW_FAIL (?, 0, G_REGEX_ERROR_MALFORMED_PROPERTY);

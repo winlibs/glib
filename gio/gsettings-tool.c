@@ -412,8 +412,6 @@ value_changed (GSettings   *settings,
 static void
 gsettings_monitor (void)
 {
-  gchar **keys;
-
   if (global_key)
     {
       gchar *name;
@@ -423,17 +421,6 @@ gsettings_monitor (void)
     }
   else
     g_signal_connect (global_settings, "changed", G_CALLBACK (value_changed), NULL);
-
-  /* We have to read a value from GSettings before we start receiving
-   * signals...
-   *
-   * If the schema has zero keys then we won't be displaying any
-   * notifications anyway.
-   */
-  keys = g_settings_list_keys (global_settings);
-  if (keys[0])
-    g_variant_unref (g_settings_get_value (global_settings, keys[0]));
-  g_strfreev (keys);
 
   for (;;)
     g_main_context_iteration (NULL, TRUE);
@@ -710,7 +697,7 @@ main (int argc, char **argv)
   if (argc < 2)
     return gsettings_help (FALSE, NULL);
 
-  global_schema_source = g_settings_schema_source_ref (g_settings_schema_source_get_default ());
+  global_schema_source = g_settings_schema_source_get_default ();
 
   if (argc > 3 && g_str_equal (argv[1], "--schemadir"))
     {
@@ -718,7 +705,6 @@ main (int argc, char **argv)
       GError *error = NULL;
 
       global_schema_source = g_settings_schema_source_new_from_directory (argv[2], parent, FALSE, &error);
-      g_settings_schema_source_unref (parent);
 
       if (global_schema_source == NULL)
         {
@@ -732,6 +718,13 @@ main (int argc, char **argv)
       argv = argv + 2;
       argc -= 2;
     }
+  else if (global_schema_source == NULL)
+    {
+      g_printerr (_("No schemas installed\n"));
+      return 1;
+    }
+  else
+    g_settings_schema_source_ref (global_schema_source);
 
   need_settings = TRUE;
 

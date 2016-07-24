@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Message Output and Debugging Functions: GLib Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="index.html" title="GLib Reference Manual">
 <link rel="up" href="glib-core.html" title="GLib Core Application Support">
 <link rel="prev" href="glib-Error-Reporting.html" title="Error Reporting">
 <link rel="next" href="glib-Message-Logging.html" title="Message Logging">
-<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.25.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -33,7 +33,7 @@
 </tr></table></div>
 <div class="refsect1">
 <a name="glib-Warnings-and-Assertions.functions"></a><h2>Functions</h2>
-<div class="informaltable"><table width="100%" border="0">
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="functions_return">
 <col class="functions_name">
@@ -152,6 +152,47 @@ you mean "if (bug in program) return". The program behavior is
 generally considered undefined after one of these checks fails.
 They are not intended for normal control flow, only to give a
 perhaps-helpful warning before giving up.</p>
+<p>Structured logging output is supported using <a class="link" href="glib-Message-Logging.html#g-log-structured" title="g_log_structured ()"><code class="function">g_log_structured()</code></a>. This differs
+from the traditional <a class="link" href="glib-Message-Logging.html#g-log" title="g_log ()"><code class="function">g_log()</code></a> API in that log messages are handled as a
+collection of key–value pairs representing individual pieces of information,
+rather than as a single string containing all the information in an arbitrary
+format.</p>
+<p>The support for structured logging was motivated by the following needs (some
+of which were supported previously; others weren’t):</p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem"><p>Support for multiple logging levels.</p></li>
+<li class="listitem"><p>Structured log support with the ability to add <code class="literal">MESSAGE_ID</code>s (see
+<a class="link" href="glib-Message-Logging.html#g-log-structured" title="g_log_structured ()"><code class="function">g_log_structured()</code></a>).</p></li>
+<li class="listitem"><p>Moving the responsibility for filtering log messages from the program to
+the log viewer — instead of libraries and programs installing log handlers
+(with <a class="link" href="glib-Message-Logging.html#g-log-set-handler" title="g_log_set_handler ()"><code class="function">g_log_set_handler()</code></a>) which filter messages before output, all log
+messages are outputted, and the log viewer program (such as <code class="literal">journalctl</code>)
+must filter them. This is based on the idea that bugs are sometimes hard
+to reproduce, so it is better to log everything possible and then use
+tools to analyse the logs than it is to not be able to reproduce a bug to
+get additional log data. Code which uses logging in performance-critical
+sections should compile out the <a class="link" href="glib-Message-Logging.html#g-log-structured" title="g_log_structured ()"><code class="function">g_log_structured()</code></a> calls in
+release builds, and compile them in in debugging builds.</p></li>
+<li class="listitem"><p>A single writer function which handles all log messages in a process, from
+all libraries and program code; rather than multiple log handlers with
+poorly defined interactions between them. This allows a program to easily
+change its logging policy by changing the writer function, for example to
+log to an additional location or to change what logging output fallbacks
+are used. The log writer functions provided by GLib are exposed publicly
+so they can be used from programs’ log writers. This allows log writer
+policy and implementation to be kept separate.</p></li>
+<li class="listitem"><p>If a library wants to add standard information to all of its log messages
+(such as library state) or to redact private data (such as passwords or
+network credentials), it should use a wrapper function around its
+<a class="link" href="glib-Message-Logging.html#g-log-structured" title="g_log_structured ()"><code class="function">g_log_structured()</code></a> calls or implement that in the single log writer
+function.</p></li>
+<li class="listitem"><p>If a program wants to pass context data from a <a class="link" href="glib-Message-Logging.html#g-log-structured" title="g_log_structured ()"><code class="function">g_log_structured()</code></a> call to
+its log writer function so that, for example, it can use the correct
+server connection to submit logs to, that user data can be passed as a
+zero-length <a class="link" href="glib-Message-Logging.html#GLogField" title="struct GLogField"><span class="type">GLogField</span></a> to <a class="link" href="glib-Message-Logging.html#g-log-structured-array" title="g_log_structured_array ()"><code class="function">g_log_structured_array()</code></a>.</p></li>
+<li class="listitem"><p>Color output needed to be supported on the terminal, to make reading
+through logs easier.</p></li>
+</ul></div>
 </div>
 <div class="refsect1">
 <a name="glib-Warnings-and-Assertions.functions_details"></a><h2>Functions</h2>
@@ -171,8 +212,8 @@ purpose message windows or even files. Instead, libraries should
 use <a class="link" href="glib-Message-Logging.html#g-log" title="g_log ()"><code class="function">g_log()</code></a>, or the convenience functions <a class="link" href="glib-Message-Logging.html#g-message" title="g_message()"><code class="function">g_message()</code></a>, <a class="link" href="glib-Message-Logging.html#g-warning" title="g_warning()"><code class="function">g_warning()</code></a>
 and <a class="link" href="glib-Message-Logging.html#g-error" title="g_error()"><code class="function">g_error()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.2.6"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-print.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -205,8 +246,8 @@ the message to stdout. By providing your own handler
 you can redirect the output, to a GTK+ widget or a
 log file for example.</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.3.6"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-set-print-handler.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -220,7 +261,7 @@ log file for example.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.11.6.3.7"></a><h4>Returns</h4>
+<a name="g-set-print-handler.returns"></a><h4>Returns</h4>
 <p> the old print handler</p>
 </div>
 </div>
@@ -232,8 +273,8 @@ log file for example.</p>
 <p>Specifies the type of the print handler functions.
 These are called with the complete formatted string to output.</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.4.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="GPrintFunc.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -262,8 +303,8 @@ new-line character.</p>
 Instead <a class="link" href="glib-Message-Logging.html#g-log" title="g_log ()"><code class="function">g_log()</code></a> should be used, or the convenience functions
 <a class="link" href="glib-Message-Logging.html#g-message" title="g_message()"><code class="function">g_message()</code></a>, <a class="link" href="glib-Message-Logging.html#g-warning" title="g_warning()"><code class="function">g_warning()</code></a> and <a class="link" href="glib-Message-Logging.html#g-error" title="g_error()"><code class="function">g_error()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.5.6"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-printerr.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -296,8 +337,8 @@ message to stderr. By providing your own handler you can
 redirect the output, to a GTK+ widget or a log file for
 example.</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.6.6"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-set-printerr-handler.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -311,7 +352,7 @@ example.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.11.6.6.7"></a><h4>Returns</h4>
+<a name="g-set-printerr-handler.returns"></a><h4>Returns</h4>
 <p> the old error message handler</p>
 </div>
 </div>
@@ -336,8 +377,8 @@ function returns.</p>
 should therefore not depend on any side effects of <em class="parameter"><code>expr</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.7.8"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-return-if-fail.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -373,8 +414,8 @@ returned from the current function.</p>
 should therefore not depend on any side effects of <em class="parameter"><code>expr</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.8.8"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-return-val-if-fail.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -410,8 +451,8 @@ This can only be used in functions which do not return a value.</p>
 <p>Logs a critical message and returns <em class="parameter"><code>val</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.10.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-return-val-if-reached.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -431,8 +472,8 @@ This can only be used in functions which do not return a value.</p>
 <pre class="programlisting">#define             g_warn_if_fail(expr)</pre>
 <p>Logs a warning if the expression is not true.</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.11.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-warn-if-fail.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -451,7 +492,7 @@ This can only be used in functions which do not return a value.</p>
 <div class="refsect2">
 <a name="g-warn-if-reached"></a><h3>g_warn_if_reached</h3>
 <pre class="programlisting">#define             g_warn_if_reached()</pre>
-<p>Logs a critical warning.</p>
+<p>Logs a warning.</p>
 <p class="since">Since: <a class="link" href="api-index-2-16.html#api-index-2.16">2.16</a></p>
 </div>
 <hr>
@@ -528,8 +569,8 @@ a stack trace. The prompt is then shown again.</p>
 <p>If "[P]roceed" is selected, the function returns.</p>
 <p>This function may cause different actions on non-UNIX platforms.</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.13.11"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-on-error-query.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -540,8 +581,8 @@ a stack trace. The prompt is then shown again.</p>
 <td class="parameter_description"><p>the program name, needed by gdb for the "[S]tack trace"
 option. If <em class="parameter"><code>prg_name</code></em>
 is <a class="link" href="glib-Standard-Macros.html#NULL:CAPS" title="NULL"><code class="literal">NULL</code></a>, <a class="link" href="glib-Miscellaneous-Utility-Functions.html#g-get-prgname" title="g_get_prgname ()"><code class="function">g_get_prgname()</code></a> is called to get
-the program name (which will work correctly if <a href="http://developer.gnome.org/gdk2/gdk3-General.html#gdk-init"><code class="function">gdk_init()</code></a> or
-<a href="http://developer.gnome.org/gtk2/gtk3-General.html#gtk-init"><code class="function">gtk_init()</code></a> has been called)</p></td>
+the program name (which will work correctly if <a href="http://developer.gnome.org/gdk3/gdk3-General.html#gdk-init"><code class="function">gdk_init()</code></a> or
+<a href="http://developer.gnome.org/gtk3/gtk3-General.html#gtk-init"><code class="function">gtk_init()</code></a> has been called)</p></td>
 <td class="parameter_annotations"> </td>
 </tr></tbody>
 </table></div>
@@ -555,12 +596,12 @@ g_on_error_stack_trace (<em class="parameter"><code>const <a class="link" href="
 <p>Invokes gdb, which attaches to the current process and shows a
 stack trace. Called by <a class="link" href="glib-Warnings-and-Assertions.html#g-on-error-query" title="g_on_error_query ()"><code class="function">g_on_error_query()</code></a> when the "[S]tack trace"
 option is selected. You can get the current process's program name
-with <a class="link" href="glib-Miscellaneous-Utility-Functions.html#g-get-prgname" title="g_get_prgname ()"><code class="function">g_get_prgname()</code></a>, assuming that you have called <a href="http://developer.gnome.org/gtk2/gtk3-General.html#gtk-init"><code class="function">gtk_init()</code></a> or
-<a href="http://developer.gnome.org/gdk2/gdk3-General.html#gdk-init"><code class="function">gdk_init()</code></a>.</p>
+with <a class="link" href="glib-Miscellaneous-Utility-Functions.html#g-get-prgname" title="g_get_prgname ()"><code class="function">g_get_prgname()</code></a>, assuming that you have called <a href="http://developer.gnome.org/gtk3/gtk3-General.html#gtk-init"><code class="function">gtk_init()</code></a> or
+<a href="http://developer.gnome.org/gdk3/gdk3-General.html#gdk-init"><code class="function">gdk_init()</code></a>.</p>
 <p>This function may cause different actions on non-UNIX platforms.</p>
 <div class="refsect3">
-<a name="id-1.4.11.6.14.6"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
+<a name="g-on-error-stack-trace.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
 <col class="parameters_description">
@@ -590,6 +631,6 @@ and on other architectures it raises a <code class="literal">SIGTRAP</code> sign
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.24.1</div>
+<hr>Generated by GTK-Doc V1.25.1</div>
 </body>
 </html>

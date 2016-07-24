@@ -84,16 +84,6 @@
  * the names must begin with a lowercase character, must not end
  * with a '-', and must not contain consecutive dashes.
  *
- * GSettings supports change notification.  The primary mechanism to
- * watch for changes is to connect to the "changed" signal.  You can
- * optionally watch for changes on only a single key by using a signal
- * detail.  Signals are only guaranteed to be emitted for a given key
- * after you have read the value of that key while a signal handler was
- * connected for that key.  Signals may or may not be emitted in the
- * case that the key "changed" to the value that you had previously
- * read.  Signals may be reported in additional cases as well and the
- * "changed" signal should really be treated as "may have changed".
- *
  * Similar to GConf, the default values in GSettings schemas can be
  * localized, but the localized values are stored in gettext catalogs
  * and looked up with the domain that is specified in the
@@ -348,8 +338,6 @@ struct _GSettingsPrivate
   GSettingsSchema *schema;
   gchar *path;
 
-  gboolean is_subscribed;
-
   GDelayedSettingsBackend *delayed;
 };
 
@@ -424,32 +412,6 @@ g_settings_real_writable_change_event (GSettings *settings,
 
   return FALSE;
 }
-
-static gboolean
-g_settings_has_signal_handlers (GSettings   *settings,
-                                const gchar *key)
-{
-  GSettingsClass *class = G_SETTINGS_GET_CLASS (settings);
-  GQuark keyq;
-
-  if (class->change_event != g_settings_real_change_event ||
-      class->writable_change_event != g_settings_real_writable_change_event)
-    return TRUE;
-
-  keyq = g_quark_from_string (key);
-
-  if (g_signal_has_handler_pending (settings, g_settings_signals[SIGNAL_WRITABLE_CHANGE_EVENT], 0, TRUE) ||
-      g_signal_has_handler_pending (settings, g_settings_signals[SIGNAL_WRITABLE_CHANGED], 0, TRUE) ||
-      g_signal_has_handler_pending (settings, g_settings_signals[SIGNAL_WRITABLE_CHANGED], keyq, TRUE) ||
-      g_signal_has_handler_pending (settings, g_settings_signals[SIGNAL_CHANGE_EVENT], 0, TRUE) ||
-      g_signal_has_handler_pending (settings, g_settings_signals[SIGNAL_CHANGED], 0, TRUE) ||
-      g_signal_has_handler_pending (settings, g_settings_signals[SIGNAL_CHANGED], keyq, TRUE))
-    return TRUE;
-
-  /* None of that?  Then surely nobody is watching.... */
-  return FALSE;
-}
-
 
 static void
 settings_backend_changed (GObject             *target,
@@ -717,6 +679,8 @@ g_settings_constructed (GObject *object)
   g_settings_backend_watch (settings->priv->backend,
                             &listener_vtable, G_OBJECT (settings),
                             settings->priv->main_context);
+  g_settings_backend_subscribe (settings->priv->backend,
+                                settings->priv->path);
 }
 
 static void
@@ -724,10 +688,8 @@ g_settings_finalize (GObject *object)
 {
   GSettings *settings = G_SETTINGS (object);
 
-  if (settings->priv->is_subscribed)
-    g_settings_backend_unsubscribe (settings->priv->backend,
-                                    settings->priv->path);
-
+  g_settings_backend_unsubscribe (settings->priv->backend,
+                                  settings->priv->path);
   g_main_context_unref (settings->priv->main_context);
   g_object_unref (settings->priv->backend);
   g_settings_schema_unref (settings->priv->schema);
@@ -768,9 +730,12 @@ g_settings_class_init (GSettingsClass *class)
    * This signal supports detailed connections.  You can connect to the
    * detailed signal "changed::x" in order to only receive callbacks
    * when key "x" changes.
+   *
+   * Note that @settings only emits this signal if you have read @key at
+   * least once while a signal handler was already connected for @key.
    */
   g_settings_signals[SIGNAL_CHANGED] =
-    g_signal_new ("changed", G_TYPE_SETTINGS,
+    g_signal_new (I_("changed"), G_TYPE_SETTINGS,
                   G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
                   G_STRUCT_OFFSET (GSettingsClass, changed),
                   NULL, NULL, g_cclosure_marshal_VOID__STRING, G_TYPE_NONE,
@@ -803,7 +768,7 @@ g_settings_class_init (GSettingsClass *class)
    *          event. FALSE to propagate the event further.
    */
   g_settings_signals[SIGNAL_CHANGE_EVENT] =
-    g_signal_new ("change-event", G_TYPE_SETTINGS,
+    g_signal_new (I_("change-event"), G_TYPE_SETTINGS,
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GSettingsClass, change_event),
                   g_signal_accumulator_true_handled, NULL,
@@ -824,7 +789,7 @@ g_settings_class_init (GSettingsClass *class)
    * callbacks when the writability of "x" changes.
    */
   g_settings_signals[SIGNAL_WRITABLE_CHANGED] =
-    g_signal_new ("writable-changed", G_TYPE_SETTINGS,
+    g_signal_new (I_("writable-changed"), G_TYPE_SETTINGS,
                   G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
                   G_STRUCT_OFFSET (GSettingsClass, writable_changed),
                   NULL, NULL, g_cclosure_marshal_VOID__STRING, G_TYPE_NONE,
@@ -858,7 +823,7 @@ g_settings_class_init (GSettingsClass *class)
    *          event. FALSE to propagate the event further.
    */
   g_settings_signals[SIGNAL_WRITABLE_CHANGE_EVENT] =
-    g_signal_new ("writable-change-event", G_TYPE_SETTINGS,
+    g_signal_new (I_("writable-change-event"), G_TYPE_SETTINGS,
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GSettingsClass, writable_change_event),
                   g_signal_accumulator_true_handled, NULL,
@@ -1191,13 +1156,6 @@ g_settings_read_from_backend (GSettings          *settings,
   GVariant *value;
   GVariant *fixup;
   gchar *path;
-
-  /* If we are not yet watching for changes, consider doing it now... */
-  if (!settings->priv->is_subscribed && g_settings_has_signal_handlers (settings, key->name))
-    {
-      g_settings_backend_subscribe (settings->priv->backend, settings->priv->path);
-      settings->priv->is_subscribed = TRUE;
-    }
 
   path = g_strconcat (settings->priv->path, key->name, NULL);
   if (user_value_only)
@@ -1919,6 +1877,62 @@ g_settings_set_int (GSettings   *settings,
 }
 
 /**
+ * g_settings_get_int64:
+ * @settings: a #GSettings object
+ * @key: the key to get the value for
+ *
+ * Gets the value that is stored at @key in @settings.
+ *
+ * A convenience variant of g_settings_get() for 64-bit integers.
+ *
+ * It is a programmer error to give a @key that isn't specified as
+ * having a int64 type in the schema for @settings.
+ *
+ * Returns: a 64-bit integer
+ *
+ * Since: 2.50
+ */
+gint64
+g_settings_get_int64 (GSettings   *settings,
+                      const gchar *key)
+{
+  GVariant *value;
+  gint64 result;
+
+  value = g_settings_get_value (settings, key);
+  result = g_variant_get_int64 (value);
+  g_variant_unref (value);
+
+  return result;
+}
+
+/**
+ * g_settings_set_int64:
+ * @settings: a #GSettings object
+ * @key: the name of the key to set
+ * @value: the value to set it to
+ *
+ * Sets @key in @settings to @value.
+ *
+ * A convenience variant of g_settings_set() for 64-bit integers.
+ *
+ * It is a programmer error to give a @key that isn't specified as
+ * having a int64 type in the schema for @settings.
+ *
+ * Returns: %TRUE if setting the key succeeded,
+ *     %FALSE if the key was not writable
+ *
+ * Since: 2.50
+ */
+gboolean
+g_settings_set_int64 (GSettings   *settings,
+                      const gchar *key,
+                      gint64       value)
+{
+  return g_settings_set_value (settings, key, g_variant_new_int64 (value));
+}
+
+/**
  * g_settings_get_uint:
  * @settings: a #GSettings object
  * @key: the key to get the value for
@@ -1974,6 +1988,64 @@ g_settings_set_uint (GSettings   *settings,
                      guint        value)
 {
   return g_settings_set_value (settings, key, g_variant_new_uint32 (value));
+}
+
+/**
+ * g_settings_get_uint64:
+ * @settings: a #GSettings object
+ * @key: the key to get the value for
+ *
+ * Gets the value that is stored at @key in @settings.
+ *
+ * A convenience variant of g_settings_get() for 64-bit unsigned
+ * integers.
+ *
+ * It is a programmer error to give a @key that isn't specified as
+ * having a uint64 type in the schema for @settings.
+ *
+ * Returns: a 64-bit unsigned integer
+ *
+ * Since: 2.50
+ */
+guint64
+g_settings_get_uint64 (GSettings   *settings,
+                       const gchar *key)
+{
+  GVariant *value;
+  guint64 result;
+
+  value = g_settings_get_value (settings, key);
+  result = g_variant_get_uint64 (value);
+  g_variant_unref (value);
+
+  return result;
+}
+
+/**
+ * g_settings_set_uint64:
+ * @settings: a #GSettings object
+ * @key: the name of the key to set
+ * @value: the value to set it to
+ *
+ * Sets @key in @settings to @value.
+ *
+ * A convenience variant of g_settings_set() for 64-bit unsigned
+ * integers.
+ *
+ * It is a programmer error to give a @key that isn't specified as
+ * having a uint64 type in the schema for @settings.
+ *
+ * Returns: %TRUE if setting the key succeeded,
+ *     %FALSE if the key was not writable
+ *
+ * Since: 2.50
+ */
+gboolean
+g_settings_set_uint64 (GSettings   *settings,
+                       const gchar *key,
+                       guint64      value)
+{
+  return g_settings_set_value (settings, key, g_variant_new_uint64 (value));
 }
 
 /**
@@ -2268,6 +2340,9 @@ g_settings_reset (GSettings *settings,
                   const gchar *key)
 {
   gchar *path;
+
+  g_return_if_fail (G_IS_SETTINGS (settings));
+  g_return_if_fail (key != NULL);
 
   path = g_strconcat (settings->priv->path, key, NULL);
   g_settings_backend_reset (settings->priv->backend, path, NULL);

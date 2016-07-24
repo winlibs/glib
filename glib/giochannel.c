@@ -103,7 +103,7 @@
  *            various functions such as g_io_channel_write_chars() to
  *            write raw bytes to the channel.  Encoding and buffering
  *            issues are dealt with at a higher level.
- * @io_seek: &lpar;optional&rpar; seeks the channel.  This is called from
+ * @io_seek: (optional) seeks the channel.  This is called from
  *           g_io_channel_seek() on channels that support it.
  * @io_close: closes the channel.  This is called from
  *            g_io_channel_close() after flushing the buffers.
@@ -421,7 +421,7 @@ g_io_channel_seek (GIOChannel *channel,
 
 /**
  * g_io_channel_new_file:
- * @filename: A string containing the name of a file
+ * @filename: (type filename): A string containing the name of a file
  * @mode: One of "r", "w", "a", "r+", "w+", "a+". These have
  *        the same meaning as in fopen()
  * @error: A location to return an error of type %G_FILE_ERROR

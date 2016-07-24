@@ -214,9 +214,10 @@ end_element (GMarkupParseContext  *context,
 
   else if (strcmp (element_name, "file") == 0)
     {
-      gchar *file, *real_file;
+      gchar *file;
+      gchar *real_file = NULL;
       gchar *key;
-      FileData *data;
+      FileData *data = NULL;
       char *tmp_file = NULL;
       char *tmp_file2 = NULL;
 
@@ -238,12 +239,10 @@ end_element (GMarkupParseContext  *context,
 	  return;
 	}
 
-      data = g_new0 (FileData, 1);
-
       if (sourcedirs != NULL)
         {
 	  real_file = find_file (file);
-	  if (real_file == NULL)
+	  if (real_file == NULL && state->collect_data)
 	    {
 		g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
 			     _("Failed to locate '%s' in any source directory"), file);
@@ -254,15 +253,18 @@ end_element (GMarkupParseContext  *context,
         {
 	  gboolean exists;
 	  exists = g_file_test (file, G_FILE_TEST_EXISTS);
-	  if (!exists)
+	  if (!exists && state->collect_data)
 	    {
 	      g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
 			   _("Failed to locate '%s' in current directory"), file);
 	      return;
 	    }
-	  real_file = g_strdup (file);
 	}
 
+      if (real_file == NULL)
+        real_file = g_strdup (file);
+
+      data = g_new0 (FileData, 1);
       data->filename = g_strdup (real_file);
       if (!state->collect_data)
         goto done;
@@ -416,6 +418,7 @@ end_element (GMarkupParseContext  *context,
     done:
 
       g_hash_table_insert (state->table, key, data);
+      data = NULL;
 
     cleanup:
       /* Cleanup */
@@ -440,6 +443,9 @@ end_element (GMarkupParseContext  *context,
           unlink (tmp_file2);
           g_free (tmp_file2);
         }
+
+      if (data != NULL)
+        file_data_free (data);
     }
 }
 
@@ -567,6 +573,33 @@ write_to_file (GHashTable   *table,
   return success;
 }
 
+static gboolean
+extension_in_set (const char *str,
+                  ...)
+{
+  va_list list;
+  const char *ext, *value;
+  gboolean rv = FALSE;
+
+  ext = strrchr (str, '.');
+  if (ext == NULL)
+    return FALSE;
+
+  ext++;
+  va_start (list, str);
+  while ((value = va_arg (list, const char *)) != NULL)
+    {
+      if (g_ascii_strcasecmp (ext, value) != 0)
+        continue;
+
+      rv = TRUE;
+      break;
+    }
+
+  va_end (list);
+  return rv;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -637,6 +670,7 @@ main (int argc, char **argv)
   if (argc != 2)
     {
       g_printerr (_("You should give exactly one file name\n"));
+      g_free (c_name);
       return 1;
     }
 
@@ -690,17 +724,18 @@ main (int argc, char **argv)
     }
   else if (generate_automatic)
     {
-      if (g_str_has_suffix (target, ".c"))
+      if (extension_in_set (target, "c", "cc", "cpp", "cxx", "c++", NULL))
         generate_source = TRUE;
-      else if (g_str_has_suffix (target, ".h"))
+      else if (extension_in_set (target, "h", "hh", "hpp", "hxx", "h++", NULL))
         generate_header = TRUE;
-      else if (g_str_has_suffix (target, ".gresource"))
+      else if (extension_in_set (target, "gresource", NULL))
         ;
     }
 
   if ((table = parse_resource_file (srcfile, !generate_dependencies)) == NULL)
     {
       g_free (target);
+      g_free (c_name);
       return 1;
     }
 
@@ -725,6 +760,7 @@ main (int argc, char **argv)
 	  if (fd == -1)
 	    {
 	      g_printerr ("Can't open temp file\n");
+	      g_free (c_name);
 	      return 1;
 	    }
 	  close (fd);
@@ -770,6 +806,7 @@ main (int argc, char **argv)
     {
       g_printerr ("%s\n", error->message);
       g_free (target);
+      g_free (c_name);
       return 1;
     }
 
@@ -781,6 +818,7 @@ main (int argc, char **argv)
       if (file == NULL)
 	{
 	  g_printerr ("can't write to file %s", target);
+	  g_free (c_name);
 	  return 1;
 	}
 
@@ -817,6 +855,7 @@ main (int argc, char **argv)
 				&data_size, NULL))
 	{
 	  g_printerr ("can't read back temporary file");
+	  g_free (c_name);
 	  return 1;
 	}
       g_unlink (binary_target);
@@ -825,6 +864,7 @@ main (int argc, char **argv)
       if (file == NULL)
 	{
 	  g_printerr ("can't write to file %s", target);
+	  g_free (c_name);
 	  return 1;
 	}
 
@@ -920,6 +960,7 @@ main (int argc, char **argv)
   g_free (target);
   g_hash_table_destroy (table);
   g_free (xmllint);
+  g_free (c_name);
 
   return 0;
 }

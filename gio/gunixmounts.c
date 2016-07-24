@@ -196,7 +196,7 @@ is_in (const char *value, const char *set[])
 
 /**
  * g_unix_is_mount_path_system_internal:
- * @mount_path: a mount path, e.g. `/media/disk` or `/usr`
+ * @mount_path: (type filename): a mount path, e.g. `/media/disk` or `/usr`
  *
  * Determines if @mount_path is considered an implementation of the
  * OS. This is primarily used for hiding mountable and mounted volumes
@@ -1481,7 +1481,7 @@ g_unix_mount_monitor_class_init (GUnixMountMonitorClass *klass)
    * Emitted when the unix mounts have changed.
    */ 
   signals[MOUNTS_CHANGED] =
-    g_signal_new ("mounts-changed",
+    g_signal_new (I_("mounts-changed"),
 		  G_TYPE_FROM_CLASS (klass),
 		  G_SIGNAL_RUN_LAST,
 		  0,
@@ -1496,7 +1496,7 @@ g_unix_mount_monitor_class_init (GUnixMountMonitorClass *klass)
    * Emitted when the unix mount points have changed.
    */
   signals[MOUNTPOINTS_CHANGED] =
-    g_signal_new ("mountpoints-changed",
+    g_signal_new (I_("mountpoints-changed"),
 		  G_TYPE_FROM_CLASS (klass),
 		  G_SIGNAL_RUN_LAST,
 		  0,
@@ -1657,7 +1657,7 @@ g_unix_mount_compare (GUnixMountEntry *mount1,
  * 
  * Gets the mount path for a unix mount.
  * 
- * Returns: the mount path for @mount_entry.
+ * Returns: (type filename): the mount path for @mount_entry.
  */
 const gchar *
 g_unix_mount_get_mount_path (GUnixMountEntry *mount_entry)
@@ -1673,7 +1673,7 @@ g_unix_mount_get_mount_path (GUnixMountEntry *mount_entry)
  * 
  * Gets the device path for a unix mount.
  * 
- * Returns: a string containing the device path.
+ * Returns: (type filename): a string containing the device path.
  */
 const gchar *
 g_unix_mount_get_device_path (GUnixMountEntry *mount_entry)
@@ -1787,7 +1787,7 @@ g_unix_mount_point_compare (GUnixMountPoint *mount1,
  * 
  * Gets the mount path for a unix mount point.
  * 
- * Returns: a string containing the mount path.
+ * Returns: (type filename): a string containing the mount path.
  */
 const gchar *
 g_unix_mount_point_get_mount_path (GUnixMountPoint *mount_point)
@@ -1803,7 +1803,7 @@ g_unix_mount_point_get_mount_path (GUnixMountPoint *mount_point)
  * 
  * Gets the device path for a unix mount point.
  * 
- * Returns: a string containing the device path.
+ * Returns: (type filename): a string containing the device path.
  */
 const gchar *
 g_unix_mount_point_get_device_path (GUnixMountPoint *mount_point)

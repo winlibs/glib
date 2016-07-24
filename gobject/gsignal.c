@@ -97,6 +97,32 @@
  * Specification of no detail argument for signal handlers (omission of the
  * detail part of the signal specification upon connection) serves as a
  * wildcard and matches any detail argument passed in to emission.
+ *
+ * ## Memory management of signal handlers # {#signal-memory-management}
+ *
+ * If you are connecting handlers to signals and using a #GObject instance as
+ * your signal handler user data, you should remember to pair calls to
+ * g_signal_connect() with calls to g_signal_handler_disconnect() or
+ * g_signal_handlers_disconnect_by_func(). While signal handlers are
+ * automatically disconnected when the object emitting the signal is finalised,
+ * they are not automatically disconnected when the signal handler user data is
+ * destroyed. If this user data is a #GObject instance, using it from a
+ * signal handler after it has been finalised is an error.
+ *
+ * There are two strategies for managing such user data. The first is to
+ * disconnect the signal handler (using g_signal_handler_disconnect() or
+ * g_signal_handlers_disconnect_by_func()) when the user data (object) is
+ * finalised; this has to be implemented manually. For non-threaded programs,
+ * g_signal_connect_object() can be used to implement this automatically.
+ * Currently, however, it is unsafe to use in threaded programs.
+ *
+ * The second is to hold a strong reference on the user data until after the
+ * signal is disconnected for other reasons. This can be implemented
+ * automatically using g_signal_connect_data().
+ *
+ * The first approach is recommended, as the second approach can result in
+ * effective memory leaks of the user data if the signal handler is never
+ * disconnected for some reason.
  */
 
 
@@ -127,6 +153,7 @@ static inline HandlerList*	handler_list_ensure	(guint		  signal_id,
 static inline HandlerList*	handler_list_lookup	(guint		  signal_id,
 							 gpointer	  instance);
 static inline Handler*		handler_new		(guint            signal_id,
+							 gpointer         instance,
                                                          gboolean	  after);
 static	      void		handler_insert		(guint		  signal_id,
 							 gpointer	  instance,
@@ -255,6 +282,7 @@ struct _Handler
   guint         after : 1;
   guint         has_invalid_closure_notify : 1;
   GClosure     *closure;
+  gpointer      instance;
 };
 struct _HandlerMatch
 {
@@ -424,7 +452,10 @@ handler_hash (gconstpointer key)
 static gboolean
 handler_equal (gconstpointer a, gconstpointer b)
 {
-  return ((Handler*)a)->sequential_number == ((Handler*)b)->sequential_number;
+  Handler *ha = (Handler *)a;
+  Handler *hb = (Handler *)b;
+  return (ha->sequential_number == hb->sequential_number) &&
+      (ha->instance  == hb->instance);
 }
 
 static Handler*
@@ -439,7 +470,9 @@ handler_lookup (gpointer  instance,
     {
       Handler key;
       key.sequential_number = handler_id;
-      return (Handler *)g_hash_table_lookup (g_handlers, &key);
+      key.instance = instance;
+      return g_hash_table_lookup (g_handlers, &key);
+
     }
 
   hlbsa = g_hash_table_lookup (g_handler_list_bsa_ht, instance);
@@ -579,7 +612,7 @@ handlers_find (gpointer         instance,
 }
 
 static inline Handler*
-handler_new (guint signal_id, gboolean after)
+handler_new (guint signal_id, gpointer instance, gboolean after)
 {
   Handler *handler = g_slice_new (Handler);
 #ifndef G_DISABLE_CHECKS
@@ -592,6 +625,7 @@ handler_new (guint signal_id, gboolean after)
   handler->next = NULL;
   handler->detail = 0;
   handler->signal_id = signal_id;
+  handler->instance = instance;
   handler->ref_count = 1;
   handler->block_count = 0;
   handler->after = after != FALSE;
@@ -631,6 +665,7 @@ handler_unref_R (guint    signal_id,
       else
         {
           hlist = handler_list_lookup (signal_id, instance);
+          g_assert (hlist != NULL);
           hlist->handlers = handler->next;
         }
 
@@ -1230,7 +1265,7 @@ g_signal_lookup (const gchar *name,
  * created. Further information about the signals can be acquired through
  * g_signal_query().
  *
- * Returns: (array length=n_ids): Newly allocated array of signal IDs.
+ * Returns: (array length=n_ids) (transfer full): Newly allocated array of signal IDs.
  */
 guint*
 g_signal_list_ids (GType  itype,
@@ -1491,7 +1526,14 @@ signal_find_class_closure (SignalNode *node,
       ClassClosure key;
 
       /* cc->instance_type is 0 for default closure */
-      
+
+      if (g_bsearch_array_get_n_nodes (bsa) == 1)
+        {
+          cc = g_bsearch_array_get_nth (bsa, &g_class_closure_bconfig, 0);
+          if (cc && cc->instance_type == 0) /* check for default closure */
+            return cc;
+        }
+
       key.instance_type = itype;
       cc = g_bsearch_array_lookup (bsa, &g_class_closure_bconfig, &key);
       while (!cc && key.instance_type)
@@ -1511,12 +1553,6 @@ signal_lookup_closure (SignalNode    *node,
 {
   ClassClosure *cc;
 
-  if (node->class_closure_bsa && g_bsearch_array_get_n_nodes (node->class_closure_bsa) == 1)
-    {
-      cc = g_bsearch_array_get_nth (node->class_closure_bsa, &g_class_closure_bconfig, 0);
-      if (cc && cc->instance_type == 0) /* check for default closure */
-        return cc->closure;
-    }
   cc = signal_find_class_closure (node, G_TYPE_FROM_INSTANCE (instance));
   return cc ? cc->closure : NULL;
 }
@@ -2076,7 +2112,8 @@ g_signal_chain_from_overridden (const GValue *instance_and_params,
 
 /**
  * g_signal_chain_from_overridden_handler: (skip)
- * @instance: the instance the signal is being emitted on.
+ * @instance: (type GObject.TypeInstance): the instance the signal is being
+ *    emitted on.
  * @...: parameters to be passed to the parent class closure, followed by a
  *  location for the return value. If the return type of the signal
  *  is #G_TYPE_NONE, the return value location can be omitted.
@@ -2295,7 +2332,7 @@ g_signal_connect_closure_by_id (gpointer  instance,
 	g_warning ("%s: signal id '%u' is invalid for instance '%p'", G_STRLOC, signal_id, instance);
       else
 	{
-	  Handler *handler = handler_new (signal_id, after);
+	  Handler *handler = handler_new (signal_id, instance, after);
 	  
 	  handler_seq_no = handler->sequential_number;
 	  handler->detail = detail;
@@ -2359,7 +2396,7 @@ g_signal_connect_closure (gpointer     instance,
                    G_STRLOC, detailed_signal, instance, g_type_name (itype));
       else
 	{
-	  Handler *handler = handler_new (signal_id, after);
+	  Handler *handler = handler_new (signal_id, instance, after);
 
 	  handler_seq_no = handler->sequential_number;
 	  handler->detail = detail;
@@ -2460,7 +2497,7 @@ g_signal_connect_data (gpointer       instance,
                    G_STRLOC, detailed_signal, instance, g_type_name (itype));
       else
 	{
-	  Handler *handler = handler_new (signal_id, after);
+	  Handler *handler = handler_new (signal_id, instance, after);
 
 	  handler_seq_no = handler->sequential_number;
 	  handler->detail = detail;
@@ -2916,6 +2953,9 @@ g_signal_handlers_disconnect_matched (gpointer         instance,
  * consistent with how a signal emitted with @detail would be delivered
  * to those handlers.
  *
+ * Since 2.46 this also checks for a non-default class closure being
+ * installed, as this is basically always what you want.
+ *
  * One example of when you might use this is when the arguments to the
  * signal are difficult to compute. A class implementor may opt to not
  * emit the signal if no one is attached anyway, thus saving the cost
@@ -2932,15 +2972,16 @@ g_signal_has_handler_pending (gpointer instance,
 {
   HandlerMatch *mlist;
   gboolean has_pending;
+  SignalNode *node;
   
   g_return_val_if_fail (G_TYPE_CHECK_INSTANCE (instance), FALSE);
   g_return_val_if_fail (signal_id > 0, FALSE);
   
   SIGNAL_LOCK ();
+
+  node = LOOKUP_SIGNAL_NODE (signal_id);
   if (detail)
     {
-      SignalNode *node = LOOKUP_SIGNAL_NODE (signal_id);
-      
       if (!(node->flags & G_SIGNAL_DETAILED))
 	{
 	  g_warning ("%s: signal id '%u' does not support detail (%u)", G_STRLOC, signal_id, detail);
@@ -2957,9 +2998,15 @@ g_signal_has_handler_pending (gpointer instance,
       handler_match_free1_R (mlist, instance);
     }
   else
-    has_pending = FALSE;
+    {
+      ClassClosure *class_closure = signal_find_class_closure (node, G_TYPE_FROM_INSTANCE (instance));
+      if (class_closure != NULL && class_closure->instance_type != 0)
+        has_pending = TRUE;
+      else
+        has_pending = FALSE;
+    }
   SIGNAL_UNLOCK ();
-  
+
   return has_pending;
 }
 
@@ -3095,7 +3142,8 @@ accumulate (GSignalInvocationHint *ihint,
 
 /**
  * g_signal_emit_valist: (skip)
- * @instance: the instance the signal is being emitted on.
+ * @instance: (type GObject.TypeInstance): the instance the signal is being
+ *    emitted on.
  * @signal_id: the signal id
  * @detail: the detail
  * @var_args: a list of parameters to be passed to the signal, followed by a

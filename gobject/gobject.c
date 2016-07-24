@@ -45,6 +45,12 @@
  * construction and destruction, property access methods, and signal
  * support.  Signals are described in detail [here][gobject-Signals].
  *
+ * For a tutorial on implementing a new GObject class, see [How to define and
+ * implement a new GObject][howto-gobject]. For a list of naming conventions for
+ * GObjects and their methods, see the [GType conventions][gtype-conventions].
+ * For the high-level concepts behind GObject, read [Instantiable classed types:
+ * Objects][gtype-instantiable-classed].
+ *
  * ## Floating references # {#floating-ref}
  *
  * GInitiallyUnowned is derived from GObject. The only difference between
@@ -298,7 +304,7 @@ g_object_notify_queue_add (GObject            *object,
 {
   G_LOCK(notify_lock);
 
-  g_return_if_fail (nqueue->n_pspecs < 65535);
+  g_assert (nqueue->n_pspecs < 65535);
 
   if (g_slist_find (nqueue->pspecs, pspec) == NULL)
     {
@@ -310,7 +316,6 @@ g_object_notify_queue_add (GObject            *object,
 }
 
 #ifdef	G_ENABLE_DEBUG
-#define	IF_DEBUG(debug_type)	if (_g_type_debug_flags & G_TYPE_DEBUG_ ## debug_type)
 G_LOCK_DEFINE_STATIC     (debug_objects);
 static guint		 debug_objects_count = 0;
 static GHashTable	*debug_objects_ht = NULL;
@@ -338,13 +343,13 @@ G_DEFINE_DESTRUCTOR(debug_objects_atexit)
 static void
 debug_objects_atexit (void)
 {
-  IF_DEBUG (OBJECTS)
+  GOBJECT_IF_DEBUG (OBJECTS,
     {
       G_LOCK (debug_objects);
       g_message ("stale GObjects: %u", debug_objects_count);
       g_hash_table_foreach (debug_objects_ht, debug_objects_foreach, NULL);
       G_UNLOCK (debug_objects);
-    }
+    });
 }
 #endif	/* G_ENABLE_DEBUG */
 
@@ -389,15 +394,13 @@ _g_object_type_init (void)
   g_assert (type == G_TYPE_OBJECT);
   g_value_register_transform_func (G_TYPE_OBJECT, G_TYPE_OBJECT, g_value_object_transform_value);
   
-#ifdef	G_ENABLE_DEBUG
-  IF_DEBUG (OBJECTS)
+  GOBJECT_IF_DEBUG (OBJECTS,
     {
       debug_objects_ht = g_hash_table_new (g_direct_hash, NULL);
 #ifndef G_HAS_CONSTRUCTORS
       g_atexit (debug_objects_atexit);
 #endif /* G_HAS_CONSTRUCTORS */
-    }
-#endif	/* G_ENABLE_DEBUG */
+    });
 }
 
 static void
@@ -696,7 +699,8 @@ g_object_class_install_properties (GObjectClass  *oclass,
 
 /**
  * g_object_interface_install_property:
- * @g_iface: any interface vtable for the interface, or the default
+ * @g_iface: (type GObject.TypeInterface): any interface vtable for the
+ *    interface, or the default
  *  vtable for the interface.
  * @pspec: the #GParamSpec for the new property
  *
@@ -775,8 +779,8 @@ g_object_class_find_property (GObjectClass *class,
 
 /**
  * g_object_interface_find_property:
- * @g_iface: any interface vtable for the interface, or the default
- *  vtable for the interface
+ * @g_iface: (type GObject.TypeInterface): any interface vtable for the
+ *  interface, or the default vtable for the interface
  * @property_name: name of a property to lookup.
  *
  * Find the #GParamSpec with the given name for an
@@ -913,8 +917,8 @@ g_object_class_list_properties (GObjectClass *class,
 
 /**
  * g_object_interface_list_properties:
- * @g_iface: any interface vtable for the interface, or the default
- *  vtable for the interface
+ * @g_iface: (type GObject.TypeInterface): any interface vtable for the
+ *  interface, or the default vtable for the interface
  * @n_properties_p: (out): location to store number of properties returned.
  *
  * Lists the properties of an interface.Generally, the interface
@@ -974,15 +978,13 @@ g_object_init (GObject		*object,
       g_datalist_id_set_data (&object->qdata, quark_in_construction, object);
     }
 
-#ifdef	G_ENABLE_DEBUG
-  IF_DEBUG (OBJECTS)
+  GOBJECT_IF_DEBUG (OBJECTS,
     {
       G_LOCK (debug_objects);
       debug_objects_count++;
       g_hash_table_insert (debug_objects_ht, object, object);
       G_UNLOCK (debug_objects);
-    }
-#endif	/* G_ENABLE_DEBUG */
+    });
 }
 
 static void
@@ -1032,18 +1034,15 @@ g_object_finalize (GObject *object)
 
   g_datalist_clear (&object->qdata);
   
-#ifdef	G_ENABLE_DEBUG
-  IF_DEBUG (OBJECTS)
+  GOBJECT_IF_DEBUG (OBJECTS,
     {
       G_LOCK (debug_objects);
       g_assert (g_hash_table_lookup (debug_objects_ht, object) == object);
       g_hash_table_remove (debug_objects_ht, object);
       debug_objects_count--;
       G_UNLOCK (debug_objects);
-    }
-#endif	/* G_ENABLE_DEBUG */
+    });
 }
-
 
 static void
 g_object_dispatch_properties_changed (GObject     *object,
@@ -1053,7 +1052,7 @@ g_object_dispatch_properties_changed (GObject     *object,
   guint i;
 
   for (i = 0; i < n_pspecs; i++)
-    g_signal_emit (object, gobject_signals[NOTIFY], g_quark_from_string (pspecs[i]->name), pspecs[i]);
+    g_signal_emit (object, gobject_signals[NOTIFY], g_param_spec_get_name_quark (pspecs[i]), pspecs[i]);
 }
 
 /**
@@ -1311,7 +1310,7 @@ consider_issuing_property_deprecation_warning (const GParamSpec *pspec)
       const gchar *value = g_getenv ("G_ENABLE_DIAGNOSTIC");
 
       if (!value)
-        value = "-";
+        value = "0";
 
       g_once_init_leave (&enable_diagnostic, value);
     }
@@ -1498,7 +1497,7 @@ object_interface_check_properties (gpointer check_data,
        *
        * If the interface was not writable to begin with then we don't
        * really have any problems here because "writable at construct
-       * type only" is still more permissive than "read only".
+       * time only" is still more permissive than "read only".
        */
       if (pspecs[n]->flags & G_PARAM_WRITABLE)
         {
@@ -1597,7 +1596,8 @@ g_object_get_type (void)
  * Construction parameters (see #G_PARAM_CONSTRUCT, #G_PARAM_CONSTRUCT_ONLY)
  * which are not explicitly specified are set to their default values.
  *
- * Returns: (transfer full): a new instance of @object_type
+ * Returns: (transfer full) (type GObject.Object) : a new instance of
+ *   @object_type
  */
 gpointer
 g_object_new (GType	   object_type,
@@ -2243,7 +2243,7 @@ g_object_get_valist (GObject	 *object,
 
 /**
  * g_object_set: (skip)
- * @object: a #GObject
+ * @object: (type GObject.Object): a #GObject
  * @first_property_name: name of the first property to set
  * @...: value for the first property, followed optionally by more
  *  name/value pairs, followed by %NULL
@@ -2271,7 +2271,7 @@ g_object_set (gpointer     _object,
 
 /**
  * g_object_get: (skip)
- * @object: a #GObject
+ * @object: (type GObject.Object): a #GObject
  * @first_property_name: name of the first property to get
  * @...: return location for the first property, followed optionally by more
  *  name/return location pairs, followed by %NULL
@@ -2447,7 +2447,7 @@ g_object_get_property (GObject	   *object,
 
 /**
  * g_object_connect: (skip)
- * @object: a #GObject
+ * @object: (type GObject.Object): a #GObject
  * @signal_spec: the spec for the first signal
  * @...: #GCallback for the first signal, followed by data for the
  *       first signal, followed optionally by more signal
@@ -2477,7 +2477,7 @@ g_object_get_property (GObject	   *object,
  * 				     NULL);
  * ]|
  *
- * Returns: (transfer none): @object
+ * Returns: (transfer none) (type GObject.Object): @object
  */
 gpointer
 g_object_connect (gpointer     _object,
@@ -2549,7 +2549,7 @@ g_object_connect (gpointer     _object,
 
 /**
  * g_object_disconnect: (skip)
- * @object: a #GObject
+ * @object: (type GObject.Object): a #GObject
  * @signal_spec: the spec for the first signal
  * @...: #GCallback for the first signal, followed by data for the first signal,
  *  followed optionally by more signal spec/callback/data triples,
@@ -2724,7 +2724,8 @@ g_object_weak_unref (GObject    *object,
 /**
  * g_object_add_weak_pointer: (skip)
  * @object: The object that should be weak referenced.
- * @weak_pointer_location: (inout): The memory address of a pointer.
+ * @weak_pointer_location: (inout) (not optional) (nullable): The memory address
+ *    of a pointer.
  *
  * Adds a weak reference from weak_pointer to @object to indicate that
  * the pointer located at @weak_pointer_location is only valid during
@@ -2751,7 +2752,8 @@ g_object_add_weak_pointer (GObject  *object,
 /**
  * g_object_remove_weak_pointer: (skip)
  * @object: The object that is weak referenced.
- * @weak_pointer_location: (inout): The memory address of a pointer.
+ * @weak_pointer_location: (inout) (not optional) (nullable): The memory address
+ *    of a pointer.
  *
  * Removes a weak reference from @object that was previously added
  * using g_object_add_weak_pointer(). The @weak_pointer_location has
@@ -3175,15 +3177,13 @@ g_object_unref (gpointer _object)
 
 	  TRACE (GOBJECT_OBJECT_FINALIZE_END(object,G_TYPE_FROM_INSTANCE(object)));
 
-#ifdef	G_ENABLE_DEBUG
-          IF_DEBUG (OBJECTS)
+          GOBJECT_IF_DEBUG (OBJECTS,
 	    {
 	      /* catch objects not chaining finalize handlers */
 	      G_LOCK (debug_objects);
 	      g_assert (g_hash_table_lookup (debug_objects_ht, object) == NULL);
 	      G_UNLOCK (debug_objects);
-	    }
-#endif	/* G_ENABLE_DEBUG */
+	    });
           g_type_free_instance ((GTypeInstance*) object);
 	}
     }
@@ -3825,10 +3825,11 @@ g_value_dup_object (const GValue *value)
 
 /**
  * g_signal_connect_object: (skip)
- * @instance: the instance to connect to.
+ * @instance: (type GObject.TypeInstance): the instance to connect to.
  * @detailed_signal: a string of the form "signal-name::detail".
  * @c_handler: the #GCallback to connect.
- * @gobject: the object to pass as data to @c_handler.
+ * @gobject: (type GObject.Object) (nullable): the object to pass as data
+ *    to @c_handler.
  * @connect_flags: a combination of #GConnectFlags.
  *
  * This is similar to g_signal_connect_data(), but uses a closure which
@@ -4135,7 +4136,7 @@ g_initially_unowned_class_init (GInitiallyUnownedClass *klass)
  * g_weak_ref_init: (skip)
  * @weak_ref: (inout): uninitialized or empty location for a weak
  *    reference
- * @object: (allow-none): a #GObject or %NULL
+ * @object: (type GObject.Object) (nullable): a #GObject or %NULL
  *
  * Initialise a non-statically-allocated #GWeakRef.
  *
@@ -4221,7 +4222,7 @@ g_weak_ref_get (GWeakRef *weak_ref)
 /**
  * g_weak_ref_set: (skip)
  * @weak_ref: location for a weak reference
- * @object: (allow-none): a #GObject or %NULL
+ * @object: (type GObject.Object) (nullable): a #GObject or %NULL
  *
  * Change the object to which @weak_ref points, or set it to
  * %NULL.

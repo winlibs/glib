@@ -3,12 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GVariant Format Strings: GLib Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="index.html" title="GLib Reference Manual">
 <link rel="up" href="glib-data-types.html" title="GLib Data Types">
 <link rel="prev" href="glib-GVariant.html" title="GVariant">
 <link rel="next" href="gvariant-text.html" title="GVariant Text Format">
-<meta name="generator" content="GTK-Doc V1.24.1 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.25.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -83,7 +83,7 @@
     The following table describes the rough meaning of symbols that may appear inside a GVariant format string.  Each
     symbol is described in detail in its own section, including usage examples.
   </p>
-<div class="informaltable"><table border="1">
+<div class="informaltable"><table class="informaltable" border="1">
 <colgroup>
 <col class="col_0">
 <col class="col_1">
@@ -113,7 +113,7 @@
 <td>
        <p>
         Used for building or deconstructing boolean, byte and numeric types.  See
-        <a href="gvariant-format-strings.html#gvariant-format-strings-numeric-types">Numeric Types</a> below.
+        Numeric Types below.
        </p>
       </td>
 </tr>
@@ -128,7 +128,7 @@
 <td>
        <p>
         Used for building or deconstructing string types.  See
-        <a href="gvariant-format-strings.html#gvariant-format-strings-strings">Strings</a> below.
+        Strings below.
        </p>
       </td>
 </tr>
@@ -141,7 +141,7 @@
 <td>
        <p>
         Used for building or deconstructing variant types.  See
-        <a href="gvariant-format-strings.html#gvariant-format-strings-variants">Variants</a> below.
+        Variants below.
        </p>
       </td>
 </tr>
@@ -156,7 +156,7 @@
 <td>
        <p>
         Used for building or deconstructing arrays.  See
-        <a href="gvariant-format-strings.html#gvariant-format-strings-arrays">Arrays</a> below.
+        Arrays below.
        </p>
       </td>
 </tr>
@@ -171,7 +171,7 @@
 <td>
        <p>
          Used for building or deconstructing maybe types.  See
-         <a href="gvariant-format-strings.html#gvariant-format-strings-maybe-types">Maybe Types</a> below.
+         Maybe Types below.
        </p>
       </td>
 </tr>
@@ -186,7 +186,7 @@
 <td>
        <p>
          Used for building or deconstructing tuples.  See
-         <a href="gvariant-format-strings.html#gvariant-format-strings-tuples">Tuples</a> below.
+         Tuples below.
        </p>
       </td>
 </tr>
@@ -201,7 +201,7 @@
 <td>
        <p>
         Used for building or deconstructing dictionary entries. See
-        <a href="gvariant-format-strings.html#gvariant-format-strings-dictionaries">Dictionaries</a> below.
+        Dictionaries below.
        </p>
       </td>
 </tr>
@@ -225,7 +225,7 @@
         For <a class="link" href="glib-GVariant.html#g-variant-get" title="g_variant_get ()"><code class="function">g_variant_get()</code></a> this means that you
         must pass a pointer to a <code class="code">(<a class="link" href="glib-GVariant.html#GVariant" title="GVariant">GVariant</a> *)</code> for the value to be returned
         by reference or <a class="link" href="glib-Standard-Macros.html#NULL:CAPS" title="NULL"><code class="literal">NULL</code></a> to ignore the value.  See
-        <a href="gvariant-format-strings.html#gvariant-format-strings-gvariant"><code class="code">GVariant *</code></a> below.
+        <code class="code">GVariant *</code> below.
        </p>
       </td>
 </tr>
@@ -240,7 +240,7 @@
 <td>
        <p>
         Exactly equivalent to <code class="literal">@*</code>, <code class="literal">@?</code> and <code class="literal">@r</code>.  Provided only for
-        completeness so that all GVariant type strings can be used also as format strings.  See <a href="gvariant-format-strings.html#gvariant-format-strings-gvariant"><code class="code">GVariant *</code></a> below.
+        completeness so that all GVariant type strings can be used also as format strings.  See <code class="code">GVariant *</code> below.
        </p>
       </td>
 </tr>
@@ -256,7 +256,7 @@
         a valid format string but <code class="literal">&amp;@s</code> is not).
         Denotes that a C pointer to serialised data
         should be used in place of the normal C type.  See
-        <a href="gvariant-format-strings.html#gvariant-format-strings-pointers">Pointers</a> below.
+        Pointers below.
        </p>
       </td>
 </tr>
@@ -269,7 +269,7 @@
 <td>
        <p>
         Used as a prefix on some specific types of format strings.  See
-        <a href="gvariant-format-strings.html#gvariant-format-strings-convenience">Convenience Conversions</a> below.
+        Convenience Conversions below.
        </p>
       </td>
 </tr>
@@ -293,7 +293,7 @@
 <p>
     The equivalent C types are as follows:
    </p>
-<div class="informaltable"><table border="1">
+<div class="informaltable"><table class="informaltable" border="1">
 <colgroup>
 <col class="col_0">
 <col class="col_1">
@@ -454,9 +454,9 @@
 </tbody>
 </table></div>
 <a name="gvariant-varargs"></a><p>
-    Note that in C, small integer types in variable argument lists are promoted up to <a class="link" href="glib-Basic-Types.html#gint" title="gint"><span class="type">int</span></a> or <a class="link" href="glib-Basic-Types.html#guint" title="guint"><span class="type">unsigned int</span></a> as appropriate, and
-    read back accordingly.  <a class="link" href="glib-Basic-Types.html#gint" title="gint"><span class="type">int</span></a> is 32 bits on every platform on which GLib is
-    currently supported.  This means that you can use C expressions of type <a class="link" href="glib-Basic-Types.html#gint" title="gint"><span class="type">int</span></a>
+    Note that in C, small integer types in variable argument lists are promoted up to <a class="link" href="glib-Basic-Types.html#gint" title="gint ()"><span class="type">int</span></a> or <a class="link" href="glib-Basic-Types.html#guint" title="guint ()"><span class="type">unsigned int</span></a> as appropriate, and
+    read back accordingly.  <a class="link" href="glib-Basic-Types.html#gint" title="gint ()"><span class="type">int</span></a> is 32 bits on every platform on which GLib is
+    currently supported.  This means that you can use C expressions of type <a class="link" href="glib-Basic-Types.html#gint" title="gint ()"><span class="type">int</span></a>
     with <a class="link" href="glib-GVariant.html#g-variant-new" title="g_variant_new ()"><code class="function">g_variant_new()</code></a> and format characters
     '<code class="literal">b</code>', '<code class="literal">y</code>', '<code class="literal">n</code>', '<code class="literal">q</code>',
     '<code class="literal">i</code>', '<code class="literal">u</code>' and '<code class="literal">h</code>'.  Specifically, you can use integer
@@ -534,7 +534,8 @@
     '<code class="literal">s</code>', '<code class="literal">o</code>' or '<code class="literal">g</code>' in a format string,
     <a class="link" href="glib-GVariant.html#g-variant-new" title="g_variant_new ()"><code class="function">g_variant_new()</code></a> takes a <code class="code">(const
     <a class="link" href="glib-Basic-Types.html#gchar" title="gchar">gchar</a> *)</code> and makes a copy of it.
-    <a class="link" href="glib-Standard-Macros.html#NULL:CAPS" title="NULL"><code class="literal">NULL</code></a> is not a valid string.  If the '<code class="literal">o</code>' or
+    <a class="link" href="glib-Standard-Macros.html#NULL:CAPS" title="NULL"><code class="literal">NULL</code></a> is not a valid string; use
+    maybe types to encode that.  If the '<code class="literal">o</code>' or
     '<code class="literal">g</code>' characters are used, care must be taken to ensure that the passed string is a valid DBus
     object path or DBus type signature, respectively.
    </p>
@@ -1137,7 +1138,7 @@
 <span class="normal">  </span><span class="usertype">GVariant</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">value</span><span class="symbol">;</span>
 
 <span class="normal">  value </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-GVariant.html#g-variant-new">g_variant_new</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"&amp;s"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"hello world"</span><span class="symbol">);</span>
-<span class="normal">  str </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-GVariant.html#g-variant-get">g_variant_get</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"&amp;s"</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">str</span><span class="symbol">);</span>
+<span class="normal">  </span><span class="function"><a href="glib-GVariant.html#g-variant-get">g_variant_get</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">value</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"&amp;s"</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">str</span><span class="symbol">);</span>
 <span class="normal">  </span><span class="function"><a href="glib-Warnings-and-Assertions.html#g-print">g_print</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"string is: %s</span><span class="specialchar">\n</span><span class="string">"</span><span class="symbol">,</span><span class="normal"> str</span><span class="symbol">);</span>
 <span class="normal">  </span><span class="comment">/* no need to free str */</span>
 <span class="cbracket">}</span></pre></td>
@@ -1167,7 +1168,7 @@
     <a class="link" href="glib-GVariant.html#g-variant-get" title="g_variant_get ()"><code class="function">g_variant_get()</code></a> one pointer value is produced by using
     the function (given in the table) and returned by reference.
    </p>
-<div class="informaltable"><table border="1">
+<div class="informaltable"><table class="informaltable" border="1">
 <colgroup>
 <col class="col_0">
 <col class="col_1">
@@ -1332,6 +1333,6 @@
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.24.1</div>
+<hr>Generated by GTK-Doc V1.25.1</div>
 </body>
 </html>

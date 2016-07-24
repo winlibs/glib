@@ -86,6 +86,7 @@ static void g_network_address_get_property (GObject      *object,
 static void                      g_network_address_connectable_iface_init       (GSocketConnectableIface *iface);
 static GSocketAddressEnumerator *g_network_address_connectable_enumerate        (GSocketConnectable      *connectable);
 static GSocketAddressEnumerator	*g_network_address_connectable_proxy_enumerate  (GSocketConnectable      *connectable);
+static gchar                    *g_network_address_connectable_to_string        (GSocketConnectable      *connectable);
 
 G_DEFINE_TYPE_WITH_CODE (GNetworkAddress, g_network_address, G_TYPE_OBJECT,
                          G_ADD_PRIVATE (GNetworkAddress)
@@ -145,6 +146,7 @@ g_network_address_connectable_iface_init (GSocketConnectableIface *connectable_i
 {
   connectable_iface->enumerate  = g_network_address_connectable_enumerate;
   connectable_iface->proxy_enumerate = g_network_address_connectable_proxy_enumerate;
+  connectable_iface->to_string = g_network_address_connectable_to_string;
 }
 
 static void
@@ -1004,6 +1006,7 @@ g_network_address_address_enumerator_next_async (GSocketAddressEnumerator  *enum
   GTask *task;
 
   task = g_task_new (addr_enum, cancellable, callback, user_data);
+  g_task_set_source_tag (task, g_network_address_address_enumerator_next_async);
 
   if (addr_enum->addresses == NULL)
     {
@@ -1110,4 +1113,28 @@ g_network_address_connectable_proxy_enumerate (GSocketConnectable *connectable)
   g_free (uri);
 
   return proxy_enum;
+}
+
+static gchar *
+g_network_address_connectable_to_string (GSocketConnectable *connectable)
+{
+  GNetworkAddress *addr;
+  const gchar *scheme;
+  guint16 port;
+  GString *out;  /* owned */
+
+  addr = G_NETWORK_ADDRESS (connectable);
+  out = g_string_new ("");
+
+  scheme = g_network_address_get_scheme (addr);
+  if (scheme != NULL)
+    g_string_append_printf (out, "%s:", scheme);
+
+  g_string_append (out, g_network_address_get_hostname (addr));
+
+  port = g_network_address_get_port (addr);
+  if (port != 0)
+    g_string_append_printf (out, ":%u", port);
+
+  return g_string_free (out, FALSE);
 }

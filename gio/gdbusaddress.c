@@ -865,6 +865,7 @@ g_dbus_address_get_stream (const gchar         *address,
   data->address = g_strdup (address);
 
   task = g_task_new (NULL, cancellable, callback, user_data);
+  g_task_set_source_tag (task, g_dbus_address_get_stream);
   g_task_set_task_data (task, data, (GDestroyNotify) get_stream_data_free);
   g_task_run_in_thread (task, get_stream_thread_func);
   g_object_unref (task);
@@ -873,7 +874,7 @@ g_dbus_address_get_stream (const gchar         *address,
 /**
  * g_dbus_address_get_stream_finish:
  * @res: A #GAsyncResult obtained from the GAsyncReadyCallback passed to g_dbus_address_get_stream().
- * @out_guid: %NULL or return location to store the GUID extracted from @address, if any.
+ * @out_guid: (optional) (out): %NULL or return location to store the GUID extracted from @address, if any.
  * @error: Return location for error or %NULL.
  *
  * Finishes an operation started with g_dbus_address_get_stream().
@@ -910,7 +911,7 @@ g_dbus_address_get_stream_finish (GAsyncResult        *res,
 /**
  * g_dbus_address_get_stream_sync:
  * @address: A valid D-Bus address.
- * @out_guid: %NULL or return location to store the GUID extracted from @address, if any.
+ * @out_guid: (optional) (out): %NULL or return location to store the GUID extracted from @address, if any.
  * @cancellable: (allow-none): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -1068,6 +1069,13 @@ get_session_address_dbus_launch (GError **error)
   if (machine_id == NULL)
     {
       g_prefix_error (error, _("Cannot spawn a message bus without a machine-id: "));
+      goto out;
+    }
+
+  if (g_getenv ("DISPLAY") == NULL)
+    {
+      g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                   _("Cannot autolaunch D-Bus without X11 $DISPLAY"));
       goto out;
     }
 
@@ -1355,6 +1363,25 @@ idle_timeout_cb (GDBusDaemon *daemon, gpointer user_data)
   g_main_loop_quit (loop);
 }
 
+/* Satisfies STARTF_FORCEONFEEDBACK */
+static void
+turn_off_the_starting_cursor (void)
+{
+  MSG msg;
+  BOOL bRet;
+
+  PostQuitMessage (0);
+
+  while ((bRet = GetMessage (&msg, 0, 0, 0)) != 0)
+    {
+      if (bRet == -1)
+        continue;
+
+      TranslateMessage (&msg);
+      DispatchMessage (&msg);
+    }
+}
+
 __declspec(dllexport) void CALLBACK g_win32_run_session_bus (HWND hwnd, HINSTANCE hinst, char *cmdline, int nCmdShow);
 
 __declspec(dllexport) void CALLBACK
@@ -1364,6 +1391,8 @@ g_win32_run_session_bus (HWND hwnd, HINSTANCE hinst, char *cmdline, int nCmdShow
   GMainLoop *loop;
   const char *address;
   GError *error = NULL;
+
+  turn_off_the_starting_cursor ();
 
   if (g_getenv ("GDBUS_DAEMON_DEBUG") != NULL)
     open_console_window ();
@@ -1528,7 +1557,7 @@ g_dbus_address_get_for_bus_sync (GBusType       bus_type,
                                  GCancellable  *cancellable,
                                  GError       **error)
 {
-  gchar *ret;
+  gchar *ret, *s = NULL;
   const gchar *starter_bus;
   GError *local_error;
 
@@ -1541,8 +1570,10 @@ g_dbus_address_get_for_bus_sync (GBusType       bus_type,
     {
       guint n;
       _g_dbus_debug_print_lock ();
+      s = _g_dbus_enum_to_string (G_TYPE_BUS_TYPE, bus_type);
       g_print ("GDBus-debug:Address: In g_dbus_address_get_for_bus_sync() for bus type '%s'\n",
-               _g_dbus_enum_to_string (G_TYPE_BUS_TYPE, bus_type));
+               s);
+      g_free (s);
       for (n = 0; n < 3; n++)
         {
           const gchar *k;
@@ -1629,18 +1660,18 @@ g_dbus_address_get_for_bus_sync (GBusType       bus_type,
   if (G_UNLIKELY (_g_dbus_debug_address ()))
     {
       _g_dbus_debug_print_lock ();
+      s = _g_dbus_enum_to_string (G_TYPE_BUS_TYPE, bus_type);
       if (ret != NULL)
         {
           g_print ("GDBus-debug:Address: Returning address '%s' for bus type '%s'\n",
-                   ret,
-                   _g_dbus_enum_to_string (G_TYPE_BUS_TYPE, bus_type));
+                   ret, s);
         }
       else
         {
           g_print ("GDBus-debug:Address: Cannot look-up address bus type '%s': %s\n",
-                   _g_dbus_enum_to_string (G_TYPE_BUS_TYPE, bus_type),
-                   local_error ? local_error->message : "");
+                   s, local_error ? local_error->message : "");
         }
+      g_free (s);
       _g_dbus_debug_print_unlock ();
     }
 

@@ -3095,7 +3095,7 @@ link_handlers_to_registered_apps (void)
         }
     }
 
-  g_debug ("%u undefhandled extensions\n", unhandled_exts);
+  g_debug ("%" G_GSIZE_FORMAT "undefhandled extensions\n", unhandled_exts);
   unhandled_exts= 0;
   g_hash_table_iter_init (&sup_iter, extensions);
   while (g_hash_table_iter_next (&sup_iter,
@@ -3109,7 +3109,7 @@ link_handlers_to_registered_apps (void)
           unhandled_exts += 1;
         }
     }
-  g_debug ("%u undefhandled extensions\n", unhandled_exts);
+  g_debug ("%" G_GSIZE_FORMAT "undefhandled extensions\n", unhandled_exts);
 }
 
 static void
@@ -3382,7 +3382,7 @@ watch_keys (void)
 static void
 g_win32_appinfo_init (void)
 {
-  static gboolean initialized = FALSE;
+  static gsize initialized;
 
   if (g_once_init_enter (&initialized))
     {
@@ -4634,7 +4634,7 @@ g_app_info_get_all_for_type (const char *content_type)
   while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &handler))
     {
       if (handler->app &&
-          (ext->chosen_handler == NULL || ext->chosen_handler->app != app))
+          (ext->chosen_handler == NULL || ext->chosen_handler->app != handler->app))
           result = g_list_prepend (result,
                                    g_win32_app_info_new_from_app (handler->app,
                                                                   handler));

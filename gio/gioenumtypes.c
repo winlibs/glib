@@ -506,6 +506,7 @@ g_io_error_enum_get_type (void)
         { G_IO_ERROR_BROKEN_PIPE, "G_IO_ERROR_BROKEN_PIPE", "broken-pipe" },
         { G_IO_ERROR_CONNECTION_CLOSED, "G_IO_ERROR_CONNECTION_CLOSED", "connection-closed" },
         { G_IO_ERROR_NOT_CONNECTED, "G_IO_ERROR_NOT_CONNECTED", "not-connected" },
+        { G_IO_ERROR_MESSAGE_TOO_LARGE, "G_IO_ERROR_MESSAGE_TOO_LARGE", "message-too-large" },
         { 0, NULL, NULL }
       };
       GType g_define_type_id =
@@ -1333,6 +1334,7 @@ g_application_flags_get_type (void)
         { G_APPLICATION_HANDLES_COMMAND_LINE, "G_APPLICATION_HANDLES_COMMAND_LINE", "handles-command-line" },
         { G_APPLICATION_SEND_ENVIRONMENT, "G_APPLICATION_SEND_ENVIRONMENT", "send-environment" },
         { G_APPLICATION_NON_UNIQUE, "G_APPLICATION_NON_UNIQUE", "non-unique" },
+        { G_APPLICATION_CAN_OVERRIDE_APP_ID, "G_APPLICATION_CAN_OVERRIDE_APP_ID", "can-override-app-id" },
         { 0, NULL, NULL }
       };
       GType g_define_type_id =

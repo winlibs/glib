@@ -28,6 +28,14 @@
 #include <gioerror.h>
 #include <gfile.h>
 
+#ifdef G_OS_UNIX
+#include "gdbusconnection.h"
+#include "gdbusmessage.h"
+#include "gdocumentportal.h"
+#include "gportalsupport.h"
+#endif
+
+
 
 /**
  * SECTION:gappinfo
@@ -84,6 +92,10 @@
  * Different launcher applications (e.g. file managers) may have
  * different ideas of what a given URI means.
  */
+
+struct _GAppLaunchContextPrivate {
+  char **envp;
+};
 
 typedef GAppInfoIface GAppInfoInterface;
 G_DEFINE_INTERFACE (GAppInfo, g_app_info, G_TYPE_OBJECT)
@@ -240,7 +252,7 @@ g_app_info_get_description (GAppInfo *appinfo)
  * 
  * Gets the executable's name for the installed application.
  *
- * Returns: a string containing the @appinfo's application 
+ * Returns: (type filename): a string containing the @appinfo's application
  * binaries name
  **/
 const char *
@@ -263,7 +275,7 @@ g_app_info_get_executable (GAppInfo *appinfo)
  * Gets the commandline with which the application will be
  * started.  
  *
- * Returns: a string containing the @appinfo's commandline, 
+ * Returns: (type filename): a string containing the @appinfo's commandline,
  *     or %NULL if this information is not available
  *
  * Since: 2.20
@@ -339,7 +351,8 @@ g_app_info_set_as_last_used_for_type (GAppInfo    *appinfo,
 /**
  * g_app_info_set_as_default_for_extension:
  * @appinfo: a #GAppInfo.
- * @extension: a string containing the file extension (without the dot).
+ * @extension: (type filename): a string containing the file extension
+ *     (without the dot).
  * @error: a #GError.
  * 
  * Sets the application as the default handler for the given file extension.
@@ -664,6 +677,73 @@ g_app_info_should_show (GAppInfo *appinfo)
   return (* iface->should_show) (appinfo);
 }
 
+#ifdef G_OS_UNIX
+static gboolean
+launch_default_with_portal (const char         *uri,
+                            GAppLaunchContext  *context,
+                            GError            **error)
+{
+  GDBusConnection *session_bus;
+  GVariantBuilder opt_builder;
+  const char *parent_window = NULL;
+  GFile *file;
+  char *real_uri;
+
+  session_bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, error);
+  if (session_bus == NULL)
+    return FALSE;
+
+  if (context && context->priv->envp)
+    parent_window = g_environ_getenv (context->priv->envp, "PARENT_WINDOW_ID");
+
+  g_variant_builder_init (&opt_builder, G_VARIANT_TYPE_VARDICT);
+
+  file = g_file_new_for_uri (uri);
+
+  if (g_file_is_native (file))
+    {
+      GError *local_error = NULL;
+
+      real_uri = g_document_portal_add_document (file, &local_error);
+      g_object_unref (file);
+
+      if (real_uri == NULL)
+        {
+          g_warning ("Can't register with document portal: %s", local_error->message);
+          g_propagate_error (error, local_error);
+          return FALSE;
+        }
+    }
+  else
+    {
+      g_object_unref (file);
+      real_uri = g_strdup (uri);
+    }
+
+  g_dbus_connection_call (session_bus,
+                          "org.freedesktop.portal.Desktop",
+                          "/org/freedesktop/portal/desktop",
+                          "org.freedesktop.portal.OpenURI",
+                          "OpenURI",
+                          g_variant_new ("(ss@a{sv})",
+                                         parent_window ? parent_window : "",
+                                         real_uri,
+                                         g_variant_builder_end (&opt_builder)),
+                          NULL,
+                          G_DBUS_CALL_FLAGS_NONE,
+                          G_MAXINT,
+                          NULL,
+                          NULL,
+                          NULL);
+
+  g_dbus_connection_flush (session_bus, NULL, NULL, NULL);
+  g_object_unref (session_bus);
+  g_free (real_uri);
+
+  return TRUE;
+}
+#endif
+
 /**
  * g_app_info_launch_default_for_uri:
  * @uri: the uri to show
@@ -686,6 +766,11 @@ g_app_info_launch_default_for_uri (const char         *uri,
   GAppInfo *app_info = NULL;
   GList l;
   gboolean res;
+
+#ifdef G_OS_UNIX
+  if (glib_should_use_portal ())
+    return launch_default_with_portal (uri, launch_context, error);
+#endif
 
   /* g_file_query_default_handler() calls
    * g_app_info_get_default_for_uri_scheme() too, but we have to do it
@@ -787,10 +872,6 @@ enum {
   LAST_SIGNAL
 };
 
-struct _GAppLaunchContextPrivate {
-  char **envp;
-};
-
 static guint signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GAppLaunchContext, g_app_launch_context, G_TYPE_OBJECT)
@@ -837,7 +918,7 @@ g_app_launch_context_class_init (GAppLaunchContextClass *klass)
    *
    * Since: 2.36
    */
-  signals[LAUNCH_FAILED] = g_signal_new ("launch-failed",
+  signals[LAUNCH_FAILED] = g_signal_new (I_("launch-failed"),
                                          G_OBJECT_CLASS_TYPE (object_class),
                                          G_SIGNAL_RUN_LAST,
                                          G_STRUCT_OFFSET (GAppLaunchContextClass, launch_failed),
@@ -858,7 +939,7 @@ g_app_launch_context_class_init (GAppLaunchContextClass *klass)
    *
    * Since: 2.36
    */
-  signals[LAUNCHED] = g_signal_new ("launched",
+  signals[LAUNCHED] = g_signal_new (I_("launched"),
                                     G_OBJECT_CLASS_TYPE (object_class),
                                     G_SIGNAL_RUN_LAST,
                                     G_STRUCT_OFFSET (GAppLaunchContextClass, launched),
@@ -1102,7 +1183,7 @@ g_app_info_monitor_class_init (GAppInfoMonitorClass *class)
    * Signal emitted when the app info database for changes (ie: newly installed
    * or removed applications).
    **/
-  g_app_info_monitor_changed_signal = g_signal_new ("changed", G_TYPE_APP_INFO_MONITOR, G_SIGNAL_RUN_FIRST,
+  g_app_info_monitor_changed_signal = g_signal_new (I_("changed"), G_TYPE_APP_INFO_MONITOR, G_SIGNAL_RUN_FIRST,
                                                     0, NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
   object_class->finalize = g_app_info_monitor_finalize;

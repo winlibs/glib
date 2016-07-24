@@ -129,6 +129,7 @@ g_socket_address_connectable_iface_init (GSocketConnectableIface *connectable_if
 {
   connectable_iface->enumerate  = g_socket_address_connectable_enumerate;
   connectable_iface->proxy_enumerate  = g_socket_address_connectable_proxy_enumerate;
+  /* to_string() is implemented by subclasses */
 }
 
 static void
@@ -191,7 +192,7 @@ g_socket_address_to_native (GSocketAddress  *address,
 
 /**
  * g_socket_address_new_from_native:
- * @native: a pointer to a struct sockaddr
+ * @native: (not nullable): a pointer to a struct sockaddr
  * @len: the size of the memory location pointed to by @native
  *
  * Creates a #GSocketAddress subclass corresponding to the native

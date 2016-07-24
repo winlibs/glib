@@ -7,7 +7,7 @@ instructions on building GLib and its dependencies with Visual C++:
 
 https://wiki.gnome.org/Projects/GTK%2B/Win32/MSVCCompilationOfGTKStack
 
-This VS12 solution and the projects it includes are intented to be used
+This VS14 solution and the projects it includes are intented to be used
 in a GLib source tree unpacked from a tarball. In a git checkout you
 first need to use some Unix-like environment or run build/win32/setup.py, 
 which will do the work for you:
@@ -25,7 +25,7 @@ http://ftp.gnome.org/pub/GNOME/binaries/win64/dependencies/ for 64-bit
 builds.
 
 One may wish to build his/her own ZLib-It is recommended that ZLib is
-built using the win32/Makefile.msc makefile with VS12 with the ASM routines
+built using the win32/Makefile.msc makefile with VS14 with the ASM routines
 to avoid linking problems-see win32/Makefile.msc in ZLib for more details.
 
 For LibFFI, please get version 3.0.10 or later, as Visual C++ build support
@@ -40,7 +40,7 @@ GLib (i.e. using the Debug or Release configurations), as GLib's bundled PCRE
 has been patched to work optimally with GLib.  If building against an existing
 PCRE is desired, use the(BuildType)_ExtPCRE configurations, but one needs to ensure
 that the existing PCRE is:
--Built with VS12
+-Built with VS14
 -Unicode support is built in (please see the CMake options for this)
 -It is built with the Multithreaded DLL (/MD, for release builds) or the
  Multithreaded DLL Debug (/MDd, for debug builds)
@@ -55,27 +55,27 @@ Set up the source tree as follows under some arbitrary top
 folder <root>:
 
 <root>\<this-glib-source-tree>
-<root>\vs12\<PlatformName>
+<root>\vs14\<PlatformName>
 
 *this* file you are now reading is thus located at
-<root>\<this-glib-source-tree>\build\win32\vs12\README.
+<root>\<this-glib-source-tree>\build\win32\vs14\README.
 
-<PlatformName> is either Win32 or x64, as in VS12 project files.
+<PlatformName> is either Win32 or x64, as in VS14 project files.
 
 You should unpack the proxy-libintl-dev zip file into
-<root>\vs12\<PlatformName>, so that for instance libintl.h end up at
-<root>\vs12\<PlatformName>\include\libintl.h.
+<root>\vs14\<PlatformName>, so that for instance libintl.h end up at
+<root>\vs14\<PlatformName>\include\libintl.h.
 
 For LibFFI, one should also put the generated ffi.h and ffitarget.h
-into <root>\vs12\<PlatformName>\include\ and the compiled static libffi.lib
+into <root>\vs14\<PlatformName>\include\ and the compiled static libffi.lib
 (or copy libffi-convenience.lib into libffi.lib) into 
-<root>\vs12\<PlatformName>\lib\.
+<root>\vs14\<PlatformName>\lib\.
 
 The "install" project will copy build results and headers into their
-appropriate location under <root>\vs12\<PlatformName>. For instance,
-built DLLs go into <root>\vs12\<PlatformName>\bin, built LIBs into
-<root>\vs12\<PlatformName>\lib and GLib headers into
-<root>\vs12\<PlatformName>\include\glib-2.0. This is then from where
+appropriate location under <root>\vs14\<PlatformName>. For instance,
+built DLLs go into <root>\vs14\<PlatformName>\bin, built LIBs into
+<root>\vs14\<PlatformName>\lib and GLib headers into
+<root>\vs14\<PlatformName>\include\glib-2.0. This is then from where
 project files higher in the stack are supposed to look for them, not
 from a specific GLib source tree.
 
