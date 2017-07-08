@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GIOError: GIO Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GIO Reference Manual">
 <link rel="up" href="file_ops.html" title="File Operations">
 <link rel="prev" href="GFileEnumerator.html" title="GFileEnumerator">
@@ -178,11 +178,11 @@ distinguished before. You should therefore avoid writing code like</p>
 3
 4
 5</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="../glib-Error-Reporting.html#g-error-matches">g_error_matches</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">error</span><span class="symbol">,</span><span class="normal"> <a href="gio-GIOError.html#G-IO-ERROR:CAPS">G_IO_ERROR</a></span><span class="symbol">,</span><span class="normal"> <a href="gio-GIOError.html#G-IO-ERROR-FAILED:CAPS">G_IO_ERROR_FAILED</a></span><span class="symbol">))</span>
-<span class="normal">  </span><span class="cbracket">{</span>
-<span class="normal">    </span><span class="comment">// Assume that this is EPRINTERONFIRE</span>
-<span class="normal">    </span><span class="symbol">...</span>
-<span class="normal">  </span><span class="cbracket">}</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="keyword">if</span> <span class="gtkdoc opt">(</span><span class="function"><a href="../glib-Error-Reporting.html#g-error-matches">g_error_matches</a></span> <span class="gtkdoc opt">(</span>error<span class="gtkdoc opt">,</span> G_IO_ERROR<span class="gtkdoc opt">,</span> G_IO_ERROR_FAILED<span class="gtkdoc opt">))</span>
+  <span class="gtkdoc opt">{</span>
+    <span class="gtkdoc slc">// Assume that this is EPRINTERONFIRE</span>
+    <span class="gtkdoc opt">...</span>
+  <span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>

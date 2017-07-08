@@ -4,7 +4,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the licence, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -2237,8 +2237,9 @@
 /**
  * G_GNUC_PRINTF:
  * @format_idx: the index of the argument corresponding to the
- *     format string (The arguments are numbered from 1)
- * @arg_idx: the index of the first of the format arguments
+ *     format string (the arguments are numbered from 1)
+ * @arg_idx: the index of the first of the format arguments, or 0 if
+ *     there are no format arguments
  *
  * Expands to the GNU C format function attribute if the compiler is gcc.
  * This is used for declaring functions which take a variable number of
@@ -2248,7 +2249,9 @@
  * Place the attribute after the function declaration, just before the
  * semicolon.
  *
- * See the GNU C documentation for more details.
+ * See the
+ * [GNU C documentation](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-Wformat-3288)
+ * for more details.
  *
  * |[<!-- language="C" -->
  * gint g_snprintf (gchar  *string,
@@ -2261,15 +2264,18 @@
 /**
  * G_GNUC_SCANF:
  * @format_idx: the index of the argument corresponding to
- *     the format string (The arguments are numbered from 1)
- * @arg_idx: the index of the first of the format arguments
+ *     the format string (the arguments are numbered from 1)
+ * @arg_idx: the index of the first of the format arguments, or 0 if
+ *     there are no format arguments
  *
  * Expands to the GNU C format function attribute if the compiler is gcc.
  * This is used for declaring functions which take a variable number of
  * arguments, with the same syntax as scanf(). It allows the compiler
  * to type-check the arguments passed to the function.
  *
- * See the GNU C documentation for details.
+ * See the
+ * [GNU C documentation](https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-Wformat-3288)
+ * for details.
  */
 
 /**
@@ -2587,9 +2593,9 @@
  *
  *   membuf = g_malloc (8192);
  *
- *   /* Some computation on membuf */
+ *   /<!-- -->* Some computation on membuf *<!-- -->/
  *
- *   /* membuf will be automatically freed here */
+ *   /<!-- -->* membuf will be automatically freed here *<!-- -->/
  *   return TRUE;
  * }
  * ]|

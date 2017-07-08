@@ -83,6 +83,14 @@
 /* define to 1 if Carbon is available */
 #undef HAVE_CARBON
 
+/* Define to 1 if you have the Mac OS X function CFLocaleCopyCurrent in the
+   CoreFoundation framework. */
+#undef HAVE_CFLOCALECOPYCURRENT
+
+/* Define to 1 if you have the Mac OS X function CFPreferencesCopyAppValue in
+   the CoreFoundation framework. */
+#undef HAVE_CFPREFERENCESCOPYAPPVALUE
+
 /* Define to 1 if you have the `clock_gettime' function. */
 #undef HAVE_CLOCK_GETTIME
 
@@ -244,8 +252,8 @@
 /* Define if libelf is available */
 #undef HAVE_LIBELF
 
-/* Define if libsystemd is available */
-#undef HAVE_LIBSYSTEMD
+/* Define if libmount is available */
+#undef HAVE_LIBMOUNT
 
 /* Define to 1 if you have the <linux/magic.h> header file. */
 #undef HAVE_LINUX_MAGIC_H
@@ -342,6 +350,15 @@
 
 /* Define to 1 if you have the 'res_init' function. */
 #undef HAVE_RES_INIT
+
+/* Define to 1 if RTLD_GLOBAL is available */
+#undef HAVE_RTLD_GLOBAL
+
+/* Define to 1 if RTLD_LAZY is available */
+#undef HAVE_RTLD_LAZY
+
+/* Define to 1 if RTLD_NOW is available */
+#undef HAVE_RTLD_NOW
 
 /* Define to 1 if you have the <sched.h> header file. */
 #undef HAVE_SCHED_H
@@ -549,6 +566,9 @@
 
 /* Define to 1 if you have the <sys/xattr.h> header file. */
 #undef HAVE_SYS_XATTR_H
+
+/* Define to 1 if you have the <termios.h> header file. */
+#undef HAVE_TERMIOS_H
 
 /* Define to 1 if you have the `timegm' function. */
 #undef HAVE_TIMEGM

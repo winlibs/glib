@@ -51,9 +51,15 @@
 
 
 /* BOOLEAN:INT (./testmarshal.list:2) */
+extern void test_marshal_BOOLEAN__INT (GClosure     *closure,
+                                       GValue       *return_value,
+                                       guint         n_param_values,
+                                       const GValue *param_values,
+                                       gpointer      invocation_hint,
+                                       gpointer      marshal_data);
 void
 test_marshal_BOOLEAN__INT (GClosure     *closure,
-                           GValue       *return_value G_GNUC_UNUSED,
+                           GValue       *return_value,
                            guint         n_param_values,
                            const GValue *param_values,
                            gpointer      invocation_hint G_GNUC_UNUSED,
@@ -90,9 +96,15 @@ test_marshal_BOOLEAN__INT (GClosure     *closure,
 }
 
 /* STRING:INT (./testmarshal.list:3) */
+extern void test_marshal_STRING__INT (GClosure     *closure,
+                                      GValue       *return_value,
+                                      guint         n_param_values,
+                                      const GValue *param_values,
+                                      gpointer      invocation_hint,
+                                      gpointer      marshal_data);
 void
 test_marshal_STRING__INT (GClosure     *closure,
-                          GValue       *return_value G_GNUC_UNUSED,
+                          GValue       *return_value,
                           guint         n_param_values,
                           const GValue *param_values,
                           gpointer      invocation_hint G_GNUC_UNUSED,
@@ -129,9 +141,15 @@ test_marshal_STRING__INT (GClosure     *closure,
 }
 
 /* VARIANT:POINTER (./testmarshal.list:4) */
+extern void test_marshal_VARIANT__POINTER (GClosure     *closure,
+                                           GValue       *return_value,
+                                           guint         n_param_values,
+                                           const GValue *param_values,
+                                           gpointer      invocation_hint,
+                                           gpointer      marshal_data);
 void
 test_marshal_VARIANT__POINTER (GClosure     *closure,
-                               GValue       *return_value G_GNUC_UNUSED,
+                               GValue       *return_value,
                                guint         n_param_values,
                                const GValue *param_values,
                                gpointer      invocation_hint G_GNUC_UNUSED,

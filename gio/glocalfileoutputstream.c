@@ -5,7 +5,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -552,7 +552,7 @@ set_error_from_open_errno (const char *filename,
       char *display_name = g_filename_display_name (filename);
       g_set_error (error, G_IO_ERROR,
                    g_io_error_from_errno (errsv),
-                   _("Error opening file '%s': %s"),
+                   _("Error opening file “%s”: %s"),
 		       display_name, g_strerror (errsv));
       g_free (display_name);
     }
@@ -763,7 +763,13 @@ handle_overwrite_open (const char    *filename,
 #ifdef O_NOFOLLOW
   is_symlink = FALSE;
   fd = g_open (filename, open_flags | O_NOFOLLOW, mode);
+#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__DragonFly__)
+  if (fd == -1 && errno == EMLINK)
+#elif defined(__NetBSD__)
+  if (fd == -1 && errno == EFTYPE)
+#else
   if (fd == -1 && errno == ELOOP)
+#endif
     {
       /* Could be a symlink, or it could be a regular ELOOP error,
        * but then the next open will fail too. */
@@ -782,7 +788,7 @@ handle_overwrite_open (const char    *filename,
       char *display_name = g_filename_display_name (filename);
       g_set_error (error, G_IO_ERROR,
 		   g_io_error_from_errno (errsv),
-		   _("Error opening file '%s': %s"),
+		   _("Error opening file “%s”: %s"),
 		   display_name, g_strerror (errsv));
       g_free (display_name);
       return -1;
@@ -800,7 +806,7 @@ handle_overwrite_open (const char    *filename,
       char *display_name = g_filename_display_name (filename);
       g_set_error (error, G_IO_ERROR,
 		   g_io_error_from_errno (errsv),
-		   _("Error when getting information for file '%s': %s"),
+		   _("Error when getting information for file “%s”: %s"),
 		   display_name, g_strerror (errsv));
       g_free (display_name);
       goto err_out;
@@ -1032,7 +1038,7 @@ handle_overwrite_open (const char    *filename,
 	  char *display_name = g_filename_display_name (filename);
 	  g_set_error (error, G_IO_ERROR,
 		       g_io_error_from_errno (errsv),
-		       _("Error opening file '%s': %s"),
+		       _("Error opening file “%s”: %s"),
 		       display_name, g_strerror (errsv));
 	  g_free (display_name);
 	  goto err_out2;

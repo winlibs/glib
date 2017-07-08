@@ -188,6 +188,7 @@ libglib_2_0_la_SOURCES = 	\
 	gunicodeprivate.h	\
 	gurifuncs.c 		\
 	gutils.c		\
+	guuid.c			\
 	gvariant.h		\
 	gvariant.c		\
 	gvariant-core.h		\
@@ -309,6 +310,7 @@ glibsubinclude_HEADERS = \
 	gunicode.h	\
 	gurifuncs.h 	\
 	gutils.h	\
+	guuid.h		\
 	gvarianttype.h	\
 	gvariant.h	\
 	gversion.h	\
@@ -364,7 +366,10 @@ INSTALL_PROGS=
 if ENABLE_DTRACE
 glib_probes.h: glib_probes.d
 	$(AM_V_GEN) $(DTRACE) -C -h -s $< -o $@.tmp
-	@$(SED) -e "s,define STAP_HAS_SEMAPHORES 1,undef STAP_HAS_SEMAPHORES," < $@.tmp > $@ && rm -f $@.tmp
+	@$(SED) \
+		-e "s,define STAP_HAS_SEMAPHORES 1,undef STAP_HAS_SEMAPHORES," \
+		-e "s,define _SDT_HAS_SEMAPHORES 1,undef _SDT_HAS_SEMAPHORES," \
+		< $@.tmp > $@ && rm -f $@.tmp
 
 glib_probes.lo: glib_probes.d
 	$(AM_V_GEN) $(LIBTOOL) --mode=compile $(AM_V_lt) --tag=CC $(DTRACE) -G -s $< -o $@
@@ -463,9 +468,9 @@ glib_HEADERS_DIR = $(glibsubincludedir)
 glib_HEADERS_INST = $(deprecatedinclude_HEADERS) $(glibsubinclude_HEADERS)
 glib_HEADERS_EXCLUDES = dummy
 
-include $(top_srcdir)/build/Makefile.msvcproj
+include $(top_srcdir)/win32/Makefile.msvcproj
 
-dist-hook: $(BUILT_EXTRA_DIST) $(top_builddir)/build/win32/vs9/glib.vcproj $(top_builddir)/build/win32/vs9/glib.headers
+dist-hook: $(BUILT_EXTRA_DIST) $(top_builddir)/win32/vs9/glib.vcproj $(top_builddir)/win32/vs9/glib.headers
 	files='$(BUILT_EXTRA_DIST)'; \
 	for f in $$files; do \
 	  if test -f $$f; then d=.; else d=$(srcdir); fi; \
@@ -473,7 +478,7 @@ dist-hook: $(BUILT_EXTRA_DIST) $(top_builddir)/build/win32/vs9/glib.vcproj $(top
 
 # install gdb scripts
 gdbdir = $(datadir)/glib-2.0/gdb
-dist_gdb_SCRIPTS = glib_gdb.py
+dist_gdb_DATA = glib_gdb.py
 
 libglib-gdb.py: libglib-gdb.py.in
 	$(AM_V_GEN) $(SED) -e "s|\@datadir\@|$(datadir)|" $(srcdir)/libglib-gdb.py.in > $(builddir)/libglib-gdb.py

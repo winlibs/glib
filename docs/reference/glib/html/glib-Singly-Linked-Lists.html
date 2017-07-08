@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Singly-Linked Lists: GLib Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GLib Reference Manual">
 <link rel="up" href="glib-data-types.html" title="GLib Data Types">
 <link rel="prev" href="glib-Doubly-Linked-Lists.html" title="Doubly-Linked Lists">
@@ -376,16 +376,16 @@ the elements and reverse the list when all elements have been added.</p>
 8
 9
 10</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="comment">// Notice that these are initialized to the empty list.</span>
-<span class="usertype">GSList</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">list </span><span class="symbol">=</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">number_list </span><span class="symbol">=</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc slc">// Notice that these are initialized to the empty list.</span>
+GSList <span class="gtkdoc opt">*</span>list <span class="gtkdoc opt">=</span> NULL<span class="gtkdoc opt">, *</span>number_list <span class="gtkdoc opt">=</span> NULL<span class="gtkdoc opt">;</span>
 
-<span class="comment">// This is a list of strings.</span>
-<span class="normal">list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-append">g_slist_append</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">list</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"first"</span><span class="symbol">);</span>
-<span class="normal">list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-append">g_slist_append</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">list</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"second"</span><span class="symbol">);</span>
+<span class="gtkdoc slc">// This is a list of strings.</span>
+list <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-append">g_slist_append</a></span> <span class="gtkdoc opt">(</span>list<span class="gtkdoc opt">,</span> <span class="string">&quot;first&quot;</span><span class="gtkdoc opt">);</span>
+list <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-append">g_slist_append</a></span> <span class="gtkdoc opt">(</span>list<span class="gtkdoc opt">,</span> <span class="string">&quot;second&quot;</span><span class="gtkdoc opt">);</span>
 
-<span class="comment">// This is a list of integers.</span>
-<span class="normal">number_list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-append">g_slist_append</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">number_list</span><span class="symbol">,</span><span class="normal"> </span><span class="function"><a href="glib-Type-Conversion-Macros.html#GINT-TO-POINTER:CAPS">GINT_TO_POINTER</a></span><span class="normal"> </span><span class="symbol">(</span><span class="number">27</span><span class="symbol">));</span>
-<span class="normal">number_list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-append">g_slist_append</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">number_list</span><span class="symbol">,</span><span class="normal"> </span><span class="function"><a href="glib-Type-Conversion-Macros.html#GINT-TO-POINTER:CAPS">GINT_TO_POINTER</a></span><span class="normal"> </span><span class="symbol">(</span><span class="number">14</span><span class="symbol">));</span></pre></td>
+<span class="gtkdoc slc">// This is a list of integers.</span>
+number_list <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-append">g_slist_append</a></span> <span class="gtkdoc opt">(</span>number_list<span class="gtkdoc opt">,</span> <span class="function"><a href="glib-Type-Conversion-Macros.html#GINT-TO-POINTER:CAPS">GINT_TO_POINTER</a></span> <span class="gtkdoc opt">(</span><span class="number">27</span><span class="gtkdoc opt">));</span>
+number_list <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-append">g_slist_append</a></span> <span class="gtkdoc opt">(</span>number_list<span class="gtkdoc opt">,</span> <span class="function"><a href="glib-Type-Conversion-Macros.html#GINT-TO-POINTER:CAPS">GINT_TO_POINTER</a></span> <span class="gtkdoc opt">(</span><span class="number">14</span><span class="gtkdoc opt">));</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -436,10 +436,10 @@ may have changed, so make sure you store the new value.</p>
 2
 3
 4</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="comment">// Notice that it is initialized to the empty list.</span>
-<span class="usertype">GSList</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">list </span><span class="symbol">=</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span>
-<span class="normal">list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-prepend">g_slist_prepend</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">list</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"last"</span><span class="symbol">);</span>
-<span class="normal">list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-prepend">g_slist_prepend</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">list</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"first"</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc slc">// Notice that it is initialized to the empty list.</span>
+GSList <span class="gtkdoc opt">*</span>list <span class="gtkdoc opt">=</span> NULL<span class="gtkdoc opt">;</span>
+list <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-prepend">g_slist_prepend</a></span> <span class="gtkdoc opt">(</span>list<span class="gtkdoc opt">,</span> <span class="string">&quot;last&quot;</span><span class="gtkdoc opt">);</span>
+list <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-prepend">g_slist_prepend</a></span> <span class="gtkdoc opt">(</span>list<span class="gtkdoc opt">,</span> <span class="string">&quot;first&quot;</span><span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -925,7 +925,7 @@ one argument.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal">another_list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-copy-deep">g_slist_copy_deep</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">list</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">(</span><span class="normal"><a href="glib-N-ary-Trees.html#GCopyFunc">GCopyFunc</a></span><span class="symbol">)</span><span class="normal"> <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#g-object-ref">g_object_ref</a></span><span class="symbol">,</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">another_list <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-copy-deep">g_slist_copy_deep</a></span> <span class="gtkdoc opt">(</span>list<span class="gtkdoc opt">, (</span>GCopyFunc<span class="gtkdoc opt">)</span> g_object_ref<span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -938,7 +938,7 @@ one argument.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-free-full">g_slist_free_full</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">another_list</span><span class="symbol">,</span><span class="normal"> <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="glib-Singly-Linked-Lists.html#g-slist-free-full">g_slist_free_full</a></span> <span class="gtkdoc opt">(</span>another_list<span class="gtkdoc opt">,</span> g_object_unref<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>

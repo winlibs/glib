@@ -5,7 +5,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -71,12 +71,13 @@
  * instance, on Windows a socket is always seen as writable until a write
  * returns %G_IO_ERROR_WOULD_BLOCK.
  *
- * As with #GSocket, #GDatagramBaseds can be either connection oriented or
- * connectionless. The interface does not cover connection establishment — use
- * methods on the underlying type to establish a connection before sending and
- * receiving data through the #GDatagramBased API. For connectionless socket
- * types the target/source address is specified or received in each I/O
- * operation.
+ * As with #GSocket, #GDatagramBaseds can be either connection oriented (for
+ * example, SCTP) or connectionless (for example, UDP). #GDatagramBaseds must be
+ * datagram-based, not stream-based. The interface does not cover connection
+ * establishment — use methods on the underlying type to establish a connection
+ * before sending and receiving data through the #GDatagramBased API. For
+ * connectionless socket types the target/source address is specified or
+ * received in each I/O operation.
  *
  * Like most other APIs in GLib, #GDatagramBased is not inherently thread safe.
  * To use a #GDatagramBased concurrently from multiple threads, you must
@@ -101,7 +102,7 @@ g_datagram_based_default_init (GDatagramBasedInterface *iface)
  * @flags: an int containing #GSocketMsgFlags flags for the overall operation
  * @timeout: the maximum time (in microseconds) to wait, 0 to not block, or -1
  *   to block indefinitely
- * @cancellable: (allow-none): a %GCancellable
+ * @cancellable: (nullable): a %GCancellable
  * @error: return location for a #GError
  *
  * Receive one or more data messages from @datagram_based in one go.

@@ -5,7 +5,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -50,7 +50,7 @@
  * Since: 2.28
  */
 
-G_DEFINE_ABSTRACT_TYPE (GTlsCertificate, g_tls_certificate, G_TYPE_OBJECT);
+G_DEFINE_ABSTRACT_TYPE (GTlsCertificate, g_tls_certificate, G_TYPE_OBJECT)
 
 enum
 {
@@ -146,7 +146,7 @@ g_tls_certificate_class_init (GTlsCertificateClass *class)
   g_object_class_install_property (gobject_class, PROP_PRIVATE_KEY,
 				   g_param_spec_boxed ("private-key",
 						       P_("Private key"),
-						       P_("The DER representation of the certificate's private key"),
+						       P_("The DER representation of the certificate’s private key"),
 						       G_TYPE_BYTE_ARRAY,
 						       G_PARAM_WRITABLE |
 						       G_PARAM_CONSTRUCT_ONLY |
@@ -170,7 +170,7 @@ g_tls_certificate_class_init (GTlsCertificateClass *class)
   g_object_class_install_property (gobject_class, PROP_PRIVATE_KEY_PEM,
 				   g_param_spec_string ("private-key-pem",
 							P_("Private key (PEM)"),
-							P_("The PEM representation of the certificate's private key"),
+							P_("The PEM representation of the certificate’s private key"),
 							NULL,
 							G_PARAM_WRITABLE |
 							G_PARAM_CONSTRUCT_ONLY |
@@ -678,8 +678,8 @@ g_tls_certificate_get_issuer (GTlsCertificate  *cert)
 /**
  * g_tls_certificate_verify:
  * @cert: a #GTlsCertificate
- * @identity: (allow-none): the expected peer identity
- * @trusted_ca: (allow-none): the certificate of a trusted authority
+ * @identity: (nullable): the expected peer identity
+ * @trusted_ca: (nullable): the certificate of a trusted authority
  *
  * This verifies @cert and returns a set of #GTlsCertificateFlags
  * indicating any problems found with it. This can be used to verify a

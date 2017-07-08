@@ -6,7 +6,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -283,7 +283,7 @@ set_connect_msg (guint8       *msg,
       if (host_len > SOCKS5_MAX_LEN)
 	{
 	  g_set_error (error, G_IO_ERROR, G_IO_ERROR_PROXY_FAILED,
-		       _("Hostname '%s' is too long for SOCKSv5 protocol"),
+		       _("Hostname “%s” is too long for SOCKSv5 protocol"),
 		       hostname);
 	  return -1;
 	}
@@ -383,7 +383,7 @@ parse_connect_reply (const guint8 *data, gint *atype, GError **error)
 
       case SOCKS5_REP_CMD_NOT_SUP:
 	g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_PROXY_FAILED,
-			     _("SOCKSv5 proxy does not support 'connect' command."));
+			     _("SOCKSv5 proxy does not support “connect” command."));
 	return FALSE;
 	break;
 

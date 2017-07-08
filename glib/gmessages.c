@@ -4,7 +4,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,7 +27,7 @@
  */
 
 /**
- * SECTION:warnings
+ * SECTION:messages
  * @Title: Message Output and Debugging Functions
  * @Short_description: functions to output messages and help debug applications
  *
@@ -49,6 +49,15 @@
  * collection of key–value pairs representing individual pieces of information,
  * rather than as a single string containing all the information in an arbitrary
  * format.
+ *
+ * The convenience macros g_info(), g_message(), g_debug(), g_warning() and g_error()
+ * will use the traditional g_log() API unless you define the symbol
+ * %G_LOG_USE_STRUCTURED before including `glib.h`. But note that even messages
+ * logged through the traditional g_log() API are ultimatively passed to
+ * g_log_structured(), so that all log messages end up in same destination.
+ * If %G_LOG_USE_STRUCTURED is defined, g_test_expect_message() will become
+ * ineffective for the wrapper macros g_warning() and friends (see
+ * [Testing for Messages][testing-for-messages]).
  *
  * The support for structured logging was motivated by the following needs (some
  * of which were supported previously; others weren’t):
@@ -84,6 +93,76 @@
  *    zero-length #GLogField to g_log_structured_array().
  *  * Color output needed to be supported on the terminal, to make reading
  *    through logs easier.
+ *
+ * ## Using Structured Logging
+ *
+ * To use structured logging (rather than the old-style logging), either use
+ * the g_log_structured() and g_log_structured_array() functions; or define
+ * `G_LOG_USE_STRUCTURED` before including any GLib header, and use the
+ * g_message(), g_debug(), g_error() (etc.) macros.
+ *
+ * You do not need to define `G_LOG_USE_STRUCTURED` to use g_log_structured(),
+ * but it is a good idea to avoid confusion.
+ *
+ * ## Log Domains
+ *
+ * Log domains may be used to broadly split up the origins of log messages.
+ * Typically, there are one or a few log domains per application or library.
+ * %G_LOG_DOMAIN should be used to define the default log domain for the current
+ * compilation unit — it is typically defined at the top of a source file, or in
+ * the preprocessor flags for a group of source files.
+ *
+ * Log domains must be unique, and it is recommended that they are the
+ * application or library name, optionally followed by a hyphen and a sub-domain
+ * name. For example, `bloatpad` or `bloatpad-io`.
+ *
+ * ## Debug Message Output
+ *
+ * The default log functions (g_log_default_handler() for the old-style API and
+ * g_log_writer_default() for the structured API) both drop debug and
+ * informational messages by default, unless the log domains of those messages
+ * are listed in the `G_MESSAGES_DEBUG` environment variable (or it is set to
+ * `all`).
+ *
+ * It is recommended that custom log writer functions re-use the
+ * `G_MESSAGES_DEBUG` environment variable, rather than inventing a custom one,
+ * so that developers can re-use the same debugging techniques and tools across
+ * projects.
+ *
+ * ## Testing for Messages
+ *
+ * With the old g_log() API, g_test_expect_message() and
+ * g_test_assert_expected_messages() could be used in simple cases to check
+ * whether some code under test had emitted a given log message. These
+ * functions have been deprecated with the structured logging API, for several
+ * reasons:
+ *  * They relied on an internal queue which was too inflexible for many use
+ *    cases, where messages might be emitted in several orders, some
+ *    messages might not be emitted deterministically, or messages might be
+ *    emitted by unrelated log domains.
+ *  * They do not support structured log fields.
+ *  * Examining the log output of code is a bad approach to testing it, and
+ *    while it might be necessary for legacy code which uses g_log(), it should
+ *    be avoided for new code using g_log_structured().
+ *
+ * They will continue to work as before if g_log() is in use (and
+ * %G_LOG_USE_STRUCTURED is not defined). They will do nothing if used with the
+ * structured logging API.
+ *
+ * Examining the log output of code is discouraged: libraries should not emit to
+ * `stderr` during defined behaviour, and hence this should not be tested. If
+ * the log emissions of a library during undefined behaviour need to be tested,
+ * they should be limited to asserting that the library aborts and prints a
+ * suitable error message before aborting. This should be done with
+ * g_test_trap_assert_stderr().
+ *
+ * If it is really necessary to test the structured log messages emitted by a
+ * particular piece of code – and the code cannot be restructured to be more
+ * suitable to more conventional unit testing – you should write a custom log
+ * writer function (see g_log_set_writer_func()) which appends all log messages
+ * to a queue. When you want to check the log messages, examine and clear the
+ * queue, ignoring irrelevant log messages (for example, from log domains other
+ * than the one under test).
  */
 
 #include "config.h"
@@ -95,10 +174,13 @@
 #include <signal.h>
 #include <locale.h>
 #include <errno.h>
+
+#if defined(__linux__) && !defined(__BIONIC__)
 #include <sys/types.h>
-#ifndef _WIN32
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <fcntl.h>
+#include <sys/uio.h>
 #endif
 
 #include "glib-init.h"
@@ -122,29 +204,71 @@
 #ifdef G_OS_WIN32
 #include <process.h>		/* For getpid() */
 #include <io.h>
-#  define _WIN32_WINDOWS 0x0401 /* to get IsDebuggerPresent */
 #  include <windows.h>
+
+#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
 #endif
 
-#ifdef HAVE_LIBSYSTEMD
-#define SD_JOURNAL_SUPPRESS_LOCATION 1
-#include <sys/uio.h>
-#include <systemd/sd-journal.h>
+/* XXX: Remove once XP support really dropped */
+#if _WIN32_WINNT < 0x0600
+
+typedef enum _FILE_INFO_BY_HANDLE_CLASS
+{
+  FileBasicInfo                   = 0,
+  FileStandardInfo                = 1,
+  FileNameInfo                    = 2,
+  FileRenameInfo                  = 3,
+  FileDispositionInfo             = 4,
+  FileAllocationInfo              = 5,
+  FileEndOfFileInfo               = 6,
+  FileStreamInfo                  = 7,
+  FileCompressionInfo             = 8,
+  FileAttributeTagInfo            = 9,
+  FileIdBothDirectoryInfo         = 10,
+  FileIdBothDirectoryRestartInfo  = 11,
+  FileIoPriorityHintInfo          = 12,
+  FileRemoteProtocolInfo          = 13,
+  FileFullDirectoryInfo           = 14,
+  FileFullDirectoryRestartInfo    = 15,
+  FileStorageInfo                 = 16,
+  FileAlignmentInfo               = 17,
+  FileIdInfo                      = 18,
+  FileIdExtdDirectoryInfo         = 19,
+  FileIdExtdDirectoryRestartInfo  = 20,
+  MaximumFileInfoByHandlesClass
+} FILE_INFO_BY_HANDLE_CLASS;
+
+typedef struct _FILE_NAME_INFO
+{
+  DWORD FileNameLength;
+  WCHAR FileName[1];
+} FILE_NAME_INFO;
+
+typedef BOOL (WINAPI fGetFileInformationByHandleEx) (HANDLE,
+                                                     FILE_INFO_BY_HANDLE_CLASS,
+                                                     LPVOID,
+                                                     DWORD);
 #endif
 
-
-/**
- * SECTION:messages
- * @title: Message Logging
- * @short_description: versatile support for logging messages
- *     with different levels of importance
- *
- * These functions provide support for logging error messages
- * or messages used for debugging.
- *
- * There are several built-in levels of messages, defined in
- * #GLogLevelFlags. These can be extended with user-defined levels.
+#if defined (_MSC_VER) && (_MSC_VER >=1400)
+/* This is ugly, but we need it for isatty() in case we have bad fd's,
+ * otherwise Windows will abort() the program on msvcrt80.dll and later
  */
+#include <crtdbg.h>
+
+_GLIB_EXTERN void
+myInvalidParameterHandler(const wchar_t *expression,
+                          const wchar_t *function,
+                          const wchar_t *file,
+                          unsigned int   line,
+                          uintptr_t      pReserved)
+{
+}
+#endif
+
+#include "gwin32.h"
+#endif
 
 /**
  * G_LOG_DOMAIN:
@@ -167,6 +291,9 @@
  * G_LOG_FATAL_MASK:
  *
  * GLib log levels that are considered fatal by default.
+ *
+ * This is not used if structured logging is enabled; see
+ * [Using Structured Logging][using-structured-logging].
  */
 
 /**
@@ -184,6 +311,9 @@
  * custom log handler functions behave similarly, so that logging calls in user
  * code do not need modifying to add a new-line character to the message if the
  * log handler is changed.
+ *
+ * This is not used if structured logging is enabled; see
+ * [Using Structured Logging][using-structured-logging].
  */
 
 /**
@@ -225,6 +355,10 @@
  * If g_log_default_handler() is used as the log handler function, a new-line
  * character will automatically be appended to @..., and need not be entered
  * manually.
+ *
+ * If structured logging is enabled, this will use g_log_structured();
+ * otherwise it will use g_log(). See
+ * [Using Structured Logging][using-structured-logging].
  */
 
 /**
@@ -245,6 +379,10 @@
  * If g_log_default_handler() is used as the log handler function,
  * a newline character will automatically be appended to @..., and
  * need not be entered manually.
+ *
+ * If structured logging is enabled, this will use g_log_structured();
+ * otherwise it will use g_log(). See
+ * [Using Structured Logging][using-structured-logging].
  */
 
 /**
@@ -266,6 +404,10 @@
  * If g_log_default_handler() is used as the log handler function, a new-line
  * character will automatically be appended to @..., and need not be entered
  * manually.
+ *
+ * If structured logging is enabled, this will use g_log_structured();
+ * otherwise it will use g_log(). See
+ * [Using Structured Logging][using-structured-logging].
  */
 
 /**
@@ -289,6 +431,9 @@
  * character will automatically be appended to @..., and need not be entered
  * manually.
  *
+ * If structured logging is enabled, this will use g_log_structured();
+ * otherwise it will use g_log(). See
+ * [Using Structured Logging][using-structured-logging].
  */
 
 /**
@@ -302,8 +447,13 @@
  * character will automatically be appended to @..., and need not be entered
  * manually.
  *
- * Such messages are suppressed by the g_log_default_handler() unless
- * the G_MESSAGES_DEBUG environment variable is set appropriately.
+ * Such messages are suppressed by the g_log_default_handler() and
+ * g_log_writer_default() unless the `G_MESSAGES_DEBUG` environment variable is
+ * set appropriately.
+ *
+ * If structured logging is enabled, this will use g_log_structured();
+ * otherwise it will use g_log(). See
+ * [Using Structured Logging][using-structured-logging].
  *
  * Since: 2.40
  */
@@ -319,8 +469,13 @@
  * character will automatically be appended to @..., and need not be entered
  * manually.
  *
- * Such messages are suppressed by the g_log_default_handler() unless
- * the G_MESSAGES_DEBUG environment variable is set appropriately.
+ * Such messages are suppressed by the g_log_default_handler() and
+ * g_log_writer_default() unless the `G_MESSAGES_DEBUG` environment variable is
+ * set appropriately.
+ *
+ * If structured logging is enabled, this will use g_log_structured();
+ * otherwise it will use g_log(). See
+ * [Using Structured Logging][using-structured-logging].
  *
  * Since: 2.6
  */
@@ -394,7 +549,6 @@ _g_log_abort (gboolean breakpoint)
 }
 
 #ifdef G_OS_WIN32
-#  include <windows.h>
 static gboolean win32_keep_fatal_message = FALSE;
 
 /* This default message will usually be overwritten. */
@@ -550,7 +704,7 @@ g_log_domain_get_handler_L (GLogDomain	*domain,
  * Structured log messages (using g_log_structured() and
  * g_log_structured_array()) are fatal only if the default log writer is used;
  * otherwise it is up to the writer function to determine which log messages
- * are fatal.
+ * are fatal. See [Using Structured Logging][using-structured-logging].
  *
  * Returns: the old fatal mask
  */
@@ -587,7 +741,8 @@ g_log_set_always_fatal (GLogLevelFlags fatal_mask)
  * This has no effect on structured log messages (using g_log_structured() or
  * g_log_structured_array()). To change the fatal behaviour for specific log
  * messages, programs must install a custom log writer function using
- * g_log_set_writer_func().
+ * g_log_set_writer_func(). See
+ * [Using Structured Logging][using-structured-logging].
  *
  * Returns: the old fatal mask for the log domain
  */
@@ -623,7 +778,7 @@ g_log_set_fatal_mask (const gchar   *log_domain,
 
 /**
  * g_log_set_handler:
- * @log_domain: (allow-none): the log domain, or %NULL for the default ""
+ * @log_domain: (nullable): the log domain, or %NULL for the default ""
  *     application domain
  * @log_levels: the log levels to apply the log handler for.
  *     To handle fatal and recursive messages as well, combine
@@ -640,6 +795,9 @@ g_log_set_fatal_mask (const gchar   *log_domain,
  * Note that since the #G_LOG_LEVEL_ERROR log level is always fatal, if
  * you want to set a handler for this log level you must combine it with
  * #G_LOG_FLAG_FATAL.
+ *
+ * This has no effect if structured logging is enabled; see
+ * [Using Structured Logging][using-structured-logging].
  *
  * Here is an example for adding a log handler for all warning messages
  * in the default domain:
@@ -673,7 +831,7 @@ g_log_set_handler (const gchar	 *log_domain,
 
 /**
  * g_log_set_handler_full: (rename-to g_log_set_handler)
- * @log_domain: (allow-none): the log domain, or %NULL for the default ""
+ * @log_domain: (nullable): the log domain, or %NULL for the default ""
  *     application domain
  * @log_levels: the log levels to apply the log handler for.
  *     To handle fatal and recursive messages as well, combine
@@ -684,6 +842,9 @@ g_log_set_handler (const gchar	 *log_domain,
  * @destroy: destroy notify for @user_data, or %NULL
  *
  * Like g_log_sets_handler(), but takes a destroy notify for the @user_data.
+ *
+ * This has no effect if structured logging is enabled; see
+ * [Using Structured Logging][using-structured-logging].
  *
  * Returns: the id of the new handler
  *
@@ -737,6 +898,9 @@ g_log_set_handler_full (const gchar    *log_domain,
  * and log level combination. By default, GLib uses
  * g_log_default_handler() as default log handler.
  *
+ * This has no effect if structured logging is enabled; see
+ * [Using Structured Logging][using-structured-logging].
+ *
  * Returns: the previous default log handler
  *
  * Since: 2.6
@@ -780,7 +944,8 @@ g_log_set_default_handler (GLogFunc log_func,
  * This handler also has no effect on structured log messages (using
  * g_log_structured() or g_log_structured_array()). To change the fatal
  * behaviour for specific log messages, programs must install a custom log
- * writer function using g_log_set_writer_func().
+ * writer function using g_log_set_writer_func().See
+ * [Using Structured Logging][using-structured-logging].
  *
  * Since: 2.22
  **/
@@ -801,6 +966,9 @@ g_test_log_set_fatal_handler (GTestLogFatalFunc log_func,
  *     in g_log_set_handler()
  *
  * Removes the log handler.
+ *
+ * This has no effect if structured logging is enabled; see
+ * [Using Structured Logging][using-structured-logging].
  */
 void
 g_log_remove_handler (const gchar *log_domain,
@@ -1063,6 +1231,9 @@ static GSList *expected_messages = NULL;
  * If g_log_default_handler() is used as the log handler function, a new-line
  * character will automatically be appended to @..., and need not be entered
  * manually.
+ *
+ * If [structured logging is enabled][using-structured-logging] this will
+ * output via the structured log writer function (see g_log_set_writer_func()).
  */
 void
 g_logv (const gchar   *log_domain,
@@ -1211,6 +1382,9 @@ g_logv (const gchar   *log_domain,
  * If g_log_default_handler() is used as the log handler function, a new-line
  * character will automatically be appended to @..., and need not be entered
  * manually.
+ *
+ * If [structured logging is enabled][using-structured-logging] this will
+ * output via the structured log writer function (see g_log_set_writer_func()).
  */
 void
 g_log (const gchar   *log_domain,
@@ -1295,6 +1469,111 @@ color_reset (gboolean use_color)
   return "\033[0m";
 }
 
+#ifdef G_OS_WIN32
+
+/* We might be using tty emulators such as mintty, so try to detect it, if we passed in a valid FD
+ * so we need to check the name of the pipe if _isatty (fd) == 0
+ */
+
+static gboolean
+win32_is_pipe_tty (int fd)
+{
+  gboolean result = FALSE;
+  int error;
+  HANDLE h_fd;
+  FILE_NAME_INFO *info = NULL;
+  gint info_size = sizeof (FILE_NAME_INFO) + sizeof (WCHAR) * MAX_PATH;
+  wchar_t *name = NULL;
+  gint length;
+
+  /* XXX: Remove once XP support really dropped */
+#if _WIN32_WINNT < 0x0600
+  HANDLE h_kerneldll = NULL;
+  fGetFileInformationByHandleEx *GetFileInformationByHandleEx;
+#endif
+
+  h_fd = (HANDLE) _get_osfhandle (fd);
+
+  if (h_fd == INVALID_HANDLE_VALUE || GetFileType (h_fd) != FILE_TYPE_PIPE)
+    goto done_query;
+
+  /* The following check is available on Vista or later, so on XP, no color support */
+  /* mintty uses a pipe, in the form of \{cygwin|msys}-xxxxxxxxxxxxxxxx-ptyN-{from|to}-master */
+
+  /* XXX: Remove once XP support really dropped */
+#if _WIN32_WINNT < 0x0600
+  h_kerneldll = LoadLibraryW (L"kernel32.dll");
+
+  if (h_kerneldll == NULL)
+    goto done_query;
+
+  GetFileInformationByHandleEx =
+    (fGetFileInformationByHandleEx *) GetProcAddress (h_kerneldll, "GetFileInformationByHandleEx");
+
+  if (GetFileInformationByHandleEx == NULL)
+    goto done_query;
+#endif
+
+  info = g_try_malloc (info_size);
+
+  if (info == NULL ||
+      !GetFileInformationByHandleEx (h_fd, FileNameInfo, info, info_size))
+    goto done_query;
+
+  info->FileName[info->FileNameLength / sizeof (WCHAR)] = L'\0';
+  name = info->FileName;
+
+  length = wcslen (L"\\cygwin-");
+  if (wcsncmp (name, L"\\cygwin-", length))
+    {
+      length = wcslen (L"\\msys-");
+      if (wcsncmp (name, L"\\msys-", length))
+        goto done_query;
+    }
+
+  name += length;
+  length = wcsspn (name, L"0123456789abcdefABCDEF");
+  if (length != 16)
+    goto done_query;
+
+  name += length;
+  length = wcslen (L"-pty");
+  if (wcsncmp (name, L"-pty", length))
+    goto done_query;
+
+  name += length;
+  length = wcsspn (name, L"0123456789");
+  if (length != 1)
+    goto done_query;
+
+  name += length;
+  length = wcslen (L"-to-master");
+  if (wcsncmp (name, L"-to-master", length))
+    {
+      length = wcslen (L"-from-master");
+      if (wcsncmp (name, L"-from-master", length))
+        goto done_query;
+    }
+
+  result = TRUE;
+
+done_query:
+  if (info != NULL)
+    g_free (info);
+
+  /* XXX: Remove once XP support really dropped */
+#if _WIN32_WINNT < 0x0600
+  if (h_kerneldll != NULL)
+    FreeLibrary (h_kerneldll);
+#endif
+
+  return result;
+}
+#endif
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+
 /**
  * g_log_structured:
  * @log_domain: log domain, usually %G_LOG_DOMAIN
@@ -1307,7 +1586,10 @@ color_reset (gboolean use_color)
  * Log a message with structured data. The message will be passed through to
  * the log writer set by the application using g_log_set_writer_func(). If the
  * message is fatal (i.e. its log level is %G_LOG_LEVEL_ERROR), the program will
- * be aborted at the end of this function.
+ * be aborted at the end of this function. If the log writer returns
+ * %G_LOG_WRITER_UNHANDLED (failure), no other fallback writers will be tried.
+ * See the documentation for #GLogWriterFunc for information on chaining
+ * writers.
  *
  * The structured data is provided as key–value pairs, where keys are UTF-8
  * strings, and values are arbitrary pointers — typically pointing to UTF-8
@@ -1371,8 +1653,10 @@ color_reset (gboolean use_color)
  * g_log_structured_array (G_LOG_LEVEL_DEBUG, fields, G_N_ELEMENTS (fields));
  * ]|
  *
- * Note also that, even if no structured fields are specified, the key-value
- * part of the argument list must be %NULL-terminated.
+ * Note also that, even if no other structured fields are specified, there
+ * must always be a `MESSAGE` key before the format string. The `MESSAGE`-format
+ * pair has to be the last of the key-value pairs, and `MESSAGE` is the only
+ * field for which printf()-style formatting is supported.
  *
  * The default writer function for `stdout` and `stderr` will automatically
  * append a new-line character after the message, so you should not add one
@@ -1398,7 +1682,13 @@ g_log_structured (const gchar    *log_domain,
 
   va_start (args, log_level);
 
-  for (p = va_arg (args, gchar *), i = 3;
+  /* MESSAGE and PRIORITY are a given */
+  n_fields = 2;
+
+  if (log_domain)
+    n_fields++;
+
+  for (p = va_arg (args, gchar *), i = n_fields;
        strcmp (p, "MESSAGE") != 0;
        p = va_arg (args, gchar *), i++)
     {
@@ -1460,11 +1750,14 @@ g_log_structured (const gchar    *log_domain,
 
   fields[1].key = "PRIORITY";
   fields[1].value = log_level_to_priority (log_level);
-  fields[1].length = 1;
+  fields[1].length = -1;
 
-  fields[2].key = "GLIB_DOMAIN";
-  fields[2].value = log_domain;
-  fields[2].length = -1;
+  if (log_domain)
+    {
+      fields[2].key = "GLIB_DOMAIN";
+      fields[2].value = log_domain;
+      fields[2].length = -1;
+    }
 
   /* Log it. */
   g_log_structured_array (log_level, fields, n_fields);
@@ -1474,6 +1767,118 @@ g_log_structured (const gchar    *log_domain,
 
   va_end (args);
 }
+
+/**
+ * g_log_variant:
+ * @log_domain: (nullable): log domain, usually %G_LOG_DOMAIN
+ * @log_level: log level, either from #GLogLevelFlags, or a user-defined
+ *    level
+ * @fields: a dictionary (#GVariant of the type %G_VARIANT_TYPE_VARDICT)
+ * containing the key-value pairs of message data.
+ *
+ * Log a message with structured data, accepting the data within a #GVariant. This
+ * version is especially useful for use in other languages, via introspection.
+ *
+ * The only mandatory item in the @fields dictionary is the "MESSAGE" which must
+ * contain the text shown to the user.
+ *
+ * The values in the @fields dictionary are likely to be of type String
+ * (#G_VARIANT_TYPE_STRING). Array of bytes (#G_VARIANT_TYPE_BYTESTRING) is also
+ * supported. In this case the message is handled as binary and will be forwarded
+ * to the log writer as such. The size of the array should not be higher than
+ * %G_MAXSSIZE. Otherwise it will be truncated to this size. For other types
+ * g_variant_print() will be used to convert the value into a string.
+ *
+ * For more details on its usage and about the parameters, see g_log_structured().
+ *
+ * Since: 2.50
+ */
+
+void
+g_log_variant (const gchar    *log_domain,
+               GLogLevelFlags  log_level,
+               GVariant       *fields)
+{
+  GVariantIter iter;
+  GVariant *value;
+  gchar *key;
+  GArray *fields_array;
+  GLogField field;
+  GSList *values_list, *print_list;
+
+  g_return_if_fail (g_variant_is_of_type (fields, G_VARIANT_TYPE_VARDICT));
+
+  values_list = print_list = NULL;
+  fields_array = g_array_new (FALSE, FALSE, sizeof (GLogField));
+
+  field.key = "PRIORITY";
+  field.value = log_level_to_priority (log_level);
+  field.length = -1;
+  g_array_append_val (fields_array, field);
+
+  if (log_domain)
+    {
+      field.key = "GLIB_DOMAIN";
+      field.value = log_domain;
+      field.length = -1;
+      g_array_append_val (fields_array, field);
+    }
+
+  g_variant_iter_init (&iter, fields);
+  while (g_variant_iter_next (&iter, "{&sv}", &key, &value))
+    {
+      gboolean defer_unref = TRUE;
+
+      field.key = key;
+      field.length = -1;
+
+      if (g_variant_is_of_type (value, G_VARIANT_TYPE_STRING))
+        {
+          field.value = g_variant_get_string (value, NULL);
+        }
+      else if (g_variant_is_of_type (value, G_VARIANT_TYPE_BYTESTRING))
+        {
+          gsize s;
+          field.value = g_variant_get_fixed_array (value, &s, sizeof (guchar));
+          if (G_LIKELY (s <= G_MAXSSIZE))
+            {
+              field.length = s;
+            }
+          else
+            {
+               _g_fprintf (stderr,
+                           "Byte array too large (%" G_GSIZE_FORMAT " bytes)"
+                           " passed to g_log_variant(). Truncating to " G_STRINGIFY (G_MAXSSIZE)
+                           " bytes.", s);
+              field.length = G_MAXSSIZE;
+            }
+        }
+      else
+        {
+          char *s = g_variant_print (value, FALSE);
+          field.value = s;
+          print_list = g_slist_prepend (print_list, s);
+          defer_unref = FALSE;
+        }
+
+      g_array_append_val (fields_array, field);
+
+      if (G_LIKELY (defer_unref))
+        values_list = g_slist_prepend (values_list, value);
+      else
+        g_variant_unref (value);
+    }
+
+  /* Log it. */
+  g_log_structured_array (log_level, (GLogField *) fields_array->data, fields_array->len);
+
+  g_array_free (fields_array, TRUE);
+  g_slist_free_full (values_list, (GDestroyNotify) g_variant_unref);
+  g_slist_free_full (print_list, g_free);
+}
+
+
+#pragma GCC diagnostic pop
 
 static GLogWriterOutput _g_log_writer_fallback (GLogLevelFlags   log_level,
                                                 const GLogField *fields,
@@ -1562,7 +1967,6 @@ g_log_set_writer_func (GLogWriterFunc func,
                        GDestroyNotify user_data_free)
 {
   g_return_if_fail (func != NULL);
-  g_return_if_fail (log_writer_func == g_log_writer_default);
 
   g_mutex_lock (&g_messages_lock);
   log_writer_func = func;
@@ -1585,12 +1989,28 @@ g_log_set_writer_func (GLogWriterFunc func,
 gboolean
 g_log_writer_supports_color (gint output_fd)
 {
+#ifdef G_OS_WIN32
+  gboolean result = FALSE;
+
+#if (defined (_MSC_VER) && _MSC_VER >= 1400)
+  _invalid_parameter_handler oldHandler, newHandler;
+  int prev_report_mode = 0;
+#endif
+
+#endif
+
   g_return_val_if_fail (output_fd >= 0, FALSE);
 
   /* FIXME: This check could easily be expanded in future to be more robust
    * against different types of terminal, which still vary in their color
-   * support. cmd.exe on Windows, for example, does not support ANSI colors;
-   * but bash on Windows does.
+   * support. cmd.exe on Windows, for example, supports ANSI colors only
+   * from Windows 10 onwards; bash on Windows has always supported ANSI colors.
+   * The Windows 10 color support is supported on:
+   * -Output in the cmd.exe, MSYS/Cygwin standard consoles.
+   * -Output in the cmd.exe, MSYS/Cygwin piped to the less program.
+   * but not:
+   * -Output in Cygwin via mintty (https://github.com/mintty/mintty/issues/482)
+   * -Color code output when output redirected to file (i.e. program 2> some.txt)
    *
    * On UNIX systems, we probably want to use the functions from terminfo to
    * work out whether colors are supported.
@@ -1601,8 +2021,85 @@ g_log_writer_supports_color (gint output_fd)
    *  - http://blog.mmediasys.com/2010/11/24/we-all-love-colors/
    *  - http://unix.stackexchange.com/questions/198794/where-does-the-term-environment-variable-default-get-set
    */
+#ifdef G_OS_WIN32
+
+#if (defined (_MSC_VER) && _MSC_VER >= 1400)
+  /* Set up our empty invalid parameter handler, for isatty(),
+   * in case of bad fd's passed in for isatty(), so that
+   * msvcrt80.dll+ won't abort the program
+   */
+  newHandler = myInvalidParameterHandler;
+  oldHandler = _set_invalid_parameter_handler (newHandler);
+
+  /* Disable the message box for assertions. */
+  prev_report_mode = _CrtSetReportMode(_CRT_ASSERT, 0);
+#endif
+
+  if (g_win32_check_windows_version (10, 0, 0, G_WIN32_OS_ANY))
+    {
+      HANDLE h_output;
+      DWORD dw_mode;
+
+      if (_isatty (output_fd))
+        {
+          h_output = (HANDLE) _get_osfhandle (output_fd);
+
+          if (!GetConsoleMode (h_output, &dw_mode))
+            goto reset_invalid_param_handler;
+
+          if (dw_mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+            result = TRUE;
+
+          if (!SetConsoleMode (h_output, dw_mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING))
+            goto reset_invalid_param_handler;
+
+          result = TRUE;
+        }
+    }
+
+  /* FIXME: Support colored outputs for structured logs for pre-Windows 10,
+   *        perhaps using WriteConsoleOutput or SetConsoleTextAttribute
+   *        (bug 775468), on standard Windows consoles, such as cmd.exe
+   */
+  if (!result)
+    result = win32_is_pipe_tty (output_fd);
+
+reset_invalid_param_handler:
+#if defined (_MSC_VER) && (_MSC_VER >= 1400)
+      _CrtSetReportMode(_CRT_ASSERT, prev_report_mode);
+      _set_invalid_parameter_handler (oldHandler);
+#endif
+
+  return result;
+#else
   return isatty (output_fd);
+#endif
 }
+
+#if defined(__linux__) && !defined(__BIONIC__)
+static int journal_fd = -1;
+
+#ifndef SOCK_CLOEXEC
+#define SOCK_CLOEXEC 0
+#else
+#define HAVE_SOCK_CLOEXEC 1
+#endif
+
+static void
+open_journal (void)
+{
+  if ((journal_fd = socket (AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, 0)) < 0)
+    return;
+
+#ifndef HAVE_SOCK_CLOEXEC
+  if (fcntl (journal_fd, F_SETFD, FD_CLOEXEC) < 0)
+    {
+      close (journal_fd);
+      journal_fd = -1;
+    }
+#endif
+}
+#endif
 
 /**
  * g_log_writer_is_journald:
@@ -1618,7 +2115,7 @@ g_log_writer_supports_color (gint output_fd)
 gboolean
 g_log_writer_is_journald (gint output_fd)
 {
-#ifdef HAVE_LIBSYSTEMD
+#if defined(__linux__) && !defined(__BIONIC__)
   /* FIXME: Use the new journal API for detecting whether we’re writing to the
    * journal. See: https://github.com/systemd/systemd/issues/2473
    */
@@ -1635,11 +2132,12 @@ g_log_writer_is_journald (gint output_fd)
       if (err == 0 && addr.ss_family == AF_UNIX)
         fd_is_journal = g_str_has_prefix (((struct sockaddr_un *)&addr)->sun_path,
                                           "/run/systemd/journal/");
+
       g_once_init_leave (&initialized, TRUE);
     }
 
   return fd_is_journal;
-#else /* if !HAVE_LIBSYSTEMD */
+#else
   return FALSE;
 #endif
 }
@@ -1752,6 +2250,92 @@ g_log_writer_format_fields (GLogLevelFlags   log_level,
   return g_string_free (gstring, FALSE);
 }
 
+#if defined(__linux__) && !defined(__BIONIC__)
+static int
+journal_sendv (struct iovec *iov,
+               gsize         iovlen)
+{
+  int buf_fd = -1;
+  struct msghdr mh;
+  struct sockaddr_un sa;
+  union {
+    struct cmsghdr cmsghdr;
+    guint8 buf[CMSG_SPACE(sizeof(int))];
+  } control;
+  struct cmsghdr *cmsg;
+  char path[] = "/dev/shm/journal.XXXXXX";
+
+  if (journal_fd < 0)
+    open_journal ();
+
+  if (journal_fd < 0)
+    return -1;
+
+  memset (&sa, 0, sizeof (sa));
+  sa.sun_family = AF_UNIX;
+  if (g_strlcpy (sa.sun_path, "/run/systemd/journal/socket", sizeof (sa.sun_path)) >= sizeof (sa.sun_path))
+    return -1;
+
+  memset (&mh, 0, sizeof (mh));
+  mh.msg_name = &sa;
+  mh.msg_namelen = offsetof (struct sockaddr_un, sun_path) + strlen (sa.sun_path);
+  mh.msg_iov = iov;
+  mh.msg_iovlen = iovlen;
+
+retry:
+  if (sendmsg (journal_fd, &mh, MSG_NOSIGNAL) >= 0)
+    return 0;
+
+  if (errno == EINTR)
+    goto retry;
+
+  if (errno != EMSGSIZE && errno != ENOBUFS)
+    return -1;
+
+  /* Message was too large, so dump to temporary file
+   * and pass an FD to the journal
+   */
+  if ((buf_fd = mkostemp (path, O_CLOEXEC|O_RDWR)) < 0)
+    return -1;
+
+  if (unlink (path) < 0)
+    {
+      close (buf_fd);
+      return -1;
+    }
+
+  if (writev (buf_fd, iov, iovlen) < 0)
+    {
+      close (buf_fd);
+      return -1;
+    }
+
+  mh.msg_iov = NULL;
+  mh.msg_iovlen = 0;
+
+  memset (&control, 0, sizeof (control));
+  mh.msg_control = &control;
+  mh.msg_controllen = sizeof (control);
+
+  cmsg = CMSG_FIRSTHDR (&mh);
+  cmsg->cmsg_level = SOL_SOCKET;
+  cmsg->cmsg_type = SCM_RIGHTS;
+  cmsg->cmsg_len = CMSG_LEN (sizeof (int));
+  memcpy (CMSG_DATA (cmsg), &buf_fd, sizeof (int));
+
+  mh.msg_controllen = cmsg->cmsg_len;
+
+retry2:
+  if (sendmsg (journal_fd, &mh, MSG_NOSIGNAL) >= 0)
+    return 0;
+
+  if (errno == EINTR)
+    goto retry2;
+
+  return -1;
+}
+#endif
+
 /**
  * g_log_writer_journald:
  * @log_level: log level, either from #GLogLevelFlags, or a user-defined
@@ -1780,9 +2364,12 @@ g_log_writer_journald (GLogLevelFlags   log_level,
                        gsize            n_fields,
                        gpointer         user_data)
 {
-#ifdef HAVE_LIBSYSTEMD
-  gsize i;
-  struct iovec *pairs;
+#if defined(__linux__) && !defined(__BIONIC__)
+  const char equals = '=';
+  const char newline = '\n';
+  gsize i, k;
+  struct iovec *iov, *v;
+  char *buf;
   gint retval;
 
   g_return_val_if_fail (fields != NULL, G_LOG_WRITER_UNHANDLED);
@@ -1795,36 +2382,67 @@ g_log_writer_journald (GLogLevelFlags   log_level,
    * locale’s character set.
    */
 
-  pairs = g_alloca (sizeof (struct iovec) * n_fields);
+  iov = g_alloca (sizeof (struct iovec) * 5 * n_fields);
+  buf = g_alloca (32 * n_fields);
 
+  k = 0;
+  v = iov;
   for (i = 0; i < n_fields; i++)
     {
-      guint8 *buf = NULL;
-      gsize key_length;
-      gsize value_length;
+      guint64 length;
+      gboolean binary;
 
-      /* Build the iovec for this field. */
-      key_length = strlen (fields[i].key);
-      value_length =
-          (fields[i].length < 0) ? strlen (fields[i].value) : fields[i].length;
+      if (fields[i].length < 0)
+        {
+          length = strlen (fields[i].value);
+          binary = strchr (fields[i].value, '\n') != NULL;
+        }
+      else
+        {
+          length = fields[i].length;
+          binary = TRUE;
+        }
 
-      buf = g_malloc (key_length + 1 + value_length + 1);
-      pairs[i].iov_base = buf;
-      pairs[i].iov_len = key_length + 1 + value_length;
+      if (binary)
+        {
+          guint64 nstr;
 
-      strncpy ((char *) buf, fields[i].key, key_length);
-      buf[key_length] = '=';
-      memcpy ((char *) buf + key_length + 1, fields[i].value, value_length);
-      buf[key_length + 1 + value_length] = '\0';
+          v[0].iov_base = (gpointer)fields[i].key;
+          v[0].iov_len = strlen (fields[i].key);
+
+          v[1].iov_base = (gpointer)&newline;
+          v[1].iov_len = 1;
+
+          nstr = GUINT64_TO_LE(length);
+          memcpy (&buf[k], &nstr, sizeof (nstr));
+
+          v[2].iov_base = &buf[k];
+          v[2].iov_len = sizeof (nstr);
+          v += 3;
+          k += sizeof (nstr);
+        }
+      else
+        {
+          v[0].iov_base = (gpointer)fields[i].key;
+          v[0].iov_len = strlen (fields[i].key);
+
+          v[1].iov_base = (gpointer)&equals;
+          v[1].iov_len = 1;
+          v += 2;
+        }
+
+      v[0].iov_base = (gpointer)fields[i].value;
+      v[0].iov_len = length;
+
+      v[1].iov_base = (gpointer)&newline;
+      v[1].iov_len = 1;
+      v += 2;
     }
 
-  retval = sd_journal_sendv (pairs, n_fields);
+  retval = journal_sendv (iov, v - iov);
 
-  for (i = 0; i < n_fields; i++)
-    g_free (pairs[i].iov_base);
-
-  return (retval == 0) ? G_LOG_WRITER_HANDLED : G_LOG_WRITER_UNHANDLED;
-#else /* if !HAVE_LIBSYSTEMD */
+  return retval == 0 ? G_LOG_WRITER_HANDLED : G_LOG_WRITER_UNHANDLED;
+#else
   return G_LOG_WRITER_UNHANDLED;
 #endif
 }
@@ -1867,6 +2485,9 @@ g_log_writer_standard_streams (GLogLevelFlags   log_level,
   g_return_val_if_fail (n_fields > 0, G_LOG_WRITER_UNHANDLED);
 
   stream = log_level_to_file (log_level);
+  if (!stream || fileno (stream) < 0)
+    return G_LOG_WRITER_UNHANDLED;
+
   out = g_log_writer_format_fields (log_level, fields, n_fields,
                                     g_log_writer_supports_color (fileno (stream)));
   _g_fprintf (stream, "%s\n", out);
@@ -1913,6 +2534,10 @@ log_is_old_api (const GLogField *fields,
  *
  * This is suitable for use as a #GLogWriterFunc, and is the default writer used
  * if no other is set using g_log_set_writer_func().
+ *
+ * As with g_log_default_handler(), this function drops debug and informational
+ * messages unless their log domain (or `all`) is listed in the space-separated
+ * `G_MESSAGES_DEBUG` environment variable.
  *
  * Returns: %G_LOG_WRITER_HANDLED on success, %G_LOG_WRITER_UNHANDLED otherwise
  * Since: 2.50
@@ -2126,7 +2751,7 @@ g_assert_warning (const char *log_domain,
 
 /**
  * g_test_expect_message:
- * @log_domain: (allow-none): the log domain of the message
+ * @log_domain: (nullable): the log domain of the message
  * @log_level: the log level of the message
  * @pattern: a glob-style [pattern][glib-Glob-style-pattern-matching]
  *
@@ -2134,6 +2759,10 @@ g_assert_warning (const char *log_domain,
  * with text matching @pattern, is expected to be logged. When this
  * message is logged, it will not be printed, and the test case will
  * not abort.
+ *
+ * This API may only be used with the old logging API (g_log() without
+ * %G_LOG_USE_STRUCTURED defined). It will not work with the structured logging
+ * API. See [Testing for Messages][testing-for-messages].
  *
  * Use g_test_assert_expected_messages() to assert that all
  * previously-expected messages have been seen and suppressed.
@@ -2210,6 +2839,10 @@ g_test_assert_expected_messages_internal (const char     *domain,
  *
  * Asserts that all messages previously indicated via
  * g_test_expect_message() have been seen and suppressed.
+ *
+ * This API may only be used with the old logging API (g_log() without
+ * %G_LOG_USE_STRUCTURED defined). It will not work with the structured logging
+ * API. See [Testing for Messages][testing-for-messages].
  *
  * If messages at %G_LOG_LEVEL_DEBUG are emitted, but not explicitly
  * expected via g_test_expect_message() then they will be ignored.
@@ -2355,6 +2988,9 @@ escape_string (GString *string)
  * stderr is used for levels %G_LOG_LEVEL_ERROR, %G_LOG_LEVEL_CRITICAL,
  * %G_LOG_LEVEL_WARNING and %G_LOG_LEVEL_MESSAGE. stdout is used for
  * the rest.
+ *
+ * This has no effect if structured logging is enabled; see
+ * [Using Structured Logging][using-structured-logging].
  */
 void
 g_log_default_handler (const gchar   *log_domain,
@@ -2362,19 +2998,9 @@ g_log_default_handler (const gchar   *log_domain,
 		       const gchar   *message,
 		       gpointer	      unused_data)
 {
-  const gchar *domains;
   GLogField fields[4];
+  int n_fields = 0;
 
-  if ((log_level & DEFAULT_LEVELS) || (log_level >> G_LOG_LEVEL_USER_SHIFT))
-    goto emit;
-
-  domains = g_getenv ("G_MESSAGES_DEBUG");
-  if (((log_level & INFO_LEVELS) == 0) ||
-      domains == NULL ||
-      (strcmp (domains, "all") != 0 && (!log_domain || !strstr (domains, log_domain))))
-    return;
-
- emit:
   /* we can be called externally with recursion for whatever reason */
   if (log_level & G_LOG_FLAG_RECURSION)
     {
@@ -2385,25 +3011,32 @@ g_log_default_handler (const gchar   *log_domain,
   fields[0].key = "GLIB_OLD_LOG_API";
   fields[0].value = "1";
   fields[0].length = -1;
+  n_fields++;
 
   fields[1].key = "MESSAGE";
   fields[1].value = message;
   fields[1].length = -1;
+  n_fields++;
 
   fields[2].key = "PRIORITY";
   fields[2].value = log_level_to_priority (log_level);
-  fields[2].length = 1;
+  fields[2].length = -1;
+  n_fields++;
 
-  fields[3].key = "GLIB_DOMAIN";
-  fields[3].value = log_domain;
-  fields[3].length = -1;
+  if (log_domain)
+    {
+      fields[3].key = "GLIB_DOMAIN";
+      fields[3].value = log_domain;
+      fields[3].length = -1;
+      n_fields++;
+    }
 
   /* Print out via the structured log API, but drop any fatal flags since we
    * have already handled them. The fatal handling in the structured logging
    * API is more coarse-grained than in the old g_log() API, so we don't want
    * to use it here.
    */
-  g_log_structured_array (log_level & ~G_LOG_FLAG_FATAL, fields, 4);
+  g_log_structured_array (log_level & ~G_LOG_FLAG_FATAL, fields, n_fields);
 }
 
 /**
@@ -2446,8 +3079,8 @@ g_set_print_handler (GPrintFunc func)
  * g_print() should not be used from within libraries for debugging
  * messages, since it may be redirected by applications to special
  * purpose message windows or even files. Instead, libraries should
- * use g_log(), or the convenience functions g_message(), g_warning()
- * and g_error().
+ * use g_log(), g_log_structured(), or the convenience macros g_message(),
+ * g_warning() and g_error().
  */
 void
 g_print (const gchar *format,
@@ -2525,8 +3158,8 @@ g_set_printerr_handler (GPrintFunc func)
  * new-line character.
  *
  * g_printerr() should not be used from within libraries.
- * Instead g_log() should be used, or the convenience functions
- * g_message(), g_warning() and g_error().
+ * Instead g_log() or g_log_structured() should be used, or the convenience
+ * macros g_message(), g_warning() and g_error().
  */
 void
 g_printerr (const gchar *format,

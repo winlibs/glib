@@ -5,7 +5,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -239,7 +239,7 @@ iter_compare (GSequenceIter *node1,
 
 /**
  * g_sequence_new:
- * @data_destroy: (allow-none): a #GDestroyNotify function, or %NULL
+ * @data_destroy: (nullable): a #GDestroyNotify function, or %NULL
  *
  * Creates a new GSequence. The @data_destroy function, if non-%NULL will
  * be called on all items when the sequence is destroyed and on items that

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Miscellaneous Macros: GLib Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GLib Reference Manual">
 <link rel="up" href="glib-fundamentals.html" title="GLib Fundamentals">
 <link rel="prev" href="glib-Numerical-Definitions.html" title="Numerical Definitions">
@@ -336,25 +336,25 @@ for non-error cases.</p>
 17
 18
 19</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal"><a href="glib-GVariant.html#GVariant">GVariant</a> </span><span class="symbol">*</span>
-<span class="function">my_func</span><span class="symbol">(</span><span class="type">void</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="function"><a href="glib-Miscellaneous-Macros.html#g-auto">g_auto</a></span><span class="symbol">(</span><span class="normal"><a href="glib-Double-ended-Queues.html#GQueue">GQueue</a></span><span class="symbol">)</span><span class="normal"> queue </span><span class="symbol">=</span><span class="normal"> <a href="glib-Double-ended-Queues.html#G-QUEUE-INIT:CAPS">G_QUEUE_INIT</a></span><span class="symbol">;</span>
-<span class="normal">  </span><span class="function"><a href="glib-Miscellaneous-Macros.html#g-auto">g_auto</a></span><span class="symbol">(</span><span class="normal"><a href="glib-GVariant.html#GVariantBuilder">GVariantBuilder</a></span><span class="symbol">)</span><span class="normal"> builder</span><span class="symbol">;</span>
-<span class="normal">  </span><span class="function"><a href="glib-Miscellaneous-Macros.html#g-auto">g_auto</a></span><span class="symbol">(</span><span class="normal"><a href="glib-String-Utility-Functions.html#GStrv">GStrv</a></span><span class="symbol">)</span><span class="normal"> strv</span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting">GVariant <span class="gtkdoc opt">*</span>
+<span class="function">my_func</span><span class="gtkdoc opt">(</span><span class="gtkdoc kwb">void</span><span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  <span class="function"><a href="glib-Miscellaneous-Macros.html#g-auto">g_auto</a></span><span class="gtkdoc opt">(</span>GQueue<span class="gtkdoc opt">)</span> queue <span class="gtkdoc opt">=</span> G_QUEUE_INIT<span class="gtkdoc opt">;</span>
+  <span class="function"><a href="glib-Miscellaneous-Macros.html#g-auto">g_auto</a></span><span class="gtkdoc opt">(</span>GVariantBuilder<span class="gtkdoc opt">)</span> builder<span class="gtkdoc opt">;</span>
+  <span class="function"><a href="glib-Miscellaneous-Macros.html#g-auto">g_auto</a></span><span class="gtkdoc opt">(</span>GStrv<span class="gtkdoc opt">)</span> strv<span class="gtkdoc opt">;</span>
 
-<span class="normal">  </span><span class="function"><a href="glib-GVariant.html#g-variant-builder-init">g_variant_builder_init</a></span><span class="normal"> </span><span class="symbol">(&amp;</span><span class="normal">builder</span><span class="symbol">,</span><span class="normal"> <a href="glib-GVariantType.html#G-VARIANT-TYPE-VARDICT:CAPS">G_VARIANT_TYPE_VARDICT</a></span><span class="symbol">);</span>
-<span class="normal">  strv </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-String-Utility-Functions.html#g-strsplit">g_strsplit</a></span><span class="symbol">(</span><span class="string">"a:b:c"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">":"</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">-</span><span class="number">1</span><span class="symbol">);</span>
+  <span class="function"><a href="glib-GVariant.html#g-variant-builder-init">g_variant_builder_init</a></span> <span class="gtkdoc opt">(&amp;</span>builder<span class="gtkdoc opt">,</span> G_VARIANT_TYPE_VARDICT<span class="gtkdoc opt">);</span>
+  strv <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-String-Utility-Functions.html#g-strsplit">g_strsplit</a></span><span class="gtkdoc opt">(</span><span class="string">&quot;a:b:c&quot;</span><span class="gtkdoc opt">,</span> <span class="string">&quot;:&quot;</span><span class="gtkdoc opt">, -</span><span class="number">1</span><span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="symbol">...</span>
+  <span class="gtkdoc opt">...</span>
 
-<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">error_condition</span><span class="symbol">)</span>
-<span class="normal">    </span><span class="keyword">return</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span>
+  <span class="keyword">if</span> <span class="gtkdoc opt">(</span>error_condition<span class="gtkdoc opt">)</span>
+    <span class="keyword">return</span> NULL<span class="gtkdoc opt">;</span>
 
-<span class="normal">  </span><span class="symbol">...</span>
+  <span class="gtkdoc opt">...</span>
 
-<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="function"><a href="glib-GVariant.html#g-variant-builder-end">g_variant_builder_end</a></span><span class="normal"> </span><span class="symbol">(&amp;</span><span class="normal">builder</span><span class="symbol">);</span>
-<span class="cbracket">}</span></pre></td>
+  <span class="keyword">return</span> <span class="function"><a href="glib-GVariant.html#g-variant-builder-end">g_variant_builder_end</a></span> <span class="gtkdoc opt">(&amp;</span>builder<span class="gtkdoc opt">);</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -427,28 +427,28 @@ for non-error cases.</p>
 20
 21
 22</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal"><a href="glib-Basic-Types.html#gboolean">gboolean</a></span>
-<span class="function">check_exists</span><span class="symbol">(</span><span class="usertype">GVariant</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">dict</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="function"><a href="glib-Miscellaneous-Macros.html#g-autoptr">g_autoptr</a></span><span class="symbol">(</span><span class="normal"><a href="glib-GVariant.html#GVariant">GVariant</a></span><span class="symbol">)</span><span class="normal"> dirname</span><span class="symbol">,</span><span class="normal"> basename </span><span class="symbol">=</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span>
-<span class="normal">  </span><span class="usertype">g_autofree</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">path </span><span class="symbol">=</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting">gboolean
+<span class="function">check_exists</span><span class="gtkdoc opt">(</span>GVariant <span class="gtkdoc opt">*</span>dict<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  <span class="function"><a href="glib-Miscellaneous-Macros.html#g-autoptr">g_autoptr</a></span><span class="gtkdoc opt">(</span>GVariant<span class="gtkdoc opt">)</span> dirname<span class="gtkdoc opt">,</span> basename <span class="gtkdoc opt">=</span> NULL<span class="gtkdoc opt">;</span>
+  g_autofree gchar <span class="gtkdoc opt">*</span>path <span class="gtkdoc opt">=</span> NULL<span class="gtkdoc opt">;</span>
 
-<span class="normal">  dirname </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-GVariant.html#g-variant-lookup-value">g_variant_lookup_value</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">dict</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"dirname"</span><span class="symbol">,</span><span class="normal"> <a href="glib-GVariantType.html#G-VARIANT-TYPE-STRING:CAPS">G_VARIANT_TYPE_STRING</a></span><span class="symbol">);</span>
+  dirname <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-GVariant.html#g-variant-lookup-value">g_variant_lookup_value</a></span> <span class="gtkdoc opt">(</span>dict<span class="gtkdoc opt">,</span> <span class="string">&quot;dirname&quot;</span><span class="gtkdoc opt">,</span> G_VARIANT_TYPE_STRING<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">dirname </span><span class="symbol">==</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">)</span>
-<span class="normal">    </span><span class="keyword">return</span><span class="normal"> <a href="glib-Standard-Macros.html#FALSE:CAPS">FALSE</a></span><span class="symbol">;</span>
+  <span class="keyword">if</span> <span class="gtkdoc opt">(</span>dirname <span class="gtkdoc opt">==</span> NULL<span class="gtkdoc opt">)</span>
+    <span class="keyword">return</span> FALSE<span class="gtkdoc opt">;</span>
 
-<span class="normal">  basename </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-GVariant.html#g-variant-lookup-value">g_variant_lookup_value</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">dict</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"basename"</span><span class="symbol">,</span><span class="normal"> <a href="glib-GVariantType.html#G-VARIANT-TYPE-STRING:CAPS">G_VARIANT_TYPE_STRING</a></span><span class="symbol">);</span>
+  basename <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-GVariant.html#g-variant-lookup-value">g_variant_lookup_value</a></span> <span class="gtkdoc opt">(</span>dict<span class="gtkdoc opt">,</span> <span class="string">&quot;basename&quot;</span><span class="gtkdoc opt">,</span> G_VARIANT_TYPE_STRING<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">basename </span><span class="symbol">==</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">)</span>
-<span class="normal">    </span><span class="keyword">return</span><span class="normal"> <a href="glib-Standard-Macros.html#FALSE:CAPS">FALSE</a></span><span class="symbol">;</span>
+  <span class="keyword">if</span> <span class="gtkdoc opt">(</span>basename <span class="gtkdoc opt">==</span> NULL<span class="gtkdoc opt">)</span>
+    <span class="keyword">return</span> FALSE<span class="gtkdoc opt">;</span>
 
-<span class="normal">  path </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Miscellaneous-Utility-Functions.html#g-build-filename">g_build_filename</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="glib-GVariant.html#g-variant-get-string">g_variant_get_string</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">dirname</span><span class="symbol">,</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">),</span>
-<span class="normal">                           </span><span class="function"><a href="glib-GVariant.html#g-variant-get-string">g_variant_get_string</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">basename</span><span class="symbol">,</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">),</span>
-<span class="normal">                           <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">);</span>
+  path <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Miscellaneous-Utility-Functions.html#g-build-filename">g_build_filename</a></span> <span class="gtkdoc opt">(</span><span class="function"><a href="glib-GVariant.html#g-variant-get-string">g_variant_get_string</a></span> <span class="gtkdoc opt">(</span>dirname<span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">),</span>
+                           <span class="function"><a href="glib-GVariant.html#g-variant-get-string">g_variant_get_string</a></span> <span class="gtkdoc opt">(</span>basename<span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">),</span>
+                           NULL<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="function"><a href="glib-File-Utilities.html#g-access">g_access</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">path</span><span class="symbol">,</span><span class="normal"> R_OK</span><span class="symbol">)</span><span class="normal"> </span><span class="symbol">==</span><span class="normal"> </span><span class="number">0</span><span class="symbol">;</span>
-<span class="cbracket">}</span></pre></td>
+  <span class="keyword">return</span> <span class="function"><a href="glib-File-Utilities.html#g-access">g_access</a></span> <span class="gtkdoc opt">(</span>path<span class="gtkdoc opt">,</span> R_OK<span class="gtkdoc opt">) ==</span> <span class="number">0</span><span class="gtkdoc opt">;</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -493,7 +493,7 @@ type.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="glib-Miscellaneous-Macros.html#G-DEFINE-AUTOPTR-CLEANUP-FUNC:CAPS">G_DEFINE_AUTOPTR_CLEANUP_FUNC</a></span><span class="symbol">(</span><span class="normal"><a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#GObject-struct">GObject</a></span><span class="symbol">,</span><span class="normal"> <a href="https://developer.gnome.org/gobject/unstable/gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span><span class="symbol">)</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="glib-Miscellaneous-Macros.html#G-DEFINE-AUTOPTR-CLEANUP-FUNC:CAPS">G_DEFINE_AUTOPTR_CLEANUP_FUNC</a></span><span class="gtkdoc opt">(</span>GObject<span class="gtkdoc opt">,</span> g_object_unref<span class="gtkdoc opt">)</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -540,7 +540,7 @@ where cleanup is not supported.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="glib-Miscellaneous-Macros.html#G-DEFINE-AUTO-CLEANUP-CLEAR-FUNC:CAPS">G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC</a></span><span class="symbol">(</span><span class="normal"><a href="glib-Double-ended-Queues.html#GQueue">GQueue</a></span><span class="symbol">,</span><span class="normal"> <a href="glib-Double-ended-Queues.html#g-queue-clear">g_queue_clear</a></span><span class="symbol">)</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="glib-Miscellaneous-Macros.html#G-DEFINE-AUTO-CLEANUP-CLEAR-FUNC:CAPS">G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC</a></span><span class="gtkdoc opt">(</span>GQueue<span class="gtkdoc opt">,</span> g_queue_clear<span class="gtkdoc opt">)</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -594,7 +594,7 @@ contain this value then the free function will not be called.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="glib-Miscellaneous-Macros.html#G-DEFINE-AUTO-CLEANUP-FREE-FUNC:CAPS">G_DEFINE_AUTO_CLEANUP_FREE_FUNC</a></span><span class="symbol">(</span><span class="normal"><a href="glib-String-Utility-Functions.html#GStrv">GStrv</a></span><span class="symbol">,</span><span class="normal"> <a href="glib-String-Utility-Functions.html#g-strfreev">g_strfreev</a></span><span class="symbol">,</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">)</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="glib-Miscellaneous-Macros.html#G-DEFINE-AUTO-CLEANUP-FREE-FUNC:CAPS">G_DEFINE_AUTO_CLEANUP_FREE_FUNC</a></span><span class="gtkdoc opt">(</span>GStrv<span class="gtkdoc opt">,</span> g_strfreev<span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">)</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -677,8 +677,8 @@ preprocessor argument expansion. For example, the following code:</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="preproc">#define</span><span class="normal"> AGE </span><span class="number">27</span>
-<span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">greeting </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-STRINGIFY:CAPS">G_STRINGIFY</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">AGE</span><span class="symbol">)</span><span class="normal"> </span><span class="string">" today!"</span><span class="symbol">;</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc ppc">#define AGE 27</span>
+<span class="gtkdoc kwb">const</span> gchar <span class="gtkdoc opt">*</span>greeting <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Miscellaneous-Macros.html#G-STRINGIFY:CAPS">G_STRINGIFY</a></span> <span class="gtkdoc opt">(</span>AGE<span class="gtkdoc opt">)</span> <span class="string">&quot; today!&quot;</span><span class="gtkdoc opt">;</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -691,7 +691,7 @@ preprocessor argument expansion. For example, the following code:</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">greeting </span><span class="symbol">=</span><span class="normal"> </span><span class="string">"27 today!"</span><span class="symbol">;</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">const</span> gchar <span class="gtkdoc opt">*</span>greeting <span class="gtkdoc opt">=</span> <span class="string">&quot;27 today!&quot;</span><span class="gtkdoc opt">;</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -734,10 +734,10 @@ the following code:</p>
 2
 3
 4</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="preproc">#define</span><span class="normal"> </span><span class="function">GET</span><span class="symbol">(</span><span class="normal">traveller</span><span class="symbol">,</span><span class="normal">method</span><span class="symbol">)</span><span class="normal"> </span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-PASTE:CAPS">G_PASTE</a></span><span class="symbol">(</span><span class="normal">traveller_get_</span><span class="symbol">,</span><span class="normal"> method</span><span class="symbol">)</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">traveller</span><span class="symbol">)</span>
-<span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">name </span><span class="symbol">=</span><span class="normal"> </span><span class="function">GET</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">traveller</span><span class="symbol">,</span><span class="normal"> name</span><span class="symbol">);</span>
-<span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">quest </span><span class="symbol">=</span><span class="normal"> </span><span class="function">GET</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">traveller</span><span class="symbol">,</span><span class="normal"> quest</span><span class="symbol">);</span>
-<span class="usertype">GdkColor</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">favourite </span><span class="symbol">=</span><span class="normal"> </span><span class="function">GET</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">traveller</span><span class="symbol">,</span><span class="normal"> favourite_colour</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc ppc">#define GET(traveller,method) G_PASTE(traveller_get_, method) (traveller)</span>
+<span class="gtkdoc kwb">const</span> gchar <span class="gtkdoc opt">*</span>name <span class="gtkdoc opt">=</span> <span class="function">GET</span> <span class="gtkdoc opt">(</span>traveller<span class="gtkdoc opt">,</span> name<span class="gtkdoc opt">);</span>
+<span class="gtkdoc kwb">const</span> gchar <span class="gtkdoc opt">*</span>quest <span class="gtkdoc opt">=</span> <span class="function">GET</span> <span class="gtkdoc opt">(</span>traveller<span class="gtkdoc opt">,</span> quest<span class="gtkdoc opt">);</span>
+GdkColor <span class="gtkdoc opt">*</span>favourite <span class="gtkdoc opt">=</span> <span class="function">GET</span> <span class="gtkdoc opt">(</span>traveller<span class="gtkdoc opt">,</span> favourite_colour<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -752,9 +752,9 @@ the following code:</p>
         <td class="listing_lines" align="right"><pre>1
 2
 3</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">name </span><span class="symbol">=</span><span class="normal"> </span><span class="function">traveller_get_name</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">traveller</span><span class="symbol">);</span>
-<span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">quest </span><span class="symbol">=</span><span class="normal"> </span><span class="function">traveller_get_quest</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">traveller</span><span class="symbol">);</span>
-<span class="usertype">GdkColor</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">favourite </span><span class="symbol">=</span><span class="normal"> </span><span class="function">traveller_get_favourite_colour</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">traveller</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">const</span> gchar <span class="gtkdoc opt">*</span>name <span class="gtkdoc opt">=</span> <span class="function">traveller_get_name</span> <span class="gtkdoc opt">(</span>traveller<span class="gtkdoc opt">);</span>
+<span class="gtkdoc kwb">const</span> gchar <span class="gtkdoc opt">*</span>quest <span class="gtkdoc opt">=</span> <span class="function">traveller_get_quest</span> <span class="gtkdoc opt">(</span>traveller<span class="gtkdoc opt">);</span>
+GdkColor <span class="gtkdoc opt">*</span>favourite <span class="gtkdoc opt">=</span> <span class="function">traveller_get_favourite_colour</span> <span class="gtkdoc opt">(</span>traveller<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -833,8 +833,8 @@ it as the first argument of a comma expression.</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="preproc">#define</span><span class="normal"> </span><span class="function">ADD_ONE_TO_INT</span><span class="symbol">(</span><span class="normal">x</span><span class="symbol">)</span><span class="normal"> </span><span class="symbol">\</span>
-<span class="normal">  </span><span class="symbol">(</span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-STATIC-ASSERT-EXPR:CAPS">G_STATIC_ASSERT_EXPR</a></span><span class="symbol">(</span><span class="keyword">sizeof</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">x</span><span class="symbol">)</span><span class="normal"> </span><span class="symbol">==</span><span class="normal"> </span><span class="keyword">sizeof</span><span class="normal"> </span><span class="symbol">(</span><span class="type">int</span><span class="symbol">)),</span><span class="normal"> </span><span class="symbol">((</span><span class="normal">x</span><span class="symbol">)</span><span class="normal"> </span><span class="symbol">+</span><span class="normal"> </span><span class="number">1</span><span class="symbol">))</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc ppc">#define ADD_ONE_TO_INT(x) \</span>
+<span class="gtkdoc ppc">  (G_STATIC_ASSERT_EXPR(sizeof (x) == sizeof (int)), ((x) + 1))</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -871,8 +871,8 @@ the following would only match on compilers such as GCC 4.8 or newer.</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="preproc">#if</span><span class="normal"> </span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-GNUC-CHECK-VERSION:CAPS">G_GNUC_CHECK_VERSION</a></span><span class="symbol">(</span><span class="number">4</span><span class="symbol">,</span><span class="normal"> </span><span class="number">8</span><span class="symbol">)</span>
-<span class="preproc">#endif</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc ppc">#if G_GNUC_CHECK_VERSION(4, 8)</span>
+<span class="gtkdoc ppc">#endif</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -988,7 +988,9 @@ arguments, with the same syntax as <code class="function">printf()</code>. It al
 to type-check the arguments passed to the function.</p>
 <p>Place the attribute after the function declaration, just before the
 semicolon.</p>
-<p>See the GNU C documentation for more details.</p>
+<p>See the
+<a class="ulink" href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-Wformat-3288" target="_top">GNU C documentation</a>
+for more details.</p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -997,10 +999,10 @@ semicolon.</p>
 2
 3
 4</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="usertype">gint</span><span class="normal"> </span><span class="function"><a href="glib-String-Utility-Functions.html#g-snprintf">g_snprintf</a></span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">gchar</span><span class="normal">  </span><span class="symbol">*</span><span class="normal">string</span><span class="symbol">,</span>
-<span class="normal">                 </span><span class="usertype">gulong</span><span class="normal">       n</span><span class="symbol">,</span>
-<span class="normal">                 </span><span class="usertype">gchar</span><span class="normal"> </span><span class="keyword">const</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">format</span><span class="symbol">,</span>
-<span class="normal">                 </span><span class="symbol">...)</span><span class="normal"> </span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-GNUC-PRINTF:CAPS">G_GNUC_PRINTF</a></span><span class="normal"> </span><span class="symbol">(</span><span class="number">3</span><span class="symbol">,</span><span class="normal"> </span><span class="number">4</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">gint <span class="function"><a href="glib-String-Utility-Functions.html#g-snprintf">g_snprintf</a></span> <span class="gtkdoc opt">(</span>gchar  <span class="gtkdoc opt">*</span>string<span class="gtkdoc opt">,</span>
+                 gulong       n<span class="gtkdoc opt">,</span>
+                 gchar <span class="gtkdoc kwb">const</span> <span class="gtkdoc opt">*</span>format<span class="gtkdoc opt">,</span>
+                 <span class="gtkdoc opt">...)</span> <span class="function"><a href="glib-Miscellaneous-Macros.html#G-GNUC-PRINTF:CAPS">G_GNUC_PRINTF</a></span> <span class="gtkdoc opt">(</span><span class="number">3</span><span class="gtkdoc opt">,</span> <span class="number">4</span><span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1019,12 +1021,13 @@ semicolon.</p>
 <tr>
 <td class="parameter_name"><p>format_idx</p></td>
 <td class="parameter_description"><p>the index of the argument corresponding to the
-format string (The arguments are numbered from 1)</p></td>
+format string (the arguments are numbered from 1)</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
 <td class="parameter_name"><p>arg_idx</p></td>
-<td class="parameter_description"><p>the index of the first of the format arguments</p></td>
+<td class="parameter_description"><p>the index of the first of the format arguments, or 0 if
+there are no format arguments</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 </tbody>
@@ -1039,7 +1042,9 @@ format string (The arguments are numbered from 1)</p></td>
 This is used for declaring functions which take a variable number of
 arguments, with the same syntax as <code class="function">scanf()</code>. It allows the compiler
 to type-check the arguments passed to the function.</p>
-<p>See the GNU C documentation for details.</p>
+<p>See the
+<a class="ulink" href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-Wformat-3288" target="_top">GNU C documentation</a>
+for details.</p>
 <div class="refsect3">
 <a name="G-GNUC-SCANF.parameters"></a><h4>Parameters</h4>
 <div class="informaltable"><table class="informaltable" width="100%" border="0">
@@ -1052,12 +1057,13 @@ to type-check the arguments passed to the function.</p>
 <tr>
 <td class="parameter_name"><p>format_idx</p></td>
 <td class="parameter_description"><p>the index of the argument corresponding to
-the format string (The arguments are numbered from 1)</p></td>
+the format string (the arguments are numbered from 1)</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
 <td class="parameter_name"><p>arg_idx</p></td>
-<td class="parameter_description"><p>the index of the first of the format arguments</p></td>
+<td class="parameter_description"><p>the index of the first of the format arguments, or 0 if
+there are no format arguments</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 </tbody>
@@ -1083,7 +1089,7 @@ semicolon.</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="function"><a href="glib-I18N.html#g-dgettext">g_dgettext</a></span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">domain_name</span><span class="symbol">,</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">msgid</span><span class="symbol">)</span><span class="normal"> </span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-GNUC-FORMAT:CAPS">G_GNUC_FORMAT</a></span><span class="normal"> </span><span class="symbol">(</span><span class="number">2</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">gchar <span class="gtkdoc opt">*</span><span class="function"><a href="glib-I18N.html#g-dgettext">g_dgettext</a></span> <span class="gtkdoc opt">(</span>gchar <span class="gtkdoc opt">*</span>domain_name<span class="gtkdoc opt">,</span> gchar <span class="gtkdoc opt">*</span>msgid<span class="gtkdoc opt">)</span> <span class="function"><a href="glib-Miscellaneous-Macros.html#G-GNUC-FORMAT:CAPS">G_GNUC_FORMAT</a></span> <span class="gtkdoc opt">(</span><span class="number">2</span><span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1177,8 +1183,8 @@ a true value. The compiler may use this information for optimizations.</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-LIKELY:CAPS">G_LIKELY</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function">random</span><span class="normal"> </span><span class="symbol">()</span><span class="normal"> </span><span class="symbol">!=</span><span class="normal"> </span><span class="number">1</span><span class="symbol">))</span>
-<span class="normal">  </span><span class="function"><a href="glib-Warnings-and-Assertions.html#g-print">g_print</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"not one"</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="keyword">if</span> <span class="gtkdoc opt">(</span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-LIKELY:CAPS">G_LIKELY</a></span> <span class="gtkdoc opt">(</span><span class="function">random</span> <span class="gtkdoc opt">() !=</span> <span class="number">1</span><span class="gtkdoc opt">))</span>
+  <span class="function"><a href="glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;not one&quot;</span><span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1220,8 +1226,8 @@ a true value. The compiler may use this information for optimizations.</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-UNLIKELY:CAPS">G_UNLIKELY</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function">random</span><span class="normal"> </span><span class="symbol">()</span><span class="normal"> </span><span class="symbol">==</span><span class="normal"> </span><span class="number">1</span><span class="symbol">))</span>
-<span class="normal">  </span><span class="function"><a href="glib-Warnings-and-Assertions.html#g-print">g_print</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"a random one"</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="keyword">if</span> <span class="gtkdoc opt">(</span><span class="function"><a href="glib-Miscellaneous-Macros.html#G-UNLIKELY:CAPS">G_UNLIKELY</a></span> <span class="gtkdoc opt">(</span><span class="function">random</span> <span class="gtkdoc opt">() ==</span> <span class="number">1</span><span class="gtkdoc opt">))</span>
+  <span class="function"><a href="glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;a random one&quot;</span><span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1297,18 +1303,18 @@ supported on GCC and clang, the variable must be initialized, etc.</p>
 10
 11
 12</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal"><a href="glib-Basic-Types.html#gboolean">gboolean</a></span>
-<span class="function">operate_on_malloc_buf</span><span class="normal"> </span><span class="symbol">(</span><span class="type">void</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="usertype">g_autofree</span><span class="normal"> <a href="glib-Basic-Types.html#guint8">guint8</a></span><span class="symbol">*</span><span class="normal"> membuf </span><span class="symbol">=</span><span class="normal"> <a href="glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting">gboolean
+<span class="function">operate_on_malloc_buf</span> <span class="gtkdoc opt">(</span><span class="gtkdoc kwb">void</span><span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  g_autofree guint8<span class="gtkdoc opt">*</span> membuf <span class="gtkdoc opt">=</span> NULL<span class="gtkdoc opt">;</span>
 
-<span class="normal">  membuf </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="glib-Memory-Allocation.html#g-malloc">g_malloc</a></span><span class="normal"> </span><span class="symbol">(</span><span class="number">8192</span><span class="symbol">);</span>
+  membuf <span class="gtkdoc opt">=</span> <span class="function"><a href="glib-Memory-Allocation.html#g-malloc">g_malloc</a></span> <span class="gtkdoc opt">(</span><span class="number">8192</span><span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="comment">/* Some computation on membuf */</span>
+  <span class="gtkdoc opt">/&lt;!-- --&gt;*</span> Some computation on membuf <span class="gtkdoc opt">*&lt;!-- --&gt;/</span>
 
-<span class="normal">  </span><span class="comment">/* membuf will be automatically freed here */</span>
-<span class="normal">  </span><span class="keyword">return</span><span class="normal"> <a href="glib-Standard-Macros.html#TRUE:CAPS">TRUE</a></span><span class="symbol">;</span>
-<span class="cbracket">}</span></pre></td>
+  <span class="gtkdoc opt">/&lt;!-- --&gt;*</span> membuf will be automatically freed here <span class="gtkdoc opt">*&lt;!-- --&gt;/</span>
+  <span class="keyword">return</span> TRUE<span class="gtkdoc opt">;</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1467,8 +1473,8 @@ argument declaration.</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="type">void</span><span class="normal"> </span><span class="function">my_unused_function</span><span class="normal"> </span><span class="symbol">(</span><span class="normal"><a href="glib-Miscellaneous-Macros.html#G-GNUC-UNUSED:CAPS">G_GNUC_UNUSED</a> </span><span class="usertype">gint</span><span class="normal"> unused_argument</span><span class="symbol">,</span>
-<span class="normal">                         </span><span class="usertype">gint</span><span class="normal"> other_argument</span><span class="symbol">)</span><span class="normal"> <a href="glib-Miscellaneous-Macros.html#G-GNUC-UNUSED:CAPS">G_GNUC_UNUSED</a></span><span class="symbol">;</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">void</span> <span class="function">my_unused_function</span> <span class="gtkdoc opt">(</span>G_GNUC_UNUSED gint unused_argument<span class="gtkdoc opt">,</span>
+                         gint other_argument<span class="gtkdoc opt">)</span> G_GNUC_UNUSED<span class="gtkdoc opt">;</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1569,11 +1575,11 @@ Sun Studio does not.</p>
 3
 4
 5</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal"><a href="glib-Miscellaneous-Macros.html#G-GNUC-INTERNAL:CAPS">G_GNUC_INTERNAL</a></span>
-<span class="type">void</span><span class="normal"> </span><span class="function">_g_log_fallback_handler</span><span class="normal"> </span><span class="symbol">(</span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal">    </span><span class="symbol">*</span><span class="normal">log_domain</span><span class="symbol">,</span>
-<span class="normal">                              </span><span class="usertype">GLogLevelFlags</span><span class="normal">  log_level</span><span class="symbol">,</span>
-<span class="normal">                              </span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal">    </span><span class="symbol">*</span><span class="normal">message</span><span class="symbol">,</span>
-<span class="normal">                              </span><span class="usertype">gpointer</span><span class="normal">        unused_data</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">G_GNUC_INTERNAL
+<span class="gtkdoc kwb">void</span> <span class="function">_g_log_fallback_handler</span> <span class="gtkdoc opt">(</span><span class="gtkdoc kwb">const</span> gchar    <span class="gtkdoc opt">*</span>log_domain<span class="gtkdoc opt">,</span>
+                              GLogLevelFlags  log_level<span class="gtkdoc opt">,</span>
+                              <span class="gtkdoc kwb">const</span> gchar    <span class="gtkdoc opt">*</span>message<span class="gtkdoc opt">,</span>
+                              gpointer        unused_data<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>

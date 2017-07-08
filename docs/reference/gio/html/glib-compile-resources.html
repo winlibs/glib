@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>glib-compile-resources: GIO Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GIO Reference Manual">
 <link rel="up" href="tools.html" title="GIO Tools">
 <link rel="prev" href="glib-compile-schemas.html" title="glib-compile-schemas">
@@ -59,6 +59,12 @@ For a detailed description of the XML file format, see the
 <td><p><span class="term"><code class="option">-h</code>, <code class="option">--help</code></span></p></td>
 <td><p>
 Print help and exit
+</p></td>
+</tr>
+<tr>
+<td><p><span class="term"><code class="option">--version</code></span></p></td>
+<td><p>
+Print program version and exit
 </p></td>
 </tr>
 <tr>
@@ -137,6 +143,9 @@ test.gresource: test.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --generate-
 <p>
 Note that this may or may not be portable to non-GNU <span class="command"><strong>make</strong></span>.
 </p>
+<p>
+Also see <code class="option">--dependency-file</code>.
+</p>
 </td>
 </tr>
 <tr>
@@ -167,6 +176,24 @@ usually want to use the functions only internally it can be more useful to
 declare them as
 <a href="../glib-Miscellaneous-Macros.html#G-GNUC-INTERNAL:CAPS"><code class="literal">G_GNUC_INTERNAL</code></a>
 which is what <code class="option">--internal</code> does.
+</p></td>
+</tr>
+<tr>
+<td><p><span class="term"><code class="option">--dependency-file=<em class="replaceable"><code>FILE</code></em></code></span></p></td>
+<td><p>
+Write dependencies in the same style as gcc -M -MF to the given file.
+If <code class="option">FILE</code> is -, the dependencies are written to the standard
+output. Unlike <code class="option">--generate-dependencies</code>, this option can be
+combined with other <code class="option">--generate</code> options to generate dependencies
+as a side-effect of generating sources.
+</p></td>
+</tr>
+<tr>
+<td><p><span class="term"><code class="option">--generate-phony-targets</code></span></p></td>
+<td><p>
+When creating a dependency file with <code class="option">--dependency-file</code>
+include phony targets in the same style as gcc -MP. This would typically
+be used with <code class="literal">make</code>.
 </p></td>
 </tr>
 </tbody>

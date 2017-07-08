@@ -8,7 +8,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,6 +52,9 @@
 #include <sys/uio.h>
 #endif
 
+#define GOBJECT_COMPILATION
+#include "gobject/gtype-private.h" /* For _PRELUDE type define */
+#undef GOBJECT_COMPILATION
 #include "gcancellable.h"
 #include "gdatagrambased.h"
 #include "gioenumtypes.h"
@@ -249,11 +252,14 @@ struct _GSocketPrivate
   guint           connect_pending : 1;
 #ifdef G_OS_WIN32
   WSAEVENT        event;
+  gboolean        waiting;
+  DWORD           waiting_result;
   int             current_events;
   int             current_errors;
   int             selected_events;
   GList          *requested_conditions; /* list of requested GIOCondition * */
   GMutex          win32_source_lock;
+  GCond           win32_source_cond;
 #endif
 
   struct {
@@ -264,13 +270,20 @@ struct _GSocketPrivate
   } recv_addr_cache[RECV_ADDR_CACHE_SIZE];
 };
 
-G_DEFINE_TYPE_WITH_CODE (GSocket, g_socket, G_TYPE_OBJECT,
-                         G_ADD_PRIVATE (GSocket)
-			 g_networking_init ();
-			 G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE,
-						g_socket_initable_iface_init);
-                         G_IMPLEMENT_INTERFACE (G_TYPE_DATAGRAM_BASED,
-                                                g_socket_datagram_based_iface_init));
+_G_DEFINE_TYPE_EXTENDED_WITH_PRELUDE (GSocket, g_socket, G_TYPE_OBJECT, 0,
+                                      /* Need a prelude for https://bugzilla.gnome.org/show_bug.cgi?id=674885 */
+                                      g_type_ensure (G_TYPE_SOCKET_FAMILY);
+                                      g_type_ensure (G_TYPE_SOCKET_TYPE);
+                                      g_type_ensure (G_TYPE_SOCKET_PROTOCOL);
+                                      g_type_ensure (G_TYPE_SOCKET_ADDRESS);
+                                      /* And networking init is appropriate for the prelude */
+                                      g_networking_init ();
+                                      , /* And now the regular type init code */
+                                      G_ADD_PRIVATE (GSocket)
+                                      G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE,
+                                                             g_socket_initable_iface_init);
+                                      G_IMPLEMENT_INTERFACE (G_TYPE_DATAGRAM_BASED,
+                                                             g_socket_datagram_based_iface_init));
 
 static int
 get_socket_errno (void)
@@ -333,8 +346,10 @@ socket_strerror (int err)
 static void
 _win32_unset_event_mask (GSocket *socket, int mask)
 {
+  g_mutex_lock (&socket->priv->win32_source_lock);
   socket->priv->current_events &= ~mask;
   socket->priv->current_errors &= ~mask;
+  g_mutex_unlock (&socket->priv->win32_source_lock);
 }
 #else
 #define win32_unset_event_mask(_socket, _mask)
@@ -831,6 +846,7 @@ g_socket_finalize (GObject *object)
 
   g_assert (socket->priv->requested_conditions == NULL);
   g_mutex_clear (&socket->priv->win32_source_lock);
+  g_cond_clear (&socket->priv->win32_source_cond);
 #endif
 
   for (i = 0; i < RECV_ADDR_CACHE_SIZE; i++)
@@ -1058,6 +1074,7 @@ g_socket_init (GSocket *socket)
 #ifdef G_OS_WIN32
   socket->priv->event = WSA_INVALID_EVENT;
   g_mutex_init (&socket->priv->win32_source_lock);
+  g_cond_init (&socket->priv->win32_source_cond);
 #endif
 }
 
@@ -2295,7 +2312,7 @@ g_socket_multicast_group_operation (GSocket       *socket,
  * g_socket_join_multicast_group:
  * @socket: a #GSocket.
  * @group: a #GInetAddress specifying the group address to join.
- * @iface: (allow-none): Name of the interface to use, or %NULL
+ * @iface: (nullable): Name of the interface to use, or %NULL
  * @source_specific: %TRUE if source-specific multicast should be used
  * @error: #GError for error reporting, or %NULL to ignore.
  *
@@ -2329,7 +2346,7 @@ g_socket_join_multicast_group (GSocket       *socket,
  * g_socket_leave_multicast_group:
  * @socket: a #GSocket.
  * @group: a #GInetAddress specifying the group address to leave.
- * @iface: (allow-none): Interface used
+ * @iface: (nullable): Interface used
  * @source_specific: %TRUE if source-specific multicast was used
  * @error: #GError for error reporting, or %NULL to ignore.
  *
@@ -2404,7 +2421,7 @@ g_socket_speaks_ipv4 (GSocket *socket)
 /**
  * g_socket_accept:
  * @socket: a #GSocket.
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * Accept incoming connections on a connection-based socket. This removes
@@ -2441,6 +2458,8 @@ g_socket_accept (GSocket       *socket,
 
   while (TRUE)
     {
+      win32_unset_event_mask (socket, FD_ACCEPT);
+
       if ((ret = accept (socket->priv->fd, NULL, 0)) < 0)
 	{
 	  int errsv = get_socket_errno ();
@@ -2455,8 +2474,6 @@ g_socket_accept (GSocket       *socket,
               errsv == EAGAIN)
 #endif
             {
-              win32_unset_event_mask (socket, FD_ACCEPT);
-
               if (socket->priv->blocking)
                 {
                   if (!g_socket_condition_wait (socket,
@@ -2472,8 +2489,6 @@ g_socket_accept (GSocket       *socket,
 	}
       break;
     }
-
-  win32_unset_event_mask (socket, FD_ACCEPT);
 
 #ifdef G_OS_WIN32
   {
@@ -2517,7 +2532,7 @@ g_socket_accept (GSocket       *socket,
  * g_socket_connect:
  * @socket: a #GSocket.
  * @address: a #GSocketAddress specifying the remote address.
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * Connect the socket to the specified remote address.
@@ -2563,6 +2578,8 @@ g_socket_connect (GSocket         *socket,
 
   while (1)
     {
+      win32_unset_event_mask (socket, FD_CONNECT);
+
       if (connect (socket->priv->fd, (struct sockaddr *) &buffer,
 		   g_socket_address_get_native_size (address)) < 0)
 	{
@@ -2577,8 +2594,6 @@ g_socket_connect (GSocket         *socket,
 	  if (errsv == WSAEWOULDBLOCK)
 #endif
 	    {
-              win32_unset_event_mask (socket, FD_CONNECT);
-
 	      if (socket->priv->blocking)
 		{
 		  if (g_socket_condition_wait (socket, G_IO_OUT, cancellable, error))
@@ -2603,8 +2618,6 @@ g_socket_connect (GSocket         *socket,
 	}
       break;
     }
-
-  win32_unset_event_mask (socket, FD_CONNECT);
 
   socket->priv->connected_read = TRUE;
   socket->priv->connected_write = TRUE;
@@ -2785,6 +2798,8 @@ g_socket_receive_with_timeout (GSocket       *socket,
 
   while (1)
     {
+      win32_unset_event_mask (socket, FD_READ);
+
       if ((ret = recv (socket->priv->fd, buffer, size, 0)) < 0)
 	{
 	  int errsv = get_socket_errno ();
@@ -2799,8 +2814,6 @@ g_socket_receive_with_timeout (GSocket       *socket,
               errsv == EAGAIN)
 #endif
             {
-              win32_unset_event_mask (socket, FD_READ);
-
               if (timeout != 0)
                 {
                   if (!block_on_timeout (socket, G_IO_IN, timeout, start_time,
@@ -2811,13 +2824,9 @@ g_socket_receive_with_timeout (GSocket       *socket,
                 }
             }
 
-	  win32_unset_event_mask (socket, FD_READ);
-
 	  socket_set_error_lazy (error, errsv, _("Error receiving data: %s"));
 	  return -1;
 	}
-
-      win32_unset_event_mask (socket, FD_READ);
 
       break;
     }
@@ -2831,7 +2840,7 @@ g_socket_receive_with_timeout (GSocket       *socket,
  * @buffer: (array length=size) (element-type guint8): a buffer to
  *     read data into (which should be at least @size bytes long).
  * @size: the number of bytes you want to read from the socket
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * Receive data (up to @size bytes) from a socket. This is mainly used by
@@ -2882,7 +2891,7 @@ g_socket_receive (GSocket       *socket,
  *     read data into (which should be at least @size bytes long).
  * @size: the number of bytes you want to read from the socket
  * @blocking: whether to do blocking or non-blocking I/O
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * This behaves exactly the same as g_socket_receive(), except that
@@ -2909,12 +2918,12 @@ g_socket_receive_with_blocking (GSocket       *socket,
 /**
  * g_socket_receive_from:
  * @socket: a #GSocket
- * @address: (out) (allow-none): a pointer to a #GSocketAddress
+ * @address: (out) (optional): a pointer to a #GSocketAddress
  *     pointer, or %NULL
  * @buffer: (array length=size) (element-type guint8): a buffer to
  *     read data into (which should be at least @size bytes long).
  * @size: the number of bytes you want to read from the socket
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * Receive data (up to @size bytes) from a socket.
@@ -2984,6 +2993,8 @@ g_socket_send_with_timeout (GSocket       *socket,
 
   while (1)
     {
+      win32_unset_event_mask (socket, FD_WRITE);
+
       if ((ret = send (socket->priv->fd, buffer, size, G_SOCKET_DEFAULT_SEND_FLAGS)) < 0)
 	{
 	  int errsv = get_socket_errno ();
@@ -2998,8 +3009,6 @@ g_socket_send_with_timeout (GSocket       *socket,
               errsv == EAGAIN)
 #endif
             {
-              win32_unset_event_mask (socket, FD_WRITE);
-
               if (timeout != 0)
                 {
                   if (!block_on_timeout (socket, G_IO_OUT, timeout, start_time,
@@ -3025,7 +3034,7 @@ g_socket_send_with_timeout (GSocket       *socket,
  * @buffer: (array length=size) (element-type guint8): the buffer
  *     containing the data to send.
  * @size: the number of bytes to send
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * Tries to send @size bytes from @buffer on the socket. This is
@@ -3067,7 +3076,7 @@ g_socket_send (GSocket       *socket,
  *     containing the data to send.
  * @size: the number of bytes to send
  * @blocking: whether to do blocking or non-blocking I/O
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * This behaves exactly the same as g_socket_send(), except that
@@ -3094,11 +3103,11 @@ g_socket_send_with_blocking (GSocket       *socket,
 /**
  * g_socket_send_to:
  * @socket: a #GSocket
- * @address: (allow-none): a #GSocketAddress, or %NULL
+ * @address: (nullable): a #GSocketAddress, or %NULL
  * @buffer: (array length=size) (element-type guint8): the buffer
  *     containing the data to send.
  * @size: the number of bytes to send
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * Tries to send @size bytes from @buffer to @address. If @address is
@@ -3414,7 +3423,7 @@ remove_condition_watch (GSocket      *socket,
 }
 
 static GIOCondition
-update_condition (GSocket *socket)
+update_condition_unlocked (GSocket *socket)
 {
   WSANETWORKEVENTS events;
   GIOCondition condition;
@@ -3480,6 +3489,16 @@ update_condition (GSocket *socket)
     }
 
   return condition;
+}
+
+static GIOCondition
+update_condition (GSocket *socket)
+{
+  GIOCondition res;
+  g_mutex_lock (&socket->priv->win32_source_lock);
+  res = update_condition_unlocked (socket);
+  g_mutex_unlock (&socket->priv->win32_source_lock);
+  return res;
 }
 #endif
 
@@ -3665,7 +3684,7 @@ socket_source_new (GSocket      *socket,
  * g_socket_create_source: (skip)
  * @socket: a #GSocket
  * @condition: a #GIOCondition mask to monitor
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  *
  * Creates a #GSource that can be attached to a %GMainContext to monitor
  * for the availability of the specified @condition on the socket. The #GSource
@@ -3770,7 +3789,7 @@ g_socket_condition_check (GSocket      *socket,
  * g_socket_condition_wait:
  * @socket: a #GSocket
  * @condition: a #GIOCondition mask to wait for
- * @cancellable: (allow-none): a #GCancellable, or %NULL
+ * @cancellable: (nullable): a #GCancellable, or %NULL
  * @error: a #GError pointer, or %NULL
  *
  * Waits for @condition to become true on @socket. When the condition
@@ -3805,7 +3824,7 @@ g_socket_condition_wait (GSocket       *socket,
  * @socket: a #GSocket
  * @condition: a #GIOCondition mask to wait for
  * @timeout: the maximum time (in microseconds) to wait, or -1
- * @cancellable: (allow-none): a #GCancellable, or %NULL
+ * @cancellable: (nullable): a #GCancellable, or %NULL
  * @error: a #GError pointer, or %NULL
  *
  * Waits for up to @timeout microseconds for @condition to become true
@@ -3848,7 +3867,7 @@ g_socket_condition_timed_wait (GSocket       *socket,
 
   if (socket->priv->timeout &&
       (timeout < 0 || socket->priv->timeout < timeout / G_USEC_PER_SEC))
-    timeout = socket->priv->timeout * 1000;
+    timeout = (gint64) socket->priv->timeout * 1000;
   else if (timeout != -1)
     timeout = timeout / 1000;
 
@@ -3876,11 +3895,44 @@ g_socket_condition_timed_wait (GSocket       *socket,
     if (timeout == -1)
       timeout = WSA_INFINITE;
 
-    current_condition = update_condition (socket);
+    g_mutex_lock (&socket->priv->win32_source_lock);
+    current_condition = update_condition_unlocked (socket);
     while ((condition & current_condition) == 0)
       {
-	res = WSAWaitForMultipleEvents (num_events, events,
-					FALSE, timeout, FALSE);
+        if (!socket->priv->waiting)
+          {
+            socket->priv->waiting = TRUE;
+            socket->priv->waiting_result = 0;
+            g_mutex_unlock (&socket->priv->win32_source_lock);
+
+            res = WSAWaitForMultipleEvents (num_events, events, FALSE, timeout, FALSE);
+
+            g_mutex_lock (&socket->priv->win32_source_lock);
+            socket->priv->waiting = FALSE;
+            socket->priv->waiting_result = res;
+            g_cond_broadcast (&socket->priv->win32_source_cond);
+          }
+        else
+          {
+            if (timeout != WSA_INFINITE)
+              {
+                if (!g_cond_wait_until (&socket->priv->win32_source_cond, &socket->priv->win32_source_lock, timeout))
+                  {
+                    res = WSA_WAIT_TIMEOUT;
+                    break;
+                  }
+                else
+                  {
+                    res = socket->priv->waiting_result;
+                  }
+              }
+            else
+              {
+                g_cond_wait (&socket->priv->win32_source_cond, &socket->priv->win32_source_lock);
+                res = socket->priv->waiting_result;
+              }
+          }
+
 	if (res == WSA_WAIT_FAILED)
 	  {
 	    int errsv = get_socket_errno ();
@@ -3901,7 +3953,7 @@ g_socket_condition_timed_wait (GSocket       *socket,
 	if (g_cancellable_set_error_if_cancelled (cancellable, error))
 	  break;
 
-	current_condition = update_condition (socket);
+        current_condition = update_condition_unlocked (socket);
 
 	if (timeout != WSA_INFINITE)
 	  {
@@ -3910,6 +3962,7 @@ g_socket_condition_timed_wait (GSocket       *socket,
 	      timeout = 0;
 	  }
       }
+    g_mutex_unlock (&socket->priv->win32_source_lock);
     remove_condition_watch (socket, &condition);
     if (num_events > 1)
       g_cancellable_release_fd (cancellable);
@@ -4099,8 +4152,16 @@ G_STMT_START { \
     } \
  \
   /* control */ \
-  _msg->msg_controllen = 2048; \
-  _msg->msg_control = g_alloca (_msg->msg_controllen); \
+  if (_message->control_messages == NULL) \
+    { \
+	  _msg->msg_controllen = 0; \
+	  _msg->msg_control = NULL; \
+    } \
+  else \
+    { \
+      _msg->msg_controllen = 2048; \
+      _msg->msg_control = g_alloca (_msg->msg_controllen); \
+    } \
  \
   /* flags */ \
   _msg->msg_flags = _message->flags; \
@@ -4125,6 +4186,7 @@ input_message_from_msghdr (const struct msghdr  *msg,
 
     if (msg->msg_controllen >= sizeof (struct cmsghdr))
       {
+        g_assert (message->control_messages != NULL);
         for (cmsg = CMSG_FIRSTHDR (msg);
              cmsg != NULL;
              cmsg = CMSG_NXTHDR ((struct msghdr *) msg, cmsg))
@@ -4140,19 +4202,9 @@ input_message_from_msghdr (const struct msghdr  *msg,
                  deserialization code, so just continue */
               continue;
 
-            if (message->control_messages == NULL)
-              {
-                /* we have to do it this way if the user ignores the
-                 * messages so that we will close any received fds.
-                 */
-                g_object_unref (control_message);
-              }
-            else
-              {
-                if (my_messages == NULL)
-                  my_messages = g_ptr_array_new ();
-                g_ptr_array_add (my_messages, control_message);
-              }
+            if (my_messages == NULL)
+              my_messages = g_ptr_array_new ();
+            g_ptr_array_add (my_messages, control_message);
            }
       }
 
@@ -4185,14 +4237,14 @@ input_message_from_msghdr (const struct msghdr  *msg,
 /**
  * g_socket_send_message:
  * @socket: a #GSocket
- * @address: (allow-none): a #GSocketAddress, or %NULL
+ * @address: (nullable): a #GSocketAddress, or %NULL
  * @vectors: (array length=num_vectors): an array of #GOutputVector structs
  * @num_vectors: the number of elements in @vectors, or -1
- * @messages: (array length=num_messages) (allow-none): a pointer to an
+ * @messages: (array length=num_messages) (nullable): a pointer to an
  *   array of #GSocketControlMessages, or %NULL.
  * @num_messages: number of elements in @messages, or -1.
  * @flags: an int containing #GSocketMsgFlags flags
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * Send data to @address on @socket.  For sending multiple messages see
@@ -4406,6 +4458,8 @@ g_socket_send_message_with_timeout (GSocket                *socket,
 
     while (1)
       {
+        win32_unset_event_mask (socket, FD_WRITE);
+
 	if (address)
 	  result = WSASendTo (socket->priv->fd,
 			      bufs, num_vectors,
@@ -4427,8 +4481,6 @@ g_socket_send_message_with_timeout (GSocket                *socket,
 
 	    if (errsv == WSAEWOULDBLOCK)
               {
-                win32_unset_event_mask (socket, FD_WRITE);
-
                 if (timeout != 0)
                   {
                     if (!block_on_timeout (socket, G_IO_OUT, timeout,
@@ -4456,7 +4508,7 @@ g_socket_send_message_with_timeout (GSocket                *socket,
  * @messages: (array length=num_messages): an array of #GOutputMessage structs
  * @num_messages: the number of elements in @messages
  * @flags: an int containing #GSocketMsgFlags flags
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore.
  *
  * Send multiple data messages from @socket in one go.  This is the most
@@ -4876,6 +4928,8 @@ g_socket_receive_message_with_timeout (GSocket                 *socket,
     /* do it */
     while (1)
       {
+        win32_unset_event_mask (socket, FD_READ);
+
 	addrlen = sizeof addr;
 	if (address)
 	  result = WSARecvFrom (socket->priv->fd,
@@ -4897,8 +4951,6 @@ g_socket_receive_message_with_timeout (GSocket                 *socket,
 
             if (errsv == WSAEWOULDBLOCK)
               {
-                win32_unset_event_mask (socket, FD_READ);
-
                 if (timeout != 0)
                   {
                     if (!block_on_timeout (socket, G_IO_IN, timeout,
@@ -4912,7 +4964,6 @@ g_socket_receive_message_with_timeout (GSocket                 *socket,
 	    socket_set_error_lazy (error, errsv, _("Error receiving message: %s"));
 	    return -1;
 	  }
-	win32_unset_event_mask (socket, FD_READ);
 	break;
       }
 
@@ -4942,7 +4993,7 @@ g_socket_receive_message_with_timeout (GSocket                 *socket,
  * @messages: (array length=num_messages): an array of #GInputMessage structs
  * @num_messages: the number of elements in @messages
  * @flags: an int containing #GSocketMsgFlags flags for the overall operation
- * @cancellable: (allow-none): a %GCancellable or %NULL
+ * @cancellable: (nullable): a %GCancellable or %NULL
  * @error: #GError for error reporting, or %NULL to ignore
  *
  * Receive multiple data messages from @socket in one go.  This is the most
@@ -5219,12 +5270,12 @@ g_socket_receive_messages_with_timeout (GSocket        *socket,
 /**
  * g_socket_receive_message:
  * @socket: a #GSocket
- * @address: (out) (nullable): a pointer to a #GSocketAddress
+ * @address: (out) (optional): a pointer to a #GSocketAddress
  *     pointer, or %NULL
  * @vectors: (array length=num_vectors): an array of #GInputVector structs
  * @num_vectors: the number of elements in @vectors, or -1
- * @messages: (array length=num_messages) (out) (nullable): a pointer which
- *    may be filled with an array of #GSocketControlMessages, or %NULL
+ * @messages: (array length=num_messages) (out) (optional) (nullable): a pointer
+ *    which may be filled with an array of #GSocketControlMessages, or %NULL
  * @num_messages: (out): a pointer which will be filled with the number of
  *    elements in @messages, or %NULL
  * @flags: (inout): a pointer to an int containing #GSocketMsgFlags flags

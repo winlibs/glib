@@ -4,7 +4,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the licence, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,7 +39,7 @@ static const GOptionEntry entries[] = {
   { "progress", 'p', 0, G_OPTION_ARG_NONE, &progress, N_("Show progress"), NULL },
   { "interactive", 'i', 0, G_OPTION_ARG_NONE, &interactive, N_("Prompt before overwrite"), NULL },
   { "backup", 'b', 0, G_OPTION_ARG_NONE, &backup, N_("Backup existing destination files"), NULL },
-  { "no-copy-fallback", 'C', 0, G_OPTION_ARG_NONE, &no_copy_fallback, N_("Don't use copy and delete fallback"), NULL },
+  { "no-copy-fallback", 'C', 0, G_OPTION_ARG_NONE, &no_copy_fallback, N_("Don’t use copy and delete fallback"), NULL },
   { NULL }
 };
 
@@ -113,12 +113,14 @@ handle_move (int argc, char *argv[], gboolean do_help)
     {
       show_help (context, error->message);
       g_error_free (error);
+      g_option_context_free (context);
       return 1;
     }
 
   if (argc < 3)
     {
       show_help (context, NULL);
+      g_option_context_free (context);
       return 1;
     }
 
@@ -128,6 +130,7 @@ handle_move (int argc, char *argv[], gboolean do_help)
     {
       show_help (context, NULL);
       g_object_unref (dest);
+      g_option_context_free (context);
       return 1;
     }
 
@@ -140,6 +143,7 @@ handle_move (int argc, char *argv[], gboolean do_help)
       show_help (context, message);
       g_free (message);
       g_object_unref (dest);
+      g_option_context_free (context);
       return 1;
     }
 
@@ -178,7 +182,7 @@ handle_move (int argc, char *argv[], gboolean do_help)
               error = NULL;
 
               uri = g_file_get_uri (target);
-              g_print (_("%s: overwrite '%s' ? "), argv[0], uri);
+              g_print (_("%s: overwrite “%s”? "), argv[0], uri);
               g_free (uri);
               if (fgets (line, sizeof (line), stdin) &&
                   (line[0] == 'y' || line[0] == 'Y'))

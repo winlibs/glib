@@ -6,7 +6,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -502,6 +502,11 @@ g_unichar_iswide_cjk (gunichar c)
 {
   if (g_unichar_iswide (c))
     return TRUE;
+
+  /* bsearch() is declared attribute(nonnull(1)) so we can't validly search
+   * for a NULL key */
+  if (c == 0)
+    return FALSE;
 
   if (bsearch (GUINT_TO_POINTER (c), 
                g_unicode_width_table_ambiguous,
@@ -1421,6 +1426,14 @@ static const guint32 iso15924_tags[] =
     PACK ('M','u','l','t'), /* G_UNICODE_SCRIPT_MULTANI */
     PACK ('H','u','n','g'), /* G_UNICODE_SCRIPT_OLD_HUNGARIAN */
     PACK ('S','g','n','w'), /* G_UNICODE_SCRIPT_SIGNWRITING */
+
+  /* Unicode 9.0 additions */
+    PACK ('A','d','l','m'), /* G_UNICODE_SCRIPT_ADLAM */
+    PACK ('B','h','k','s'), /* G_UNICODE_SCRIPT_BHAIKSUKI */
+    PACK ('M','a','r','c'), /* G_UNICODE_SCRIPT_MARCHEN */
+    PACK ('N','e','w','a'), /* G_UNICODE_SCRIPT_NEWA */
+    PACK ('O','s','g','e'), /* G_UNICODE_SCRIPT_OSAGE */
+    PACK ('T','a','n','g'), /* G_UNICODE_SCRIPT_TANGUT */
 #undef PACK
 };
 

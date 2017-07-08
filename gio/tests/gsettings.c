@@ -335,6 +335,7 @@ test_complex_types (void)
   gchar *s;
   gint i1, i2;
   GVariantIter *iter = NULL;
+  GVariant *v = NULL;
 
   settings = g_settings_new ("org.gtk.test.complex-types");
 
@@ -369,6 +370,22 @@ test_complex_types (void)
   g_assert_cmpint (i1, ==, 5);
   g_assert (!g_variant_iter_next (iter, "i", &i1));
   g_variant_iter_free (iter);
+
+  g_settings_get (settings, "test-dict", "a{sau}", &iter);
+  g_assert_cmpint (g_variant_iter_n_children (iter), ==, 2);
+  g_assert (g_variant_iter_next (iter, "{&s@au}", &s, &v));
+  g_assert_cmpstr (s, ==, "AC");
+  g_assert_cmpstr ((char *)g_variant_get_type (v), ==, "au");
+  g_variant_unref (v);
+  g_assert (g_variant_iter_next (iter, "{&s@au}", &s, &v));
+  g_assert_cmpstr (s, ==, "IV");
+  g_assert_cmpstr ((char *)g_variant_get_type (v), ==, "au");
+  g_variant_unref (v);
+  g_variant_iter_free (iter);
+
+  v = g_settings_get_value (settings, "test-dict");
+  g_assert_cmpstr ((char *)g_variant_get_type (v), ==, "a{sau}");
+  g_variant_unref (v);
 
   g_object_unref (settings);
 }
@@ -1186,9 +1203,9 @@ test_simple_binding (void)
   g_assert_cmpuint (g_settings_get_uint64 (settings, "uint64"), ==, 12345);
 
   g_settings_set_uint64 (settings, "uint64", 54321);
-  u = 1111;
-  g_object_get (obj, "uint64", &u, NULL);
-  g_assert_cmpuint (u, ==, 54321);
+  u64 = 1111;
+  g_object_get (obj, "uint64", &u64, NULL);
+  g_assert_cmpuint (u64, ==, 54321);
 
   g_settings_bind (settings, "int64", obj, "int64", G_SETTINGS_BIND_DEFAULT);
 
@@ -2356,10 +2373,8 @@ test_schema_list_keys (void)
                             "farewell",
                             NULL));
 
-
   g_strfreev (keys);
   g_settings_schema_unref (schema);
-  g_settings_schema_source_unref (src);
 }
 
 static void
@@ -2423,6 +2438,8 @@ test_actions (void)
   g_assert_cmpstr (g_variant_get_string (state, NULL), ==, "kthxbye");
 
   g_free (name);
+  g_variant_type_free (param_type);
+  g_variant_type_free (state_type);
   g_variant_unref (state);
 
   g_object_unref (string);
@@ -2596,6 +2613,7 @@ main (int argc, char *argv[])
       backend_set = g_getenv ("GSETTINGS_BACKEND") != NULL;
 
       g_setenv ("XDG_DATA_DIRS", ".", TRUE);
+      g_setenv ("XDG_DATA_HOME", ".", TRUE);
       g_setenv ("GSETTINGS_SCHEMA_DIR", ".", TRUE);
 
       if (!backend_set)
@@ -2612,6 +2630,7 @@ main (int argc, char *argv[])
 
       g_assert (g_file_get_contents (SRCDIR "/org.gtk.test.gschema.xml.orig", &schema_text, NULL, NULL));
       g_assert (g_file_set_contents ("org.gtk.test.gschema.xml", schema_text, -1, NULL));
+      g_free (schema_text);
 
       g_remove ("gschemas.compiled");
       g_assert (g_spawn_command_line_sync ("../glib-compile-schemas --targetdir=. "

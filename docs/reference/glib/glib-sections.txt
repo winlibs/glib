@@ -1177,6 +1177,7 @@ g_log_set_default_handler
 
 <SUBSECTION>
 g_log_structured
+g_log_variant
 GLogField
 g_log_structured_array
 G_DEBUG_HERE
@@ -1473,6 +1474,15 @@ g_ascii_strtod
 g_ascii_dtostr
 g_ascii_formatd
 g_strtod
+
+<SUBSECTION>
+GNumberParserError
+G_NUMBER_PARSER_ERROR
+g_ascii_string_to_signed
+g_ascii_string_to_unsigned
+
+<SUBSECTION Private>
+g_number_parser_error_quark
 
 <SUBSECTION>
 g_strchug
@@ -2565,6 +2575,8 @@ g_ptr_array_set_size
 g_ptr_array_index
 g_ptr_array_free
 g_ptr_array_foreach
+g_ptr_array_find
+g_ptr_array_find_with_equal_func
 
 </SECTION>
 
@@ -2922,6 +2934,7 @@ g_utf8_strrchr
 g_utf8_strreverse
 g_utf8_substring
 g_utf8_validate
+g_utf8_make_valid
 
 <SUBSECTION>
 g_utf8_strup
@@ -3400,4 +3413,11 @@ g_hostname_is_non_ascii
 g_hostname_is_ascii_encoded
 <SUBSECTION>
 g_hostname_is_ip_address
+</SECTION>
+
+<SECTION>
+<FILE>uuid</FILE>
+<TITLE>GUuid</TITLE>
+g_uuid_string_is_valid
+g_uuid_string_random
 </SECTION>

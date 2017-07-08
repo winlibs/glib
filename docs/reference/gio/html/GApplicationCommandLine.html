@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GApplicationCommandLine: GIO Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GIO Reference Manual">
 <link rel="up" href="application.html" title="Application support">
 <link rel="prev" href="GApplication.html" title="GApplication">
@@ -270,27 +270,27 @@ of the launching instance.</p>
 19
 20
 21</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">static</span><span class="normal"> </span><span class="type">int</span>
-<span class="function">command_line</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">GApplication</span><span class="normal">            </span><span class="symbol">*</span><span class="normal">application</span><span class="symbol">,</span>
-<span class="normal">              </span><span class="usertype">GApplicationCommandLine</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">cmdline</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">**</span><span class="normal">argv</span><span class="symbol">;</span>
-<span class="normal">  </span><span class="usertype">gint</span><span class="normal"> argc</span><span class="symbol">;</span>
-<span class="normal">  </span><span class="usertype">gint</span><span class="normal"> i</span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">static int</span>
+<span class="function">command_line</span> <span class="gtkdoc opt">(</span>GApplication            <span class="gtkdoc opt">*</span>application<span class="gtkdoc opt">,</span>
+              GApplicationCommandLine <span class="gtkdoc opt">*</span>cmdline<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  gchar <span class="gtkdoc opt">**</span>argv<span class="gtkdoc opt">;</span>
+  gint argc<span class="gtkdoc opt">;</span>
+  gint i<span class="gtkdoc opt">;</span>
 
-<span class="normal">  argv </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="GApplicationCommandLine.html#g-application-command-line-get-arguments">g_application_command_line_get_arguments</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">cmdline</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">argc</span><span class="symbol">);</span>
+  argv <span class="gtkdoc opt">=</span> <span class="function"><a href="GApplicationCommandLine.html#g-application-command-line-get-arguments">g_application_command_line_get_arguments</a></span> <span class="gtkdoc opt">(</span>cmdline<span class="gtkdoc opt">, &amp;</span>argc<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="function"><a href="GApplicationCommandLine.html#g-application-command-line-print">g_application_command_line_print</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">cmdline</span><span class="symbol">,</span>
-<span class="normal">                                    </span><span class="string">"This text is written back</span><span class="specialchar">\n</span><span class="string">"</span>
-<span class="normal">                                    </span><span class="string">"to stdout of the caller</span><span class="specialchar">\n</span><span class="string">"</span><span class="symbol">);</span>
+  <span class="function"><a href="GApplicationCommandLine.html#g-application-command-line-print">g_application_command_line_print</a></span> <span class="gtkdoc opt">(</span>cmdline<span class="gtkdoc opt">,</span>
+                                    <span class="string">&quot;This text is written back</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span>
+                                    <span class="string">&quot;to stdout of the caller</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="keyword">for</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">i </span><span class="symbol">=</span><span class="normal"> </span><span class="number">0</span><span class="symbol">;</span><span class="normal"> i </span><span class="symbol">&lt;</span><span class="normal"> argc</span><span class="symbol">;</span><span class="normal"> i</span><span class="symbol">++)</span>
-<span class="normal">    </span><span class="function"><a href="../glib-Warnings-and-Assertions.html#g-print">g_print</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"argument %d: %s</span><span class="specialchar">\n</span><span class="string">"</span><span class="symbol">,</span><span class="normal"> i</span><span class="symbol">,</span><span class="normal"> argv</span><span class="symbol">[</span><span class="normal">i</span><span class="symbol">]);</span>
+  <span class="keyword">for</span> <span class="gtkdoc opt">(</span>i <span class="gtkdoc opt">=</span> <span class="number">0</span><span class="gtkdoc opt">;</span> i <span class="gtkdoc opt">&lt;</span> argc<span class="gtkdoc opt">;</span> i<span class="gtkdoc opt">++)</span>
+    <span class="function"><a href="../glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;argument %d: %s</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">,</span> i<span class="gtkdoc opt">,</span> argv<span class="gtkdoc opt">[</span>i<span class="gtkdoc opt">]);</span>
 
-<span class="normal">  </span><span class="function"><a href="../glib-String-Utility-Functions.html#g-strfreev">g_strfreev</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">argv</span><span class="symbol">);</span>
+  <span class="function"><a href="../glib-String-Utility-Functions.html#g-strfreev">g_strfreev</a></span> <span class="gtkdoc opt">(</span>argv<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="number">0</span><span class="symbol">;</span>
-<span class="cbracket">}</span></pre></td>
+  <span class="keyword">return</span> <span class="number">0</span><span class="gtkdoc opt">;</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -344,45 +344,45 @@ split between the launcher and the primary instance.</p>
 37
 38
 39</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">static</span><span class="normal"> <a href="../glib-Basic-Types.html#gboolean">gboolean</a></span>
-<span class="normal"> </span><span class="function">test_local_cmdline</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">GApplication</span><span class="normal">   </span><span class="symbol">*</span><span class="normal">application</span><span class="symbol">,</span>
-<span class="normal">                     </span><span class="usertype">gchar</span><span class="normal">        </span><span class="symbol">***</span><span class="normal">arguments</span><span class="symbol">,</span>
-<span class="normal">                     </span><span class="usertype">gint</span><span class="normal">           </span><span class="symbol">*</span><span class="normal">exit_status</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="usertype">gint</span><span class="normal"> i</span><span class="symbol">,</span><span class="normal"> j</span><span class="symbol">;</span>
-<span class="normal">  </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">**</span><span class="normal">argv</span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">static</span> gboolean
+ <span class="function">test_local_cmdline</span> <span class="gtkdoc opt">(</span>GApplication   <span class="gtkdoc opt">*</span>application<span class="gtkdoc opt">,</span>
+                     gchar        <span class="gtkdoc opt">***</span>arguments<span class="gtkdoc opt">,</span>
+                     gint           <span class="gtkdoc opt">*</span>exit_status<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  gint i<span class="gtkdoc opt">,</span> j<span class="gtkdoc opt">;</span>
+  gchar <span class="gtkdoc opt">**</span>argv<span class="gtkdoc opt">;</span>
 
-<span class="normal">  argv </span><span class="symbol">=</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">arguments</span><span class="symbol">;</span>
+  argv <span class="gtkdoc opt">= *</span>arguments<span class="gtkdoc opt">;</span>
 
-<span class="normal">  i </span><span class="symbol">=</span><span class="normal"> </span><span class="number">1</span><span class="symbol">;</span>
-<span class="normal">  </span><span class="keyword">while</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">argv</span><span class="symbol">[</span><span class="normal">i</span><span class="symbol">])</span>
-<span class="normal">    </span><span class="cbracket">{</span>
-<span class="normal">      </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="../glib-String-Utility-Functions.html#g-str-has-prefix">g_str_has_prefix</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">argv</span><span class="symbol">[</span><span class="normal">i</span><span class="symbol">],</span><span class="normal"> </span><span class="string">"--local-"</span><span class="symbol">))</span>
-<span class="normal">        </span><span class="cbracket">{</span>
-<span class="normal">          </span><span class="function"><a href="../glib-Warnings-and-Assertions.html#g-print">g_print</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"handling argument %s locally</span><span class="specialchar">\n</span><span class="string">"</span><span class="symbol">,</span><span class="normal"> argv</span><span class="symbol">[</span><span class="normal">i</span><span class="symbol">]);</span>
-<span class="normal">          </span><span class="function"><a href="../glib-Memory-Allocation.html#g-free">g_free</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">argv</span><span class="symbol">[</span><span class="normal">i</span><span class="symbol">]);</span>
-<span class="normal">          </span><span class="keyword">for</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">j </span><span class="symbol">=</span><span class="normal"> i</span><span class="symbol">;</span><span class="normal"> argv</span><span class="symbol">[</span><span class="normal">j</span><span class="symbol">];</span><span class="normal"> j</span><span class="symbol">++)</span>
-<span class="normal">            argv</span><span class="symbol">[</span><span class="normal">j</span><span class="symbol">]</span><span class="normal"> </span><span class="symbol">=</span><span class="normal"> argv</span><span class="symbol">[</span><span class="normal">j </span><span class="symbol">+</span><span class="normal"> </span><span class="number">1</span><span class="symbol">];</span>
-<span class="normal">        </span><span class="cbracket">}</span>
-<span class="normal">      </span><span class="keyword">else</span>
-<span class="normal">        </span><span class="cbracket">{</span>
-<span class="normal">          </span><span class="function"><a href="../glib-Warnings-and-Assertions.html#g-print">g_print</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"not handling argument %s locally</span><span class="specialchar">\n</span><span class="string">"</span><span class="symbol">,</span><span class="normal"> argv</span><span class="symbol">[</span><span class="normal">i</span><span class="symbol">]);</span>
-<span class="normal">          i</span><span class="symbol">++;</span>
-<span class="normal">        </span><span class="cbracket">}</span>
-<span class="normal">    </span><span class="cbracket">}</span>
+  i <span class="gtkdoc opt">=</span> <span class="number">1</span><span class="gtkdoc opt">;</span>
+  <span class="keyword">while</span> <span class="gtkdoc opt">(</span>argv<span class="gtkdoc opt">[</span>i<span class="gtkdoc opt">])</span>
+    <span class="gtkdoc opt">{</span>
+      <span class="keyword">if</span> <span class="gtkdoc opt">(</span><span class="function"><a href="../glib-String-Utility-Functions.html#g-str-has-prefix">g_str_has_prefix</a></span> <span class="gtkdoc opt">(</span>argv<span class="gtkdoc opt">[</span>i<span class="gtkdoc opt">],</span> <span class="string">&quot;--local-&quot;</span><span class="gtkdoc opt">))</span>
+        <span class="gtkdoc opt">{</span>
+          <span class="function"><a href="../glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;handling argument %s locally</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">,</span> argv<span class="gtkdoc opt">[</span>i<span class="gtkdoc opt">]);</span>
+          <span class="function"><a href="../glib-Memory-Allocation.html#g-free">g_free</a></span> <span class="gtkdoc opt">(</span>argv<span class="gtkdoc opt">[</span>i<span class="gtkdoc opt">]);</span>
+          <span class="keyword">for</span> <span class="gtkdoc opt">(</span>j <span class="gtkdoc opt">=</span> i<span class="gtkdoc opt">;</span> argv<span class="gtkdoc opt">[</span>j<span class="gtkdoc opt">];</span> j<span class="gtkdoc opt">++)</span>
+            argv<span class="gtkdoc opt">[</span>j<span class="gtkdoc opt">] =</span> argv<span class="gtkdoc opt">[</span>j <span class="gtkdoc opt">+</span> <span class="number">1</span><span class="gtkdoc opt">];</span>
+        <span class="gtkdoc opt">}</span>
+      <span class="keyword">else</span>
+        <span class="gtkdoc opt">{</span>
+          <span class="function"><a href="../glib-Warnings-and-Assertions.html#g-print">g_print</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;not handling argument %s locally</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">,</span> argv<span class="gtkdoc opt">[</span>i<span class="gtkdoc opt">]);</span>
+          i<span class="gtkdoc opt">++;</span>
+        <span class="gtkdoc opt">}</span>
+    <span class="gtkdoc opt">}</span>
 
-<span class="normal">  </span><span class="symbol">*</span><span class="normal">exit_status </span><span class="symbol">=</span><span class="normal"> </span><span class="number">0</span><span class="symbol">;</span>
+  <span class="gtkdoc opt">*</span>exit_status <span class="gtkdoc opt">=</span> <span class="number">0</span><span class="gtkdoc opt">;</span>
 
-<span class="normal">  </span><span class="keyword">return</span><span class="normal"> <a href="../glib-Standard-Macros.html#FALSE:CAPS">FALSE</a></span><span class="symbol">;</span>
-<span class="cbracket">}</span>
+  <span class="keyword">return</span> FALSE<span class="gtkdoc opt">;</span>
+<span class="gtkdoc opt">}</span>
 
-<span class="keyword">static</span><span class="normal"> </span><span class="type">void</span>
-<span class="function">test_application_class_init</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">TestApplicationClass</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">class</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="function">G_APPLICATION_CLASS</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">class</span><span class="symbol">)-&gt;</span><span class="normal">local_command_line </span><span class="symbol">=</span><span class="normal"> test_local_cmdline</span><span class="symbol">;</span>
+<span class="gtkdoc kwb">static void</span>
+<span class="function">test_application_class_init</span> <span class="gtkdoc opt">(</span>TestApplicationClass <span class="gtkdoc opt">*</span><span class="gtkdoc kwc">class</span><span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  <span class="function">G_APPLICATION_CLASS</span> <span class="gtkdoc opt">(</span><span class="gtkdoc kwc">class</span><span class="gtkdoc opt">)-&gt;</span>local_command_line <span class="gtkdoc opt">=</span> test_local_cmdline<span class="gtkdoc opt">;</span>
 
-<span class="normal">  </span><span class="symbol">...</span>
-<span class="cbracket">}</span></pre></td>
+  <span class="gtkdoc opt">...</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -430,35 +430,35 @@ be better to defer it.</p>
 27
 28
 29</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">static</span><span class="normal"> <a href="../glib-Basic-Types.html#gboolean">gboolean</a></span>
-<span class="function">my_cmdline_handler</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">gpointer</span><span class="normal"> data</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="usertype">GApplicationCommandLine</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">cmdline </span><span class="symbol">=</span><span class="normal"> data</span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">static</span> gboolean
+<span class="function">my_cmdline_handler</span> <span class="gtkdoc opt">(</span>gpointer data<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  GApplicationCommandLine <span class="gtkdoc opt">*</span>cmdline <span class="gtkdoc opt">=</span> data<span class="gtkdoc opt">;</span>
 
-<span class="normal">  </span><span class="comment">// do the heavy lifting in an idle</span>
+  <span class="gtkdoc slc">// do the heavy lifting in an idle</span>
 
-<span class="normal">  </span><span class="function"><a href="GApplicationCommandLine.html#g-application-command-line-set-exit-status">g_application_command_line_set_exit_status</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">cmdline</span><span class="symbol">,</span><span class="normal"> </span><span class="number">0</span><span class="symbol">);</span>
-<span class="normal">  </span><span class="function"><a href="../gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">cmdline</span><span class="symbol">);</span><span class="normal"> </span><span class="comment">// this releases the application</span>
+  <span class="function"><a href="GApplicationCommandLine.html#g-application-command-line-set-exit-status">g_application_command_line_set_exit_status</a></span> <span class="gtkdoc opt">(</span>cmdline<span class="gtkdoc opt">,</span> <span class="number">0</span><span class="gtkdoc opt">);</span>
+  <span class="function"><a href="../gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span> <span class="gtkdoc opt">(</span>cmdline<span class="gtkdoc opt">);</span> <span class="gtkdoc slc">// this releases the application</span>
 
-<span class="normal">  </span><span class="keyword">return</span><span class="normal"> <a href="../glib-The-Main-Event-Loop.html#G-SOURCE-REMOVE:CAPS">G_SOURCE_REMOVE</a></span><span class="symbol">;</span>
-<span class="cbracket">}</span>
+  <span class="keyword">return</span> G_SOURCE_REMOVE<span class="gtkdoc opt">;</span>
+<span class="gtkdoc opt">}</span>
 
-<span class="keyword">static</span><span class="normal"> </span><span class="type">int</span>
-<span class="function">command_line</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">GApplication</span><span class="normal">            </span><span class="symbol">*</span><span class="normal">application</span><span class="symbol">,</span>
-<span class="normal">              </span><span class="usertype">GApplicationCommandLine</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">cmdline</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="comment">// keep the application running until we are done with this commandline</span>
-<span class="normal">  </span><span class="function"><a href="GApplication.html#g-application-hold">g_application_hold</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">application</span><span class="symbol">);</span>
+<span class="gtkdoc kwb">static int</span>
+<span class="function">command_line</span> <span class="gtkdoc opt">(</span>GApplication            <span class="gtkdoc opt">*</span>application<span class="gtkdoc opt">,</span>
+              GApplicationCommandLine <span class="gtkdoc opt">*</span>cmdline<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  <span class="gtkdoc slc">// keep the application running until we are done with this commandline</span>
+  <span class="function"><a href="GApplication.html#g-application-hold">g_application_hold</a></span> <span class="gtkdoc opt">(</span>application<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="function"><a href="../gobject-The-Base-Object-Type.html#g-object-set-data-full">g_object_set_data_full</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="../gobject-The-Base-Object-Type.html#G-OBJECT:CAPS">G_OBJECT</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">cmdline</span><span class="symbol">),</span>
-<span class="normal">                          </span><span class="string">"application"</span><span class="symbol">,</span><span class="normal"> application</span><span class="symbol">,</span>
-<span class="normal">                          </span><span class="symbol">(</span><span class="normal"><a href="../glib-Datasets.html#GDestroyNotify">GDestroyNotify</a></span><span class="symbol">)</span><span class="normal"><a href="GApplication.html#g-application-release">g_application_release</a></span><span class="symbol">);</span>
+  <span class="function"><a href="../gobject-The-Base-Object-Type.html#g-object-set-data-full">g_object_set_data_full</a></span> <span class="gtkdoc opt">(</span><span class="function"><a href="../gobject-The-Base-Object-Type.html#G-OBJECT:CAPS">G_OBJECT</a></span> <span class="gtkdoc opt">(</span>cmdline<span class="gtkdoc opt">),</span>
+                          <span class="string">&quot;application&quot;</span><span class="gtkdoc opt">,</span> application<span class="gtkdoc opt">,</span>
+                          <span class="gtkdoc opt">(</span>GDestroyNotify<span class="gtkdoc opt">)</span>g_application_release<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="function"><a href="../gobject-The-Base-Object-Type.html#g-object-ref">g_object_ref</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">cmdline</span><span class="symbol">);</span>
-<span class="normal">  </span><span class="function"><a href="../glib-The-Main-Event-Loop.html#g-idle-add">g_idle_add</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">my_cmdline_handler</span><span class="symbol">,</span><span class="normal"> cmdline</span><span class="symbol">);</span>
+  <span class="function"><a href="../gobject-The-Base-Object-Type.html#g-object-ref">g_object_ref</a></span> <span class="gtkdoc opt">(</span>cmdline<span class="gtkdoc opt">);</span>
+  <span class="function"><a href="../glib-The-Main-Event-Loop.html#g-idle-add">g_idle_add</a></span> <span class="gtkdoc opt">(</span>my_cmdline_handler<span class="gtkdoc opt">,</span> cmdline<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="number">0</span><span class="symbol">;</span>
-<span class="cbracket">}</span></pre></td>
+  <span class="keyword">return</span> <span class="number">0</span><span class="gtkdoc opt">;</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -506,7 +506,7 @@ use <a href="../glib-Commandline-option-parser.html#g-option-context-parse-strv"
 <tr>
 <td class="parameter_name"><p>argc</p></td>
 <td class="parameter_description"><p> the length of the arguments array, or <a href="../glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="NULL may be passed instead of a pointer to a location."><span class="acronym">optional</span></acronym>]</span></td>
 </tr>
 </tbody>
 </table></div>

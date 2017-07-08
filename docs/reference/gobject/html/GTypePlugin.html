@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GTypePlugin: GObject Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GObject Reference Manual">
 <link rel="up" href="rn01.html" title="API Reference">
 <link rel="prev" href="gobject-Type-Information.html" title="Type Information">
@@ -129,7 +129,7 @@
 </div>
 <div class="refsect1">
 <a name="GTypePlugin.object-hierarchy"></a><h2>Object Hierarchy</h2>
-<pre class="screen">    <a href="https://developer.gnome.org/gobject/unstable/GTypeModule.html">GInterface</a>
+<pre class="screen">    <a href="/home/mclasen/gnome/share/gtk-doc/html/gobject/GTypeModule.html">GInterface</a>
     <span class="lineart">╰──</span> GTypePlugin
 </pre>
 </div>
@@ -162,10 +162,10 @@ introduces what types), like this:</p>
 2
 3
 4</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal">new_type_id </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-Type-Information.html#g-type-register-dynamic">g_type_register_dynamic</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">parent_type_id</span><span class="symbol">,</span>
-<span class="normal">                                      </span><span class="string">"TypeName"</span><span class="symbol">,</span>
-<span class="normal">                                      new_type_plugin</span><span class="symbol">,</span>
-<span class="normal">                                      type_flags</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">new_type_id <span class="gtkdoc opt">=</span> <span class="function"><a href="gobject-Type-Information.html#g-type-register-dynamic">g_type_register_dynamic</a></span> <span class="gtkdoc opt">(</span>parent_type_id<span class="gtkdoc opt">,</span>
+                                      <span class="string">&quot;TypeName&quot;</span><span class="gtkdoc opt">,</span>
+                                      new_type_plugin<span class="gtkdoc opt">,</span>
+                                      type_flags<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>

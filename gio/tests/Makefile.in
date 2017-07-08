@@ -93,10 +93,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = $(am__EXEEXT_8) $(am__EXEEXT_10)
-installed_test_PROGRAMS = $(am__EXEEXT_17)
-noinst_PROGRAMS = $(am__EXEEXT_18)
-check_PROGRAMS = $(am__EXEEXT_16)
+TESTS = $(am__EXEEXT_11) $(am__EXEEXT_14)
+installed_test_PROGRAMS = $(am__EXEEXT_23)
+noinst_PROGRAMS = $(am__EXEEXT_24)
+check_PROGRAMS = $(am__EXEEXT_22)
 @ENABLE_ALWAYS_BUILD_TESTS_TRUE@am__append_1 = $(all_test_ltlibs)
 @ENABLE_ALWAYS_BUILD_TESTS_TRUE@am__append_2 = $(all_test_programs)
 @ENABLE_ALWAYS_BUILD_TESTS_TRUE@am__append_3 = $(all_test_scripts)
@@ -125,22 +125,25 @@ check_PROGRAMS = $(am__EXEEXT_16)
 
 # -----------------------------------------------------------------------------
 #  Test programs buildable on UNIX only
+@OS_UNIX_TRUE@am__append_14 = \
+@OS_UNIX_TRUE@	file					\
+@OS_UNIX_TRUE@	gdbus-peer-object-manager		\
+@OS_UNIX_TRUE@	live-g-file				\
+@OS_UNIX_TRUE@	socket-address				\
+@OS_UNIX_TRUE@	stream-rw_all				\
+@OS_UNIX_TRUE@	unix-fd					\
+@OS_UNIX_TRUE@	unix-streams				\
+@OS_UNIX_TRUE@	$(NULL)
 
-# This is peer to peer so it doesn't need a session bus (so we can run it normally)
-@OS_UNIX_TRUE@am__append_14 = file gdbus-peer-object-manager \
-@OS_UNIX_TRUE@	gdbus-unix-addresses live-g-file socket-address \
-@OS_UNIX_TRUE@	stream-rw_all unix-fd unix-streams $(NULL) \
-@OS_UNIX_TRUE@	mimeapps gdbus-connection-flush gdbus-non-socket \
-@OS_UNIX_TRUE@	gdbus-peer
-
-# This test is currently unreliable
 @OS_UNIX_TRUE@am__append_15 = basic-application dbus-launch $(NULL) \
-@OS_UNIX_TRUE@	appinfo-test apps $(NULL) gsubprocess-testprog \
-@OS_UNIX_TRUE@	gdbus-overflow
+@OS_UNIX_TRUE@	appinfo-test $(NULL)
 
 # Uninstalled because of the check-for-executable logic in DesktopAppInfo unable to find the installed executable
-@OS_UNIX_TRUE@am__append_16 = appinfo desktop-app-info $(NULL) \
-@OS_UNIX_TRUE@	gsettings gschema-compile
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@am__append_16 = \
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@	appinfo					\
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@	desktop-app-info			\
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@	$(NULL)
+
 @OS_UNIX_TRUE@am__append_17 = $(addprefix \
 @OS_UNIX_TRUE@	desktop-files/usr/applications/,$(usr_desktop_files)) \
 @OS_UNIX_TRUE@	$(addprefix \
@@ -160,6 +163,9 @@ check_PROGRAMS = $(am__EXEEXT_16)
 @OS_UNIX_TRUE@	gdbus-example-objectmanager-client \
 @OS_UNIX_TRUE@	gdbus-example-objectmanager-server \
 @OS_UNIX_TRUE@	gdbus-test-fixture
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@am__append_19 = apps
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@am__append_20 = mimeapps
+@OS_UNIX_TRUE@am__append_21 = gsettings gschema-compile
 @OS_UNIX_FALSE@gsettings_DEPENDENCIES =  \
 @OS_UNIX_FALSE@	$(top_builddir)/gio/libgio-2.0.la \
 @OS_UNIX_FALSE@	$(top_builddir)/gobject/libgobject-2.0.la \
@@ -167,51 +173,52 @@ check_PROGRAMS = $(am__EXEEXT_16)
 @OS_UNIX_FALSE@	$(top_builddir)/glib/libglib-2.0.la \
 @OS_UNIX_FALSE@	$(am__DEPENDENCIES_1)
 # Generated while running the testcase itself...
-@OS_UNIX_TRUE@am__append_19 = test.mo de/LC_MESSAGES/test.mo \
+@OS_UNIX_TRUE@am__append_22 = test.mo de/LC_MESSAGES/test.mo \
 @OS_UNIX_TRUE@	keyfile/gsettings.store org.gtk.test.gschema.xml \
 @OS_UNIX_TRUE@	org.gtk.test.enums.xml gsettings.store \
 @OS_UNIX_TRUE@	gschemas.compiled \
 @OS_UNIX_TRUE@	schema-source/gschemas.compiled
-@OS_UNIX_TRUE@am__append_20 = de.po
-@OS_UNIX_TRUE@am__append_21 = \
+@OS_UNIX_TRUE@am__append_23 = de.po
+@OS_UNIX_TRUE@am__append_24 = \
 @OS_UNIX_TRUE@	org.gtk.test.gschema.xml.orig		\
 @OS_UNIX_TRUE@	org.gtk.schemasourcecheck.gschema.xml	\
 @OS_UNIX_TRUE@	testenum.h				\
 @OS_UNIX_TRUE@	enums.xml.template
 
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__append_22 = \
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	actions					\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	dbus-appinfo				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gapplication				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-auth				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-bz627724				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-close-pending			\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-connection			\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-connection-loss			\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-connection-slow			\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-error				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-exit-on-close			\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-export				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-introspection			\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-names				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy-threads			\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy-well-known-name		\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-test-codegen			\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-test-codegen-old			\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-threading				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gmenumodel				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gnotification				\
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	$(NULL)
+@OS_UNIX_TRUE@am__append_25 = gdbus-connection-flush gdbus-non-socket
 
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__append_23 = gdbus-test-codegen-generated.c gdbus-test-codegen-generated.h
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__append_24 = test-codegen.xml
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__append_25 = gdbus-test-codegen-generated.[ch] gdbus-test-codegen-generated-doc-*.xml
+# This test is currently unreliable
+@OS_UNIX_TRUE@am__append_26 = gsubprocess-testprog gdbus-overflow
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__append_27 = actions \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	defaultvalue gapplication \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-auth gdbus-bz627724 \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-close-pending \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-connection \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-connection-loss \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-connection-slow \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-error \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-exit-on-close \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-export \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-introspection \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-names gdbus-peer \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy-threads \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy-well-known-name \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-test-codegen \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-test-codegen-old \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-threading \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gmenumodel gnotification \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	$(NULL) \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-unix-addresses
+@HAVE_DBUS_DAEMON_TRUE@@OS_COCOA_FALSE@@OS_UNIX_TRUE@am__append_28 = dbus-appinfo
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__append_29 = gdbus-test-codegen-generated.c gdbus-test-codegen-generated.h
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__append_30 = test-codegen.xml
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__append_31 = gdbus-test-codegen-generated.[ch] gdbus-test-codegen-generated-doc-*.xml
 
 # -----------------------------------------------------------------------------
-@OS_WIN32_TRUE@am__append_26 = win32-streams
-@HAVE_DBUS1_TRUE@am__append_27 = gdbus-serialization
-@HAVE_GCC_TRUE@am__append_28 = \
+@OS_WIN32_TRUE@am__append_32 = win32-streams
+@HAVE_DBUS1_TRUE@am__append_33 = gdbus-serialization
+@HAVE_GCC_TRUE@am__append_34 = \
 @HAVE_GCC_TRUE@	autoptr				\
 @HAVE_GCC_TRUE@	$(NULL)
 
@@ -219,15 +226,15 @@ check_PROGRAMS = $(am__EXEEXT_16)
 # -----------------------------------------------------------------------------
 #  The resources test is a bit more complicated, and we cannot build it when
 #  cross-compiling GIO because it requires running a binary...
-@CROSS_COMPILING_FALSE@am__append_29 = resources
+@CROSS_COMPILING_FALSE@am__append_35 = resources
 @CROSS_COMPILING_TRUE@resources_DEPENDENCIES =  \
 @CROSS_COMPILING_TRUE@	$(top_builddir)/gio/libgio-2.0.la \
 @CROSS_COMPILING_TRUE@	$(top_builddir)/gobject/libgobject-2.0.la \
 @CROSS_COMPILING_TRUE@	$(top_builddir)/gmodule/libgmodule-2.0.la \
 @CROSS_COMPILING_TRUE@	$(top_builddir)/glib/libglib-2.0.la \
 @CROSS_COMPILING_TRUE@	$(am__DEPENDENCIES_1)
-@CROSS_COMPILING_FALSE@am__append_30 = libresourceplugin.la
-@CROSS_COMPILING_FALSE@am__append_31 = test.gresource
+@CROSS_COMPILING_FALSE@am__append_36 = libresourceplugin.la
+@CROSS_COMPILING_FALSE@am__append_37 = test.gresource
 
 # libtool contains a bug whereby the created .la file doesn't contain the correct dlname='' in the case that
 # you're building a library but not installing it.  This is apparently because the only considered use for an
@@ -236,9 +243,9 @@ check_PROGRAMS = $(am__EXEEXT_16)
 # will install the module by giving it a bogus -rpath for the uninstalled cases.
 #
 # See http://lists.gnu.org/archive/html/bug-libtool/2013-05/msg00009.html
-@CROSS_COMPILING_FALSE@@ENABLE_INSTALLED_TESTS_FALSE@am__append_32 = -rpath /
-@CROSS_COMPILING_FALSE@am__append_33 = test.gresource.xml test1.txt test2.gresource.xml test2.txt test3.gresource.xml test3.txt test4.gresource.xml
-@CROSS_COMPILING_FALSE@am__append_34 = test-generated.txt test_resources.c test_resources2.[ch] plugin_resources.c test.gresource
+@CROSS_COMPILING_FALSE@@ENABLE_INSTALLED_TESTS_FALSE@am__append_38 = -rpath /
+@CROSS_COMPILING_FALSE@am__append_39 = test.gresource.xml test1.txt test2.gresource.xml test2.txt test3.gresource.xml test3.txt test4.gresource.xml
+@CROSS_COMPILING_FALSE@am__append_40 = test-generated.txt test_resources.c test_resources2.[ch] plugin_resources.c test.gresource
 subdir = gio/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4macros/attributes.m4 \
@@ -322,15 +329,14 @@ libresourceplugin_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am__EXEEXT_1 =
 @OS_UNIX_TRUE@am__EXEEXT_2 = file$(EXEEXT) \
 @OS_UNIX_TRUE@	gdbus-peer-object-manager$(EXEEXT) \
-@OS_UNIX_TRUE@	gdbus-unix-addresses$(EXEEXT) \
 @OS_UNIX_TRUE@	live-g-file$(EXEEXT) socket-address$(EXEEXT) \
 @OS_UNIX_TRUE@	stream-rw_all$(EXEEXT) unix-fd$(EXEEXT) \
-@OS_UNIX_TRUE@	unix-streams$(EXEEXT) $(am__EXEEXT_1) \
-@OS_UNIX_TRUE@	mimeapps$(EXEEXT) \
-@OS_UNIX_TRUE@	gdbus-connection-flush$(EXEEXT) \
-@OS_UNIX_TRUE@	gdbus-non-socket$(EXEEXT) gdbus-peer$(EXEEXT)
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__EXEEXT_3 = actions$(EXEEXT) \
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	dbus-appinfo$(EXEEXT) \
+@OS_UNIX_TRUE@	unix-streams$(EXEEXT) $(am__EXEEXT_1)
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@am__EXEEXT_3 = mimeapps$(EXEEXT)
+@OS_UNIX_TRUE@am__EXEEXT_4 = gdbus-connection-flush$(EXEEXT) \
+@OS_UNIX_TRUE@	gdbus-non-socket$(EXEEXT)
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@am__EXEEXT_5 = actions$(EXEEXT) \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	defaultvalue$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gapplication$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-auth$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-bz627724$(EXEEXT) \
@@ -343,6 +349,7 @@ am__EXEEXT_1 =
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-export$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-introspection$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-names$(EXEEXT) \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-peer$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy-threads$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy-well-known-name$(EXEEXT) \
@@ -351,21 +358,22 @@ am__EXEEXT_1 =
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-threading$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gmenumodel$(EXEEXT) \
 @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gnotification$(EXEEXT) \
-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	$(am__EXEEXT_1)
-@OS_WIN32_TRUE@am__EXEEXT_4 = win32-streams$(EXEEXT)
-@HAVE_DBUS1_TRUE@am__EXEEXT_5 = gdbus-serialization$(EXEEXT)
-@HAVE_GCC_TRUE@am__EXEEXT_6 = autoptr$(EXEEXT) $(am__EXEEXT_1)
-@CROSS_COMPILING_FALSE@am__EXEEXT_7 = resources$(EXEEXT)
-am__EXEEXT_8 = appmonitor$(EXEEXT) async-close-output-stream$(EXEEXT) \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	$(am__EXEEXT_1) \
+@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-unix-addresses$(EXEEXT)
+@HAVE_DBUS_DAEMON_TRUE@@OS_COCOA_FALSE@@OS_UNIX_TRUE@am__EXEEXT_6 = dbus-appinfo$(EXEEXT)
+@OS_WIN32_TRUE@am__EXEEXT_7 = win32-streams$(EXEEXT)
+@HAVE_DBUS1_TRUE@am__EXEEXT_8 = gdbus-serialization$(EXEEXT)
+@HAVE_GCC_TRUE@am__EXEEXT_9 = autoptr$(EXEEXT) $(am__EXEEXT_1)
+@CROSS_COMPILING_FALSE@am__EXEEXT_10 = resources$(EXEEXT)
+am__EXEEXT_11 = appmonitor$(EXEEXT) async-close-output-stream$(EXEEXT) \
 	async-splice-output-stream$(EXEEXT) \
 	buffered-input-stream$(EXEEXT) buffered-output-stream$(EXEEXT) \
 	cancellable$(EXEEXT) contexts$(EXEEXT) contenttype$(EXEEXT) \
 	converter-stream$(EXEEXT) credentials$(EXEEXT) \
 	data-input-stream$(EXEEXT) data-output-stream$(EXEEXT) \
-	defaultvalue$(EXEEXT) fileattributematcher$(EXEEXT) \
-	filter-streams$(EXEEXT) giomodule$(EXEEXT) \
-	gsubprocess$(EXEEXT) g-file$(EXEEXT) g-file-info$(EXEEXT) \
-	g-icon$(EXEEXT) gdbus-addresses$(EXEEXT) \
+	fileattributematcher$(EXEEXT) filter-streams$(EXEEXT) \
+	giomodule$(EXEEXT) gsubprocess$(EXEEXT) g-file$(EXEEXT) \
+	g-file-info$(EXEEXT) g-icon$(EXEEXT) gdbus-addresses$(EXEEXT) \
 	gdbus-message$(EXEEXT) inet-address$(EXEEXT) \
 	io-stream$(EXEEXT) memory-input-stream$(EXEEXT) \
 	memory-output-stream$(EXEEXT) monitor$(EXEEXT) \
@@ -379,24 +387,29 @@ am__EXEEXT_8 = appmonitor$(EXEEXT) async-close-output-stream$(EXEEXT) \
 	testfilemonitor$(EXEEXT) $(am__EXEEXT_1) \
 	thumbnail-verification$(EXEEXT) tls-certificate$(EXEEXT) \
 	$(am__EXEEXT_2) $(am__EXEEXT_3) $(am__EXEEXT_4) \
-	$(am__EXEEXT_5) $(am__EXEEXT_6) $(am__EXEEXT_7)
-@OS_UNIX_TRUE@am__EXEEXT_9 = appinfo$(EXEEXT) \
-@OS_UNIX_TRUE@	desktop-app-info$(EXEEXT) $(am__EXEEXT_1) \
-@OS_UNIX_TRUE@	gsettings$(EXEEXT) gschema-compile$(EXEEXT)
-am__EXEEXT_10 = $(am__EXEEXT_1) $(am__EXEEXT_9)
-@OS_UNIX_TRUE@am__EXEEXT_11 = basic-application$(EXEEXT) \
+	$(am__EXEEXT_5) $(am__EXEEXT_6) $(am__EXEEXT_7) \
+	$(am__EXEEXT_8) $(am__EXEEXT_9) $(am__EXEEXT_10)
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@am__EXEEXT_12 = appinfo$(EXEEXT) \
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@	desktop-app-info$(EXEEXT) \
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@	$(am__EXEEXT_1)
+@OS_UNIX_TRUE@am__EXEEXT_13 = gsettings$(EXEEXT) \
+@OS_UNIX_TRUE@	gschema-compile$(EXEEXT)
+am__EXEEXT_14 = $(am__EXEEXT_1) $(am__EXEEXT_12) $(am__EXEEXT_13)
+@OS_UNIX_TRUE@am__EXEEXT_15 = basic-application$(EXEEXT) \
 @OS_UNIX_TRUE@	dbus-launch$(EXEEXT) $(am__EXEEXT_1) \
-@OS_UNIX_TRUE@	appinfo-test$(EXEEXT) apps$(EXEEXT) \
-@OS_UNIX_TRUE@	$(am__EXEEXT_1) gsubprocess-testprog$(EXEEXT) \
+@OS_UNIX_TRUE@	appinfo-test$(EXEEXT) $(am__EXEEXT_1)
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@am__EXEEXT_16 = apps$(EXEEXT)
+@OS_UNIX_TRUE@am__EXEEXT_17 = gsubprocess-testprog$(EXEEXT) \
 @OS_UNIX_TRUE@	gdbus-overflow$(EXEEXT)
-am__EXEEXT_12 = gdbus-connection-flush-helper$(EXEEXT) \
-	gdbus-testserver$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_11)
-@OS_UNIX_TRUE@am__EXEEXT_13 = gdbus-example-unix-fd-client$(EXEEXT) \
+am__EXEEXT_18 = gdbus-connection-flush-helper$(EXEEXT) \
+	gdbus-testserver$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_15) \
+	$(am__EXEEXT_16) $(am__EXEEXT_17)
+@OS_UNIX_TRUE@am__EXEEXT_19 = gdbus-example-unix-fd-client$(EXEEXT) \
 @OS_UNIX_TRUE@	$(am__EXEEXT_1) \
 @OS_UNIX_TRUE@	gdbus-example-objectmanager-client$(EXEEXT) \
 @OS_UNIX_TRUE@	gdbus-example-objectmanager-server$(EXEEXT) \
 @OS_UNIX_TRUE@	gdbus-test-fixture$(EXEEXT)
-am__EXEEXT_14 = gio-du$(EXEEXT) echo-server$(EXEEXT) \
+am__EXEEXT_20 = gio-du$(EXEEXT) echo-server$(EXEEXT) \
 	filter-cat$(EXEEXT) gapplication-example-actions$(EXEEXT) \
 	gapplication-example-cmdline$(EXEEXT) \
 	gapplication-example-cmdline2$(EXEEXT) \
@@ -412,13 +425,13 @@ am__EXEEXT_14 = gio-du$(EXEEXT) echo-server$(EXEEXT) \
 	gsubprocess-testprog$(EXEEXT) httpd$(EXEEXT) proxy$(EXEEXT) \
 	resolver$(EXEEXT) send-data$(EXEEXT) socket-server$(EXEEXT) \
 	$(am__EXEEXT_1) socket-client$(EXEEXT) gdbus-daemon$(EXEEXT) \
-	$(am__EXEEXT_13)
-am__EXEEXT_15 = $(am__EXEEXT_8) $(am__EXEEXT_10) $(am__EXEEXT_12) \
-	$(am__EXEEXT_14)
-@ENABLE_ALWAYS_BUILD_TESTS_FALSE@am__EXEEXT_16 = $(am__EXEEXT_15)
-@ENABLE_INSTALLED_TESTS_TRUE@am__EXEEXT_17 = $(am__EXEEXT_8) \
-@ENABLE_INSTALLED_TESTS_TRUE@	$(am__EXEEXT_12)
-@ENABLE_ALWAYS_BUILD_TESTS_TRUE@am__EXEEXT_18 = $(am__EXEEXT_15)
+	$(am__EXEEXT_19)
+am__EXEEXT_21 = $(am__EXEEXT_11) $(am__EXEEXT_14) $(am__EXEEXT_18) \
+	$(am__EXEEXT_20)
+@ENABLE_ALWAYS_BUILD_TESTS_FALSE@am__EXEEXT_22 = $(am__EXEEXT_21)
+@ENABLE_INSTALLED_TESTS_TRUE@am__EXEEXT_23 = $(am__EXEEXT_11) \
+@ENABLE_INSTALLED_TESTS_TRUE@	$(am__EXEEXT_18)
+@ENABLE_ALWAYS_BUILD_TESTS_TRUE@am__EXEEXT_24 = $(am__EXEEXT_21)
 PROGRAMS = $(installed_test_PROGRAMS) $(noinst_PROGRAMS)
 am__actions_SOURCES_DIST = gdbus-sessionbus.c gdbus-sessionbus.h \
 	gdbus-tests.h gdbus-tests.c actions.c
@@ -1960,16 +1973,17 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INSTOBJEXT = @INSTOBJEXT@
 INTLLIBS = @INTLLIBS@
+INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBELF_CFLAGS = @LIBELF_CFLAGS@
 LIBELF_LIBS = @LIBELF_LIBS@
 LIBFFI_CFLAGS = @LIBFFI_CFLAGS@
 LIBFFI_LIBS = @LIBFFI_LIBS@
+LIBMOUNT_CFLAGS = @LIBMOUNT_CFLAGS@
+LIBMOUNT_LIBS = @LIBMOUNT_LIBS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
-LIBSYSTEMD_CFLAGS = @LIBSYSTEMD_CFLAGS@
-LIBSYSTEMD_LIBS = @LIBSYSTEMD_LIBS@
 LIBTOOL = @LIBTOOL@
 LIB_EXE_MACHINE_FLAG = @LIB_EXE_MACHINE_FLAG@
 LIPO = @LIPO@
@@ -2109,7 +2123,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TESTS_ENVIRONMENT = \
+AM_TESTS_ENVIRONMENT = \
 	G_TEST_SRCDIR="$(abs_srcdir)" 		\
 	G_TEST_BUILDDIR="$(abs_builddir)" 	\
 	G_DEBUG=gc-friendly 			\
@@ -2121,16 +2135,16 @@ LOG_COMPILER = $(top_srcdir)/tap-test
 NULL = 
 
 # initialize variables for unconditional += appending
-BUILT_SOURCES = $(am__append_23) giotypefuncs.c
+BUILT_SOURCES = $(am__append_29) giotypefuncs.c
 BUILT_EXTRA_DIST = 
-CLEANFILES = *.log *.trs $(am__append_13) $(am__append_19) \
-	$(am__append_25) $(am__append_34) xgen-giosrc.c xgen-gio \
+CLEANFILES = *.log *.trs $(am__append_13) $(am__append_22) \
+	$(am__append_31) $(am__append_40) xgen-giosrc.c xgen-gio \
 	giotypefuncs.c
 DISTCLEANFILES = 
 MAINTAINERCLEANFILES = 
 EXTRA_DIST = $(all_dist_test_scripts) $(all_dist_test_data) \
-	socket-common.c $(am__append_20) $(am__append_24) \
-	$(am__append_33)
+	socket-common.c $(am__append_23) $(am__append_30) \
+	$(am__append_39)
 installed_test_LTLIBRARIES = $(am__append_12)
 installed_test_SCRIPTS = $(am__append_10)
 nobase_installed_test_DATA = $(am__append_11)
@@ -2165,8 +2179,8 @@ all_test_ltlibs = $(test_ltlibraries) $(uninstalled_test_ltlibraries) $(installe
 
 @ENABLE_INSTALLED_TESTS_TRUE@installed_test_meta_DATA = $(installed_testcases:=.test)
 dist_uninstalled_test_data = $(addprefix \
-	schema-tests/,$(schema_tests)) $(am__append_21)
-test_ltlibraries = $(am__append_30)
+	schema-tests/,$(schema_tests)) $(am__append_24)
+test_ltlibraries = $(am__append_36)
 SUBDIRS = gdbus-object-manager-example services modules
 LDADD = \
 	$(top_builddir)/gio/libgio-2.0.la		\
@@ -2184,8 +2198,8 @@ test_programs = appmonitor async-close-output-stream \
 	async-splice-output-stream buffered-input-stream \
 	buffered-output-stream cancellable contexts contenttype \
 	converter-stream credentials data-input-stream \
-	data-output-stream defaultvalue fileattributematcher \
-	filter-streams giomodule gsubprocess g-file g-file-info g-icon \
+	data-output-stream fileattributematcher filter-streams \
+	giomodule gsubprocess g-file g-file-info g-icon \
 	gdbus-addresses gdbus-message inet-address io-stream \
 	memory-input-stream memory-output-stream monitor \
 	network-address network-monitor permission pollable proxy-test \
@@ -2193,12 +2207,13 @@ test_programs = appmonitor async-close-output-stream \
 	socket socket-listener socket-service srvtarget task \
 	tls-interaction vfs volumemonitor glistmodel testfilemonitor \
 	$(NULL) thumbnail-verification tls-certificate \
-	$(am__append_14) $(am__append_22) $(am__append_26) \
-	$(am__append_27) $(am__append_28) $(am__append_29)
-uninstalled_test_programs = $(NULL) $(am__append_16)
+	$(am__append_14) $(am__append_20) $(am__append_25) \
+	$(am__append_27) $(am__append_28) $(am__append_32) \
+	$(am__append_33) $(am__append_34) $(am__append_35)
+uninstalled_test_programs = $(NULL) $(am__append_16) $(am__append_21)
 dist_test_data = contexts.c g-icon.c $(NULL) $(thumbnail_data_files) \
 	$(cert_data_files) $(am__append_17)
-test_data = $(NULL) $(am__append_31)
+test_data = $(NULL) $(am__append_37)
 uninstalled_test_extra_programs = gio-du echo-server filter-cat \
 	gapplication-example-actions gapplication-example-cmdline \
 	gapplication-example-cmdline2 gapplication-example-cmdline3 \
@@ -2210,7 +2225,7 @@ uninstalled_test_extra_programs = gio-du echo-server filter-cat \
 	resolver send-data socket-server $(NULL) socket-client \
 	gdbus-daemon $(am__append_18)
 test_extra_programs = gdbus-connection-flush-helper gdbus-testserver \
-	$(NULL) $(am__append_15)
+	$(NULL) $(am__append_15) $(am__append_19) $(am__append_26)
 schema_tests = \
 	array-default-not-in-choices.gschema.xml	\
 	bad-choice.gschema.xml				\
@@ -2388,6 +2403,8 @@ gdbus_daemon_SOURCES = \
 @OS_UNIX_TRUE@gdbus_example_objectmanager_client_LDADD = gdbus-object-manager-example/libgdbus-example-objectmanager.la $(LDADD)
 @OS_UNIX_TRUE@gdbus_example_objectmanager_server_LDADD = gdbus-object-manager-example/libgdbus-example-objectmanager.la $(LDADD)
 @OS_UNIX_TRUE@gdbus_test_fixture_LDADD = gdbus-object-manager-example/libgdbus-example-objectmanager.la $(LDADD)
+
+# This is peer to peer so it doesn't need a session bus (so we can run it normally)
 @OS_UNIX_TRUE@gdbus_peer_LDADD = gdbus-object-manager-example/libgdbus-example-objectmanager.la $(LDADD)
 
 # -----------------------------------------------------------------------------
@@ -2434,7 +2451,7 @@ tls_interaction_SOURCES = tls-interaction.c gtesttlsbackend.c gtesttlsbackend.h
 @CROSS_COMPILING_FALSE@libresourceplugin_la_SOURCES = resourceplugin.c plugin_resources.c
 @CROSS_COMPILING_FALSE@libresourceplugin_la_LDFLAGS = -avoid-version \
 @CROSS_COMPILING_FALSE@	-module -export-dynamic $(no_undefined) \
-@CROSS_COMPILING_FALSE@	$(am__append_32)
+@CROSS_COMPILING_FALSE@	$(am__append_38)
 @CROSS_COMPILING_FALSE@libresourceplugin_la_LIBADD = $(LDADD)
 @CROSS_COMPILING_FALSE@glib_compile_resources = $(top_builddir)/gio/glib-compile-resources
 all: $(BUILT_SOURCES)
@@ -3856,13 +3873,6 @@ data-output-stream.log: data-output-stream$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-defaultvalue.log: defaultvalue$(EXEEXT)
-	@p='defaultvalue$(EXEEXT)'; \
-	b='defaultvalue'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 fileattributematcher.log: fileattributematcher$(EXEEXT)
 	@p='fileattributematcher$(EXEEXT)'; \
 	b='fileattributematcher'; \
@@ -4122,13 +4132,6 @@ gdbus-peer-object-manager.log: gdbus-peer-object-manager$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-gdbus-unix-addresses.log: gdbus-unix-addresses$(EXEEXT)
-	@p='gdbus-unix-addresses$(EXEEXT)'; \
-	b='gdbus-unix-addresses'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 live-g-file.log: live-g-file$(EXEEXT)
 	@p='live-g-file$(EXEEXT)'; \
 	b='live-g-file'; \
@@ -4185,13 +4188,6 @@ gdbus-non-socket.log: gdbus-non-socket$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-gdbus-peer.log: gdbus-peer$(EXEEXT)
-	@p='gdbus-peer$(EXEEXT)'; \
-	b='gdbus-peer'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 actions.log: actions$(EXEEXT)
 	@p='actions$(EXEEXT)'; \
 	b='actions'; \
@@ -4199,9 +4195,9 @@ actions.log: actions$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-dbus-appinfo.log: dbus-appinfo$(EXEEXT)
-	@p='dbus-appinfo$(EXEEXT)'; \
-	b='dbus-appinfo'; \
+defaultvalue.log: defaultvalue$(EXEEXT)
+	@p='defaultvalue$(EXEEXT)'; \
+	b='defaultvalue'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -4290,6 +4286,13 @@ gdbus-names.log: gdbus-names$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+gdbus-peer.log: gdbus-peer$(EXEEXT)
+	@p='gdbus-peer$(EXEEXT)'; \
+	b='gdbus-peer'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 gdbus-proxy.log: gdbus-proxy$(EXEEXT)
 	@p='gdbus-proxy$(EXEEXT)'; \
 	b='gdbus-proxy'; \
@@ -4342,6 +4345,20 @@ gmenumodel.log: gmenumodel$(EXEEXT)
 gnotification.log: gnotification$(EXEEXT)
 	@p='gnotification$(EXEEXT)'; \
 	b='gnotification'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+gdbus-unix-addresses.log: gdbus-unix-addresses$(EXEEXT)
+	@p='gdbus-unix-addresses$(EXEEXT)'; \
+	b='gdbus-unix-addresses'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+dbus-appinfo.log: dbus-appinfo$(EXEEXT)
+	@p='dbus-appinfo$(EXEEXT)'; \
+	b='dbus-appinfo'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -4522,6 +4539,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+@OS_COCOA_TRUE@clean-local:
 @OS_UNIX_FALSE@clean-local:
 @ENABLE_INSTALLED_TESTS_FALSE@install-data-hook:
 @OS_UNIX_FALSE@install-data-hook:
@@ -4644,9 +4662,9 @@ uninstall-am: uninstall-installed_testLTLIBRARIES \
 @ENABLE_INSTALLED_TESTS_TRUE@	echo 'Exec=$(installed_testdir)/$(notdir $<) --tap' >> $@.tmp; \
 @ENABLE_INSTALLED_TESTS_TRUE@	echo 'Output=TAP' >> $@.tmp; \
 @ENABLE_INSTALLED_TESTS_TRUE@	mv $@.tmp $@)
-@OS_UNIX_TRUE@clean-local: clean-mimeapps
-@OS_UNIX_TRUE@clean-mimeapps:
-@OS_UNIX_TRUE@	rm -rf xdgdatadir xdgdatahome xdgconfighome
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@clean-local: clean-mimeapps
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@clean-mimeapps:
+@OS_COCOA_FALSE@@OS_UNIX_TRUE@	rm -rf xdgdatadir xdgdatahome xdgconfighome
 @OS_UNIX_TRUE@test.mo: de.po
 @OS_UNIX_TRUE@	$(AM_V_GEN) $(MSGFMT) -o test.mo $(srcdir)/de.po; \
 @OS_UNIX_TRUE@	$(MKDIR_P) de/LC_MESSAGES; \

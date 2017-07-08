@@ -30,8 +30,8 @@ m4_define(glib_configure_ac)
 # <mclasen> on the unstable (ie master), interface age = 0
 
 m4_define([glib_major_version], [2])
-m4_define([glib_minor_version], [49])
-m4_define([glib_micro_version], [4])
+m4_define([glib_minor_version], [53])
+m4_define([glib_micro_version], [3])
 m4_define([glib_interface_age], [0])
 m4_define([glib_binary_age],
           [m4_eval(100 * glib_minor_version + glib_micro_version)])
@@ -223,22 +223,19 @@ AS_IF([test "x$glib_have_carbon" = "xyes"], [
 ], [CARBON_LIBS=""])
 
 AC_SUBST([CARBON_LIBS])
-
+ac_cv_have_os_x_9_or_later="no"
 AS_IF([test "x$glib_have_cocoa" = "xyes"], [
   AC_DEFINE(HAVE_COCOA, 1, [define to 1 if Cocoa is available])
   COCOA_LIBS="-Wl,-framework,Foundation"
   LDFLAGS="$LDFLAGS $COCOA_LIBS"
-
-  osx_version=`sw_vers -productVersion`
-  osx_min_version="10.9.0"
-  AC_MSG_CHECKING([OSX version >= $osx_min_version])
-  AS_VERSION_COMPARE([$osx_version], [$osx_min_version], [
-    AC_MSG_RESULT([no])
-    AC_MSG_ERROR([OSX version is too old!])
-  ])
-  AC_MSG_RESULT([yes])
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <AvailabilityMacros.h>
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 1090
+#error Compiling for minimum OS X version before 10.9
+#endif
+  ]])],[ac_cv_have_os_x_9_or_later="yes"])
 ], [COCOA_LIBS=""])
-
+AM_CONDITIONAL([MAC_OS_X_9], [test "x$ac_cv_have_os_x_9_or_later" = xyes])
 AC_SUBST([COCOA_LIBS])
 
 dnl declare --enable-* args and collect ac_help strings
@@ -712,6 +709,7 @@ AC_CHECK_HEADERS([sys/select.h stdint.h inttypes.h sched.h malloc.h])
 AC_CHECK_HEADERS([sys/vfs.h sys/vmount.h sys/statfs.h sys/statvfs.h sys/filio.h])
 AC_CHECK_HEADERS([mntent.h sys/mnttab.h sys/vfstab.h sys/mntctl.h fstab.h])
 AC_CHECK_HEADERS([linux/magic.h])
+AC_CHECK_HEADERS([termios.h])
 
 # Some versions of MSC lack these
 AC_CHECK_HEADERS([dirent.h sys/time.h])
@@ -1491,6 +1489,16 @@ dnl *** check whether we need preceeding underscores
   		G_MODULE_NEED_USCORE=0
 	fi
 
+        AC_CHECK_DECL([RTLD_LAZY],
+                      [AC_DEFINE(HAVE_RTLD_LAZY, 1, [Define to 1 if RTLD_LAZY is available])],
+                      [], [[#include <dlfcn.h>]])
+        AC_CHECK_DECL([RTLD_NOW],
+                      [AC_DEFINE(HAVE_RTLD_NOW, 1, [Define to 1 if RTLD_NOW is available])],
+                      [], [[#include <dlfcn.h>]])
+        AC_CHECK_DECL([RTLD_GLOBAL],
+                      [AC_DEFINE(HAVE_RTLD_GLOBAL, 1, [Define to 1 if RTLD_GLOBAL is available])],
+                      [], [[#include <dlfcn.h>]])
+
 	LDFLAGS="$LDFLAGS_orig"
 dnl *** check for having dlerror()
 	AC_CHECK_FUNC(dlerror,
@@ -1730,20 +1738,42 @@ if test x$have_libelf = xyes; then
   AC_DEFINE(HAVE_LIBELF, 1, [Define if libelf is available])
 fi
 
-dnl *************************
-dnl *** check for systemd ***
-dnl *************************
-AC_ARG_ENABLE([libsystemd],
-              [AS_HELP_STRING([--disable-libsystemd],
-                              [build without libsystemd support])])
-AS_IF([test "$enable_libsystemd" != "no"],[
-  PKG_CHECK_MODULES([LIBSYSTEMD], [libsystemd],
-                    [have_libsystemd=yes], [have_libsystemd=no])
+dnl ************************
+dnl *** check for libmount ***
+dnl ************************
+
+dnl The fallback code doesn't really implement the same behaviors - e.g.
+dnl so on linux we want to require libmount unless specifically disabled
+dnl
+enable_libmount_default=${glib_os_linux:-no}
+AC_ARG_ENABLE(libmount,
+              [AS_HELP_STRING([--enable-libmount],
+                              [build with libmount support [default for Linux]])],,
+              [enable_libmount=$enable_libmount_default])
+AS_IF([ test "x$enable_libmount" = "xyes"],[
+PKG_CHECK_MODULES([LIBMOUNT], [mount >= 2.28], [have_libmount=yes], [have_libmount=maybe])
+AS_IF([ test $have_libmount = maybe ], [
+  glib_save_LIBS=$LIBS
+  AC_CHECK_HEADER([libmount/libmount.h], [:], [have_libmount=no])
+
+  # Check for a recent enough libmount
+  AC_CHECK_LIB([mount], [mnt_unref_table], [:], [have_libmount=no])
+  LIBS=$glib_save_LIBS
+
+  if test $have_libmount != no; then
+    LIBMOUNT_LIBS=-lmount
+    have_libmount=yes
+  fi
+])
+if test $have_libmount = no ; then
+   AC_MSG_ERROR([*** Could not find libmount])
+fi
 ])
 
-AS_IF([test "$have_libsystemd" = "yes"],[
-  AC_DEFINE([HAVE_LIBSYSTEMD],[1],[Define if libsystemd is available])
-])
+if test x$have_libmount = xyes; then
+  AC_DEFINE(HAVE_LIBMOUNT, 1, [Define if libmount is available])
+fi
+AM_CONDITIONAL(HAVE_LIBMOUNT, [test x$have_libmount = xyes])
 
 dnl ****************************************
 dnl *** platform dependent source checks ***
@@ -2563,7 +2593,7 @@ AS_IF([ test "x$use_gcov" = "xyes"], [
     AC_MSG_ERROR([ccache must be disabled when --enable-coverage option is used. You can disable ccache by setting environment variable CCACHE_DISABLE=1.])
   fi
 
-  ltp_version_list="1.6 1.7 1.8 1.9 1.10"
+  ltp_version_list="1.6 1.7 1.8 1.9 1.10 1.12"
   AC_CHECK_PROG(LTP, lcov, lcov)
   AC_CHECK_PROG(LTP_GENHTML, genhtml, genhtml)
 
@@ -3258,6 +3288,10 @@ AM_CONDITIONAL(HAVE_DBUS1, [test "x$have_dbus1" = "xyes"])
 AC_CHECK_PROGS([DBUS_DAEMON], [dbus-daemon])
 AM_CONDITIONAL([HAVE_DBUS_DAEMON], [test x$DBUS_DAEMON = xdbus-daemon ])
 
+# Check whether MSVC toolset is explicitly set
+AM_CONDITIONAL(MSVC_BASE_NO_TOOLSET_SET, [test x$MSVC_BASE_TOOLSET = x])
+AM_CONDITIONAL(MSVC_NO_TOOLSET_SET, [test x$MSVC_TOOLSET = x])
+
 dnl
 dnl Check for -Bsymbolic-functions linker flag used to avoid
 dnl intra-library PLT jumps, if available.
@@ -3414,13 +3448,15 @@ Makefile
 build/Makefile
 build/win32/Makefile
 build/win32/dirent/Makefile
-build/win32/vs9/Makefile
-build/win32/vs9/glib-version-paths.vsprops
-build/win32/vs10/Makefile
-build/win32/vs10/glib-version-paths.props
-build/win32/vs11/Makefile
-build/win32/vs12/Makefile
-build/win32/vs14/Makefile
+win32/Makefile
+win32/vs9/Makefile
+win32/vs9/glib-version-paths.vsprops
+win32/vs10/Makefile
+win32/vs10/glib-version-paths.props
+win32/vs11/Makefile
+win32/vs12/Makefile
+win32/vs14/Makefile
+win32/vs15/Makefile
 glib/Makefile
 glib/libcharset/Makefile
 glib/gnulib/Makefile

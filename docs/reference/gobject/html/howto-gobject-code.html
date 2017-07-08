@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Boilerplate code: GObject Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GObject Reference Manual">
 <link rel="up" href="howto-gobject.html" title="How to define and implement a new GObject">
 <link rel="prev" href="howto-gobject.html" title="How to define and implement a new GObject">
@@ -49,13 +49,13 @@
 <span class="comment"> * Copyright information</span>
 <span class="comment"> */</span>
 
-<span class="preproc">#include</span><span class="normal"> </span><span class="string">"viewer-file.h"</span>
+<span class="gtkdoc ppc">#include</span> <span class="gtkdoc pps">&quot;viewer-file.h&quot;</span><span class="gtkdoc ppc"></span>
 
 <span class="comment">/* Private structure definition. */</span>
-<span class="keyword">typedef</span><span class="normal"> </span><span class="keyword">struct</span><span class="normal"> </span><span class="cbracket">{</span>
-<span class="normal">  </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">filename</span><span class="symbol">;</span>
-<span class="normal">  </span><span class="comment">/* stuff */</span>
-<span class="cbracket">}</span><span class="normal"> ViewerFilePrivate</span><span class="symbol">;</span>
+<span class="gtkdoc kwc">typedef</span> <span class="gtkdoc kwb">struct</span> <span class="gtkdoc opt">{</span>
+  gchar <span class="gtkdoc opt">*</span>filename<span class="gtkdoc opt">;</span>
+  <span class="comment">/* stuff */</span>
+<span class="gtkdoc opt">}</span> ViewerFilePrivate<span class="gtkdoc opt">;</span>
 
 <span class="comment">/* </span>
 <span class="comment"> * forward definitions</span>
@@ -82,12 +82,12 @@
 4
 5
 6</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">struct</span><span class="normal"> </span><span class="classname">_ViewerFile</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="usertype">GObject</span><span class="normal"> parent_instance</span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">struct</span> _ViewerFile
+<span class="gtkdoc opt">{</span>
+  GObject parent_instance<span class="gtkdoc opt">;</span>
 
-<span class="normal">  </span><span class="comment">/* Other members, including private data. */</span>
-<span class="cbracket">}</span></pre></td>
+  <span class="comment">/* Other members, including private data. */</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -134,7 +134,7 @@
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-Type-Information.html#G-DEFINE-TYPE:CAPS">G_DEFINE_TYPE</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">ViewerFile</span><span class="symbol">,</span><span class="normal"> viewer_file</span><span class="symbol">,</span><span class="normal"> <a href="gobject-Type-Information.html#G-TYPE-OBJECT:CAPS">G_TYPE_OBJECT</a></span><span class="symbol">)</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-Type-Information.html#G-DEFINE-TYPE:CAPS">G_DEFINE_TYPE</a></span> <span class="gtkdoc opt">(</span>ViewerFile<span class="gtkdoc opt">,</span> viewer_file<span class="gtkdoc opt">,</span> G_TYPE_OBJECT<span class="gtkdoc opt">)</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -148,7 +148,7 @@ or
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-Type-Information.html#G-DEFINE-TYPE-WITH-PRIVATE:CAPS">G_DEFINE_TYPE_WITH_PRIVATE</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">ViewerFile</span><span class="symbol">,</span><span class="normal"> viewer_file</span><span class="symbol">,</span><span class="normal"> <a href="gobject-Type-Information.html#G-TYPE-OBJECT:CAPS">G_TYPE_OBJECT</a></span><span class="symbol">)</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-Type-Information.html#G-DEFINE-TYPE-WITH-PRIVATE:CAPS">G_DEFINE_TYPE_WITH_PRIVATE</a></span> <span class="gtkdoc opt">(</span>ViewerFile<span class="gtkdoc opt">,</span> viewer_file<span class="gtkdoc opt">,</span> G_TYPE_OBJECT<span class="gtkdoc opt">)</span></pre></td>
       </tr>
     </tbody>
   </table>

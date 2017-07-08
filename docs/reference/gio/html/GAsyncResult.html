@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GAsyncResult: GIO Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GIO Reference Manual">
 <link rel="up" href="async.html" title="Asynchronous I/O">
 <link rel="prev" href="GCancellable.html" title="GCancellable">
@@ -106,7 +106,7 @@
 </div>
 <div class="refsect1">
 <a name="GAsyncResult.object-hierarchy"></a><h2>Object Hierarchy</h2>
-<pre class="screen">    <a href="https://developer.gnome.org/gobject/unstable/GTypeModule.html">GInterface</a>
+<pre class="screen">    <a href="/home/mclasen/gnome/share/gtk-doc/html/gobject/GTypeModule.html">GInterface</a>
     <span class="lineart">╰──</span> GAsyncResult
 </pre>
 </div>
@@ -196,44 +196,44 @@ however, the "<code class="function">_finish()</code>" function may be called at
 36
 37
 38</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="type">void</span><span class="normal"> </span><span class="function">_theoretical_frobnitz_async</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">Theoretical</span><span class="normal">         </span><span class="symbol">*</span><span class="normal">t</span><span class="symbol">,</span>
-<span class="normal">                                  </span><span class="usertype">GCancellable</span><span class="normal">        </span><span class="symbol">*</span><span class="normal">c</span><span class="symbol">,</span>
-<span class="normal">                                  </span><span class="usertype">GAsyncReadyCallback</span><span class="normal">  cb</span><span class="symbol">,</span>
-<span class="normal">                                  </span><span class="usertype">gpointer</span><span class="normal">             u</span><span class="symbol">);</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">void</span> <span class="function">_theoretical_frobnitz_async</span> <span class="gtkdoc opt">(</span>Theoretical         <span class="gtkdoc opt">*</span>t<span class="gtkdoc opt">,</span>
+                                  GCancellable        <span class="gtkdoc opt">*</span>c<span class="gtkdoc opt">,</span>
+                                  GAsyncReadyCallback  cb<span class="gtkdoc opt">,</span>
+                                  gpointer             u<span class="gtkdoc opt">);</span>
 
-<span class="usertype">gboolean</span><span class="normal"> </span><span class="function">_theoretical_frobnitz_finish</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">Theoretical</span><span class="normal">   </span><span class="symbol">*</span><span class="normal">t</span><span class="symbol">,</span>
-<span class="normal">                                       </span><span class="usertype">GAsyncResult</span><span class="normal">  </span><span class="symbol">*</span><span class="normal">res</span><span class="symbol">,</span>
-<span class="normal">                                       </span><span class="usertype">GError</span><span class="normal">       </span><span class="symbol">**</span><span class="normal">e</span><span class="symbol">);</span>
+gboolean <span class="function">_theoretical_frobnitz_finish</span> <span class="gtkdoc opt">(</span>Theoretical   <span class="gtkdoc opt">*</span>t<span class="gtkdoc opt">,</span>
+                                       GAsyncResult  <span class="gtkdoc opt">*</span>res<span class="gtkdoc opt">,</span>
+                                       GError       <span class="gtkdoc opt">**</span>e<span class="gtkdoc opt">);</span>
 
-<span class="keyword">static</span><span class="normal"> </span><span class="type">void</span>
-<span class="function">frobnitz_result_func</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">GObject</span><span class="normal">      </span><span class="symbol">*</span><span class="normal">source_object</span><span class="symbol">,</span>
-<span class="normal">         </span><span class="usertype">GAsyncResult</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">res</span><span class="symbol">,</span>
-<span class="normal">         </span><span class="usertype">gpointer</span><span class="normal">      user_data</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="usertype">gboolean</span><span class="normal"> success </span><span class="symbol">=</span><span class="normal"> <a href="../glib-Standard-Macros.html#FALSE:CAPS">FALSE</a></span><span class="symbol">;</span>
+<span class="gtkdoc kwb">static void</span>
+<span class="function">frobnitz_result_func</span> <span class="gtkdoc opt">(</span>GObject      <span class="gtkdoc opt">*</span>source_object<span class="gtkdoc opt">,</span>
+		 GAsyncResult <span class="gtkdoc opt">*</span>res<span class="gtkdoc opt">,</span>
+		 gpointer      user_data<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  gboolean success <span class="gtkdoc opt">=</span> FALSE<span class="gtkdoc opt">;</span>
 
-<span class="normal">  success </span><span class="symbol">=</span><span class="normal"> </span><span class="function">_theoretical_frobnitz_finish</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">source_object</span><span class="symbol">,</span><span class="normal"> res</span><span class="symbol">,</span><span class="normal"> <a href="../glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">);</span>
+  success <span class="gtkdoc opt">=</span> <span class="function">_theoretical_frobnitz_finish</span> <span class="gtkdoc opt">(</span>source_object<span class="gtkdoc opt">,</span> res<span class="gtkdoc opt">,</span> NULL<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">success</span><span class="symbol">)</span>
-<span class="normal">    </span><span class="function"><a href="../glib-String-Utility-Functions.html#g-printf">g_printf</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"Hurray!</span><span class="specialchar">\n</span><span class="string">"</span><span class="symbol">);</span>
-<span class="normal">  </span><span class="keyword">else</span>
-<span class="normal">    </span><span class="function"><a href="../glib-String-Utility-Functions.html#g-printf">g_printf</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"Uh oh!</span><span class="specialchar">\n</span><span class="string">"</span><span class="symbol">);</span>
+  <span class="keyword">if</span> <span class="gtkdoc opt">(</span>success<span class="gtkdoc opt">)</span>
+    <span class="function"><a href="../glib-String-Utility-Functions.html#g-printf">g_printf</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;Hurray!</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">);</span>
+  <span class="keyword">else</span>
+    <span class="function"><a href="../glib-String-Utility-Functions.html#g-printf">g_printf</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;Uh oh!</span><span class="gtkdoc esc">\n</span><span class="string">&quot;</span><span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="symbol">...</span>
+  <span class="gtkdoc opt">...</span>
 
-<span class="cbracket">}</span>
+<span class="gtkdoc opt">}</span>
 
-<span class="type">int</span><span class="normal"> </span><span class="function">main</span><span class="normal"> </span><span class="symbol">(</span><span class="type">int</span><span class="normal"> argc</span><span class="symbol">,</span><span class="normal"> </span><span class="type">void</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">argv</span><span class="symbol">[])</span>
-<span class="cbracket">{</span>
-<span class="normal">   </span><span class="symbol">...</span>
+<span class="gtkdoc kwb">int</span> <span class="function">main</span> <span class="gtkdoc opt">(</span><span class="gtkdoc kwb">int</span> argc<span class="gtkdoc opt">,</span> <span class="gtkdoc kwb">void</span> <span class="gtkdoc opt">*</span>argv<span class="gtkdoc opt">[])</span>
+<span class="gtkdoc opt">{</span>
+   <span class="gtkdoc opt">...</span>
 
-<span class="normal">   </span><span class="function">_theoretical_frobnitz_async</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">theoretical_data</span><span class="symbol">,</span>
-<span class="normal">                                <a href="../glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">,</span>
-<span class="normal">                                frobnitz_result_func</span><span class="symbol">,</span>
-<span class="normal">                                <a href="../glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">);</span>
+   <span class="function">_theoretical_frobnitz_async</span> <span class="gtkdoc opt">(</span>theoretical_data<span class="gtkdoc opt">,</span>
+                                NULL<span class="gtkdoc opt">,</span>
+                                frobnitz_result_func<span class="gtkdoc opt">,</span>
+                                NULL<span class="gtkdoc opt">);</span>
 
-<span class="normal">   </span><span class="symbol">...</span>
-<span class="cbracket">}</span></pre></td>
+   <span class="gtkdoc opt">...</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>

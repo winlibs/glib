@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GDatagramBased: GIO Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GIO Reference Manual">
 <link rel="up" href="networking.html" title="Low-level network support">
 <link rel="prev" href="GSocket.html" title="GSocket">
@@ -115,7 +115,7 @@
 </div>
 <div class="refsect1">
 <a name="GDatagramBased.object-hierarchy"></a><h2>Object Hierarchy</h2>
-<pre class="screen">    <a href="https://developer.gnome.org/gobject/unstable/GTypeModule.html">GInterface</a>
+<pre class="screen">    <a href="/home/mclasen/gnome/share/gtk-doc/html/gobject/GTypeModule.html">GInterface</a>
     <span class="lineart">╰──</span> GDatagramBased
 </pre>
 </div>
@@ -175,12 +175,13 @@ said that I/O was possible. This can easily happen in case of a race
 condition in the application, but it can also happen for other reasons. For
 instance, on Windows a socket is always seen as writable until a write
 returns <a class="link" href="gio-GIOError.html#G-IO-ERROR-WOULD-BLOCK:CAPS"><code class="literal">G_IO_ERROR_WOULD_BLOCK</code></a>.</p>
-<p>As with <a class="link" href="GSocket.html" title="GSocket"><span class="type">GSocket</span></a>, <a href="GDatagramBased.html#GDatagramBased-struct"><span class="type">GDatagramBaseds</span></a> can be either connection oriented or
-connectionless. The interface does not cover connection establishment — use
-methods on the underlying type to establish a connection before sending and
-receiving data through the <a class="link" href="GDatagramBased.html" title="GDatagramBased"><span class="type">GDatagramBased</span></a> API. For connectionless socket
-types the target/source address is specified or received in each I/O
-operation.</p>
+<p>As with <a class="link" href="GSocket.html" title="GSocket"><span class="type">GSocket</span></a>, <a href="GDatagramBased.html#GDatagramBased-struct"><span class="type">GDatagramBaseds</span></a> can be either connection oriented (for
+example, SCTP) or connectionless (for example, UDP). <a href="GDatagramBased.html#GDatagramBased-struct"><span class="type">GDatagramBaseds</span></a> must be
+datagram-based, not stream-based. The interface does not cover connection
+establishment — use methods on the underlying type to establish a connection
+before sending and receiving data through the <a class="link" href="GDatagramBased.html" title="GDatagramBased"><span class="type">GDatagramBased</span></a> API. For
+connectionless socket types the target/source address is specified or
+received in each I/O operation.</p>
 <p>Like most other APIs in GLib, <a class="link" href="GDatagramBased.html" title="GDatagramBased"><span class="type">GDatagramBased</span></a> is not inherently thread safe.
 To use a <a class="link" href="GDatagramBased.html" title="GDatagramBased"><span class="type">GDatagramBased</span></a> concurrently from multiple threads, you must
 implement your own locking.</p>
@@ -333,7 +334,7 @@ to block indefinitely</p></td>
 <tr>
 <td class="parameter_name"><p>cancellable</p></td>
 <td class="parameter_description"><p> a <a class="link" href="GCancellable.html" title="GCancellable"><code class="literal">GCancellable</code></a>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>error</p></td>

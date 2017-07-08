@@ -5,7 +5,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -396,7 +396,7 @@ g_inet_socket_address_new (GInetAddress *address,
  * Creates a new #GInetSocketAddress for @address and @port.
  *
  * If @address is an IPv6 address, it can also contain a scope ID
- * (separated from the address by a "<literal>%</literal>").
+ * (separated from the address by a `%`).
  *
  * Returns: a new #GInetSocketAddress, or %NULL if @address cannot be
  * parsed.

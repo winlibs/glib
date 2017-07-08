@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GObject: GObject Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GObject Reference Manual">
 <link rel="up" href="rn01.html" title="API Reference">
 <link rel="prev" href="GTypeModule.html" title="GTypeModule">
@@ -199,6 +199,14 @@
 </tr>
 <tr>
 <td class="function_type">
+<a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gobject-The-Base-Object-Type.html#g-object-new-with-properties" title="g_object_new_with_properties ()">g_object_new_with_properties</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
 <a href="../glib-Basic-Types.html#gpointer"><span class="returnvalue">gpointer</span></a>
 </td>
 <td class="function_name">
@@ -352,7 +360,23 @@
 <span class="returnvalue">void</span>
 </td>
 <td class="function_name">
+<a class="link" href="gobject-The-Base-Object-Type.html#g-object-setv" title="g_object_setv ()">g_object_setv</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
 <a class="link" href="gobject-The-Base-Object-Type.html#g-object-get" title="g_object_get ()">g_object_get</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="gobject-The-Base-Object-Type.html#g-object-getv" title="g_object_getv ()">g_object_getv</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -676,8 +700,8 @@ allows code to be written as:</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal">container </span><span class="symbol">=</span><span class="normal"> </span><span class="function">create_container</span><span class="normal"> </span><span class="symbol">();</span>
-<span class="function">container_add_child</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">container</span><span class="symbol">,</span><span class="normal"> </span><span class="function">create_child</span><span class="symbol">());</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">container <span class="gtkdoc opt">=</span> <span class="function">create_container</span> <span class="gtkdoc opt">();</span>
+<span class="function">container_add_child</span> <span class="gtkdoc opt">(</span>container<span class="gtkdoc opt">,</span> <span class="function">create_child</span><span class="gtkdoc opt">());</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -698,11 +722,11 @@ written as:</p>
 3
 4
 5</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="usertype">Child</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">child</span><span class="symbol">;</span>
-<span class="normal">container </span><span class="symbol">=</span><span class="normal"> </span><span class="function">create_container</span><span class="normal"> </span><span class="symbol">();</span>
-<span class="normal">child </span><span class="symbol">=</span><span class="normal"> </span><span class="function">create_child</span><span class="normal"> </span><span class="symbol">();</span>
-<span class="function">container_add_child</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">container</span><span class="symbol">,</span><span class="normal"> child</span><span class="symbol">);</span>
-<span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">child</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">Child <span class="gtkdoc opt">*</span>child<span class="gtkdoc opt">;</span>
+container <span class="gtkdoc opt">=</span> <span class="function">create_container</span> <span class="gtkdoc opt">();</span>
+child <span class="gtkdoc opt">=</span> <span class="function">create_child</span> <span class="gtkdoc opt">();</span>
+<span class="function">container_add_child</span> <span class="gtkdoc opt">(</span>container<span class="gtkdoc opt">,</span> child<span class="gtkdoc opt">);</span>
+<span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span> <span class="gtkdoc opt">(</span>child<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -718,7 +742,7 @@ language bindings that provide automated reference and memory ownership
 maintenance (such as smart pointers or garbage collection) should not
 expose floating references in their API.</p>
 <p>Some object implementations may need to save an objects floating state
-across certain code portions (an example is <a href="http://developer.gnome.org/gtk3/GtkMenu.html#GtkMenu-struct"><span class="type">GtkMenu</span></a>), to achieve this,
+across certain code portions (an example is <a href="../gtk4/GtkMenu.html#GtkMenu-struct"><span class="type">GtkMenu</span></a>), to achieve this,
 the following sequence can be used:</p>
 <div class="informalexample">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
@@ -736,18 +760,18 @@ the following sequence can be used:</p>
 10
 11
 12</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="comment">// save floating state</span>
-<span class="usertype">gboolean</span><span class="normal"> was_floating </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-is-floating">g_object_is_floating</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span>
-<span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-ref-sink">g_object_ref_sink</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span>
-<span class="comment">// protected code portion</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc slc">// save floating state</span>
+gboolean was_floating <span class="gtkdoc opt">=</span> <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-is-floating">g_object_is_floating</a></span> <span class="gtkdoc opt">(</span>object<span class="gtkdoc opt">);</span>
+<span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-ref-sink">g_object_ref_sink</a></span> <span class="gtkdoc opt">(</span>object<span class="gtkdoc opt">);</span>
+<span class="gtkdoc slc">// protected code portion</span>
 
-<span class="symbol">...</span>
+<span class="gtkdoc opt">...</span>
 
-<span class="comment">// restore floating state</span>
-<span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">was_floating</span><span class="symbol">)</span>
-<span class="normal">  </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-force-floating">g_object_force_floating</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span>
+<span class="gtkdoc slc">// restore floating state</span>
+<span class="keyword">if</span> <span class="gtkdoc opt">(</span>was_floating<span class="gtkdoc opt">)</span>
+  <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-force-floating">g_object_force_floating</a></span> <span class="gtkdoc opt">(</span>object<span class="gtkdoc opt">);</span>
 <span class="keyword">else</span>
-<span class="normal">  </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">);</span><span class="normal"> </span><span class="comment">// release previously acquired reference</span></pre></td>
+  <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span> <span class="gtkdoc opt">(</span>object<span class="gtkdoc opt">);</span> <span class="gtkdoc slc">// release previously acquired reference</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1218,34 +1242,34 @@ class initialization:</p>
 26
 27
 28</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">enum</span><span class="normal"> </span><span class="cbracket">{</span>
-<span class="normal">  PROP_0</span><span class="symbol">,</span><span class="normal"> PROP_FOO</span><span class="symbol">,</span><span class="normal"> PROP_BAR</span><span class="symbol">,</span><span class="normal"> N_PROPERTIES</span>
-<span class="cbracket">}</span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">enum</span> <span class="gtkdoc opt">{</span>
+  PROP_0<span class="gtkdoc opt">,</span> PROP_FOO<span class="gtkdoc opt">,</span> PROP_BAR<span class="gtkdoc opt">,</span> N_PROPERTIES
+<span class="gtkdoc opt">};</span>
 
-<span class="keyword">static</span><span class="normal"> </span><span class="usertype">GParamSpec</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">obj_properties</span><span class="symbol">[</span><span class="normal">N_PROPERTIES</span><span class="symbol">]</span><span class="normal"> </span><span class="symbol">=</span><span class="normal"> </span><span class="cbracket">{</span><span class="normal"> <a href="../glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">,</span><span class="normal"> </span><span class="cbracket">}</span><span class="symbol">;</span>
+<span class="gtkdoc kwb">static</span> GParamSpec <span class="gtkdoc opt">*</span>obj_properties<span class="gtkdoc opt">[</span>N_PROPERTIES<span class="gtkdoc opt">] = {</span> NULL<span class="gtkdoc opt">, };</span>
 
-<span class="keyword">static</span><span class="normal"> </span><span class="type">void</span>
-<span class="function">my_object_class_init</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">MyObjectClass</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">klass</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="usertype">GObjectClass</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">gobject_class </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-The-Base-Object-Type.html#G-OBJECT-CLASS:CAPS">G_OBJECT_CLASS</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">klass</span><span class="symbol">);</span>
+<span class="gtkdoc kwb">static void</span>
+<span class="function">my_object_class_init</span> <span class="gtkdoc opt">(</span>MyObjectClass <span class="gtkdoc opt">*</span>klass<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  GObjectClass <span class="gtkdoc opt">*</span>gobject_class <span class="gtkdoc opt">=</span> <span class="function"><a href="gobject-The-Base-Object-Type.html#G-OBJECT-CLASS:CAPS">G_OBJECT_CLASS</a></span> <span class="gtkdoc opt">(</span>klass<span class="gtkdoc opt">);</span>
 
-<span class="normal">  obj_properties</span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]</span><span class="normal"> </span><span class="symbol">=</span>
-<span class="normal">    </span><span class="function"><a href="gobject-Standard-Parameter-and-Value-Types.html#g-param-spec-int">g_param_spec_int</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"foo"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Foo"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Foo"</span><span class="symbol">,</span>
-<span class="normal">                      </span><span class="symbol">-</span><span class="number">1</span><span class="symbol">,</span><span class="normal"> <a href="../glib-Basic-Types.html#G-MAXINT:CAPS">G_MAXINT</a></span><span class="symbol">,</span>
-<span class="normal">                      </span><span class="number">0</span><span class="symbol">,</span>
-<span class="normal">                      <a href="gobject-GParamSpec.html#G-PARAM-READWRITE:CAPS">G_PARAM_READWRITE</a></span><span class="symbol">);</span>
+  obj_properties<span class="gtkdoc opt">[</span>PROP_FOO<span class="gtkdoc opt">] =</span>
+    <span class="function"><a href="gobject-Standard-Parameter-and-Value-Types.html#g-param-spec-int">g_param_spec_int</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;foo&quot;</span><span class="gtkdoc opt">,</span> <span class="string">&quot;Foo&quot;</span><span class="gtkdoc opt">,</span> <span class="string">&quot;Foo&quot;</span><span class="gtkdoc opt">,</span>
+                      <span class="gtkdoc opt">-</span><span class="number">1</span><span class="gtkdoc opt">,</span> G_MAXINT<span class="gtkdoc opt">,</span>
+                      <span class="number">0</span><span class="gtkdoc opt">,</span>
+                      G_PARAM_READWRITE<span class="gtkdoc opt">);</span>
 
-<span class="normal">  obj_properties</span><span class="symbol">[</span><span class="normal">PROP_BAR</span><span class="symbol">]</span><span class="normal"> </span><span class="symbol">=</span>
-<span class="normal">    </span><span class="function"><a href="gobject-Standard-Parameter-and-Value-Types.html#g-param-spec-string">g_param_spec_string</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"bar"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Bar"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Bar"</span><span class="symbol">,</span>
-<span class="normal">                         <a href="../glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">,</span>
-<span class="normal">                         <a href="gobject-GParamSpec.html#G-PARAM-READWRITE:CAPS">G_PARAM_READWRITE</a></span><span class="symbol">);</span>
+  obj_properties<span class="gtkdoc opt">[</span>PROP_BAR<span class="gtkdoc opt">] =</span>
+    <span class="function"><a href="gobject-Standard-Parameter-and-Value-Types.html#g-param-spec-string">g_param_spec_string</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;bar&quot;</span><span class="gtkdoc opt">,</span> <span class="string">&quot;Bar&quot;</span><span class="gtkdoc opt">,</span> <span class="string">&quot;Bar&quot;</span><span class="gtkdoc opt">,</span>
+                         NULL<span class="gtkdoc opt">,</span>
+                         G_PARAM_READWRITE<span class="gtkdoc opt">);</span>
 
-<span class="normal">  gobject_class</span><span class="symbol">-&gt;</span><span class="normal">set_property </span><span class="symbol">=</span><span class="normal"> my_object_set_property</span><span class="symbol">;</span>
-<span class="normal">  gobject_class</span><span class="symbol">-&gt;</span><span class="normal">get_property </span><span class="symbol">=</span><span class="normal"> my_object_get_property</span><span class="symbol">;</span>
-<span class="normal">  </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-class-install-properties">g_object_class_install_properties</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">gobject_class</span><span class="symbol">,</span>
-<span class="normal">                                     N_PROPERTIES</span><span class="symbol">,</span>
-<span class="normal">                                     obj_properties</span><span class="symbol">);</span>
-<span class="cbracket">}</span></pre></td>
+  gobject_class<span class="gtkdoc opt">-&gt;</span>set_property <span class="gtkdoc opt">=</span> my_object_set_property<span class="gtkdoc opt">;</span>
+  gobject_class<span class="gtkdoc opt">-&gt;</span>get_property <span class="gtkdoc opt">=</span> my_object_get_property<span class="gtkdoc opt">;</span>
+  <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-class-install-properties">g_object_class_install_properties</a></span> <span class="gtkdoc opt">(</span>gobject_class<span class="gtkdoc opt">,</span>
+                                     N_PROPERTIES<span class="gtkdoc opt">,</span>
+                                     obj_properties<span class="gtkdoc opt">);</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1266,15 +1290,15 @@ class initialization:</p>
 7
 8
 9</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="type">void</span>
-<span class="function">my_object_set_foo</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">MyObject</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">self</span><span class="symbol">,</span><span class="normal"> </span><span class="usertype">gint</span><span class="normal"> foo</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">-&gt;</span><span class="normal">foo </span><span class="symbol">!=</span><span class="normal"> foo</span><span class="symbol">)</span>
-<span class="normal">    </span><span class="cbracket">{</span>
-<span class="normal">      self</span><span class="symbol">-&gt;</span><span class="normal">foo </span><span class="symbol">=</span><span class="normal"> foo</span><span class="symbol">;</span>
-<span class="normal">      </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-notify-by-pspec">g_object_notify_by_pspec</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="gobject-The-Base-Object-Type.html#G-OBJECT:CAPS">G_OBJECT</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">),</span><span class="normal"> obj_properties</span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]);</span>
-<span class="normal">    </span><span class="cbracket">}</span>
-<span class="normal"> </span><span class="cbracket">}</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">void</span>
+<span class="function">my_object_set_foo</span> <span class="gtkdoc opt">(</span>MyObject <span class="gtkdoc opt">*</span>self<span class="gtkdoc opt">,</span> gint foo<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  <span class="keyword">if</span> <span class="gtkdoc opt">(</span>self<span class="gtkdoc opt">-&gt;</span>foo <span class="gtkdoc opt">!=</span> foo<span class="gtkdoc opt">)</span>
+    <span class="gtkdoc opt">{</span>
+      self<span class="gtkdoc opt">-&gt;</span>foo <span class="gtkdoc opt">=</span> foo<span class="gtkdoc opt">;</span>
+      <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-notify-by-pspec">g_object_notify_by_pspec</a></span> <span class="gtkdoc opt">(</span><span class="function"><a href="gobject-The-Base-Object-Type.html#G-OBJECT:CAPS">G_OBJECT</a></span> <span class="gtkdoc opt">(</span>self<span class="gtkdoc opt">),</span> obj_properties<span class="gtkdoc opt">[</span>PROP_FOO<span class="gtkdoc opt">]);</span>
+    <span class="gtkdoc opt">}</span>
+ <span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -1619,10 +1643,67 @@ name/value pairs, followed by <a href="../glib-Standard-Macros.html#NULL:CAPS"><
 </div>
 <div class="refsect3">
 <a name="g-object-new.returns"></a><h4>Returns</h4>
-<p> (transfer full) (type GObject.Object) : a new instance of
+<p> a new instance of
 <em class="parameter"><code>object_type</code></em>
-</p>
+. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object]</span></p>
 </div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-new-with-properties"></a><h3>g_object_new_with_properties ()</h3>
+<pre class="programlisting"><a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="returnvalue">GObject</span></a> *
+g_object_new_with_properties (<em class="parameter"><code><a class="link" href="gobject-Type-Information.html#GType" title="GType"><span class="type">GType</span></a> object_type</code></em>,
+                              <em class="parameter"><code><a href="../glib-Basic-Types.html#guint"><span class="type">guint</span></a> n_properties</code></em>,
+                              <em class="parameter"><code>const <span class="type">char</span> *names[]</code></em>,
+                              <em class="parameter"><code>const <a class="link" href="gobject-Generic-values.html#GValue" title="GValue"><span class="type">GValue</span></a> values[]</code></em>);</pre>
+<p>Creates a new instance of a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> subtype and sets its properties using
+the provided arrays. Both arrays must have exactly <em class="parameter"><code>n_properties</code></em>
+ elements,
+and the names and values correspond by index.</p>
+<p>Construction parameters (see <a class="link" href="gobject-GParamSpec.html#G-PARAM-CONSTRUCT:CAPS"><code class="literal">G_PARAM_CONSTRUCT</code></a>, <a class="link" href="gobject-GParamSpec.html#G-PARAM-CONSTRUCT-ONLY:CAPS"><code class="literal">G_PARAM_CONSTRUCT_ONLY</code></a>)
+which are not explicitly specified are set to their default values.</p>
+<p><span class="annotation">[<acronym title="Rename the original symbol's name to SYMBOL."><span class="acronym">rename-to</span></acronym> g_object_new]</span></p>
+<div class="refsect3">
+<a name="g-object-new-with-properties.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>object_type</p></td>
+<td class="parameter_description"><p>the object type to instantiate</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n_properties</p></td>
+<td class="parameter_description"><p>the number of properties</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>names</p></td>
+<td class="parameter_description"><p> the names of each property to be set. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=n_properties]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>values</p></td>
+<td class="parameter_description"><p> the values of each property to be set. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=n_properties]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-new-with-properties.returns"></a><h4>Returns</h4>
+<p> a new instance of
+<em class="parameter"><code>object_type</code></em>
+. </p>
+<p><span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GObject.Object][<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+<p class="since">Since: 2.54</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -1631,10 +1712,14 @@ name/value pairs, followed by <a href="../glib-Standard-Macros.html#NULL:CAPS"><
 g_object_newv (<em class="parameter"><code><a class="link" href="gobject-Type-Information.html#GType" title="GType"><span class="type">GType</span></a> object_type</code></em>,
                <em class="parameter"><code><a href="../glib-Basic-Types.html#guint"><span class="type">guint</span></a> n_parameters</code></em>,
                <em class="parameter"><code><a class="link" href="gobject-The-Base-Object-Type.html#GParameter" title="struct GParameter"><span class="type">GParameter</span></a> *parameters</code></em>);</pre>
+<div class="warning">
+<p><code class="literal">g_object_newv</code> has been deprecated since version 2.54 and should not be used in newly-written code.</p>
+<p>Use <a class="link" href="gobject-The-Base-Object-Type.html#g-object-new-with-properties" title="g_object_new_with_properties ()"><code class="function">g_object_new_with_properties()</code></a> instead.
+deprecated. See <a class="link" href="gobject-The-Base-Object-Type.html#GParameter" title="struct GParameter"><span class="type">GParameter</span></a> for more information.</p>
+</div>
 <p>Creates a new instance of a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> subtype and sets its properties.</p>
 <p>Construction parameters (see <a class="link" href="gobject-GParamSpec.html#G-PARAM-CONSTRUCT:CAPS"><span class="type">G_PARAM_CONSTRUCT</span></a>, <a class="link" href="gobject-GParamSpec.html#G-PARAM-CONSTRUCT-ONLY:CAPS"><span class="type">G_PARAM_CONSTRUCT_ONLY</span></a>)
 which are not explicitly specified are set to their default values.</p>
-<p><span class="annotation">[<acronym title="Rename the original symbol's name to SYMBOL."><span class="acronym">rename-to</span></acronym> g_object_new]</span></p>
 <div class="refsect3">
 <a name="g-object-newv.parameters"></a><h4>Parameters</h4>
 <div class="informaltable"><table class="informaltable" width="100%" border="0">
@@ -1798,16 +1883,16 @@ between compilation units.</p>
 8
 9
 10</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="type">void</span>
-<span class="function">foo_set_bar</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">Foo</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">foo</span><span class="symbol">,</span>
-<span class="normal">             </span><span class="usertype">Bar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">new_bar</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="function"><a href="../glib-Warnings-and-Assertions.html#g-return-if-fail">g_return_if_fail</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function">IS_FOO</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">foo</span><span class="symbol">));</span>
-<span class="normal">  </span><span class="function"><a href="../glib-Warnings-and-Assertions.html#g-return-if-fail">g_return_if_fail</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">new_bar </span><span class="symbol">==</span><span class="normal"> <a href="../glib-Standard-Macros.html#NULL:CAPS">NULL</a> </span><span class="symbol">||</span><span class="normal"> </span><span class="function">IS_BAR</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">new_bar</span><span class="symbol">));</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">void</span>
+<span class="function">foo_set_bar</span> <span class="gtkdoc opt">(</span>Foo <span class="gtkdoc opt">*</span>foo<span class="gtkdoc opt">,</span>
+             Bar <span class="gtkdoc opt">*</span>new_bar<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  <span class="function"><a href="../glib-Warnings-and-Assertions.html#g-return-if-fail">g_return_if_fail</a></span> <span class="gtkdoc opt">(</span><span class="function">IS_FOO</span> <span class="gtkdoc opt">(</span>foo<span class="gtkdoc opt">));</span>
+  <span class="function"><a href="../glib-Warnings-and-Assertions.html#g-return-if-fail">g_return_if_fail</a></span> <span class="gtkdoc opt">(</span>new_bar <span class="gtkdoc opt">==</span> NULL <span class="gtkdoc opt">||</span> <span class="function">IS_BAR</span> <span class="gtkdoc opt">(</span>new_bar<span class="gtkdoc opt">));</span>
 
-<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-set-object">g_set_object</a></span><span class="normal"> </span><span class="symbol">(&amp;</span><span class="normal">foo</span><span class="symbol">-&gt;</span><span class="normal">bar</span><span class="symbol">,</span><span class="normal"> new_bar</span><span class="symbol">))</span>
-<span class="normal">    </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-notify">g_object_notify</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">foo</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"bar"</span><span class="symbol">);</span>
-<span class="cbracket">}</span></pre></td>
+  <span class="keyword">if</span> <span class="gtkdoc opt">(</span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-set-object">g_set_object</a></span> <span class="gtkdoc opt">(&amp;</span>foo<span class="gtkdoc opt">-&gt;</span>bar<span class="gtkdoc opt">,</span> new_bar<span class="gtkdoc opt">))</span>
+    <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-notify">g_object_notify</a></span> <span class="gtkdoc opt">(</span>foo<span class="gtkdoc opt">,</span> <span class="string">&quot;bar&quot;</span><span class="gtkdoc opt">);</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -2083,7 +2168,7 @@ thread. Use <a class="link" href="gobject-The-Base-Object-Type.html#GWeakRef" ti
 <td class="parameter_name"><p>weak_pointer_location</p></td>
 <td class="parameter_description"><p> The memory address
 of a pointer. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input and for returning results. Default is transfer full."><span class="acronym">inout</span></acronym>][not optional][<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input and for returning results. Default is transfer full."><span class="acronym">inout</span></acronym>][not optional]</span></td>
 </tr>
 </tbody>
 </table></div>
@@ -2119,7 +2204,7 @@ to match the one used with <a class="link" href="gobject-The-Base-Object-Type.ht
 <td class="parameter_name"><p>weak_pointer_location</p></td>
 <td class="parameter_description"><p> The memory address
 of a pointer. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input and for returning results. Default is transfer full."><span class="acronym">inout</span></acronym>][not optional][<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input and for returning results. Default is transfer full."><span class="acronym">inout</span></acronym>][not optional]</span></td>
 </tr>
 </tbody>
 </table></div>
@@ -2311,14 +2396,14 @@ g_object_connect (<em class="parameter"><code><a href="../glib-Basic-Types.html#
 6
 7
 8</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal">menu</span><span class="symbol">-&gt;</span><span class="normal">toplevel </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-connect">g_object_connect</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-new">g_object_new</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">GTK_TYPE_WINDOW</span><span class="symbol">,</span>
-<span class="normal">                           </span><span class="string">"type"</span><span class="symbol">,</span><span class="normal"> <a href="http://developer.gnome.org/gtk3/GtkWindow.html#GTK-WINDOW-POPUP:CAPS">GTK_WINDOW_POPUP</a></span><span class="symbol">,</span>
-<span class="normal">                           </span><span class="string">"child"</span><span class="symbol">,</span><span class="normal"> menu</span><span class="symbol">,</span>
-<span class="normal">                           <a href="../glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">),</span>
-<span class="normal">                     </span><span class="string">"signal::event"</span><span class="symbol">,</span><span class="normal"> gtk_menu_window_event</span><span class="symbol">,</span><span class="normal"> menu</span><span class="symbol">,</span>
-<span class="normal">                     </span><span class="string">"signal::size_request"</span><span class="symbol">,</span><span class="normal"> gtk_menu_window_size_request</span><span class="symbol">,</span><span class="normal"> menu</span><span class="symbol">,</span>
-<span class="normal">                     </span><span class="string">"signal::destroy"</span><span class="symbol">,</span><span class="normal"> <a href="http://developer.gnome.org/gtk3/GtkWidget.html#gtk-widget-destroyed">gtk_widget_destroyed</a></span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">menu</span><span class="symbol">-&gt;</span><span class="normal">toplevel</span><span class="symbol">,</span>
-<span class="normal">                     <a href="../glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">menu<span class="gtkdoc opt">-&gt;</span>toplevel <span class="gtkdoc opt">=</span> <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-connect">g_object_connect</a></span> <span class="gtkdoc opt">(</span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-new">g_object_new</a></span> <span class="gtkdoc opt">(</span>GTK_TYPE_WINDOW<span class="gtkdoc opt">,</span>
+						   <span class="string">&quot;type&quot;</span><span class="gtkdoc opt">,</span> GTK_WINDOW_POPUP<span class="gtkdoc opt">,</span>
+						   <span class="string">&quot;child&quot;</span><span class="gtkdoc opt">,</span> menu<span class="gtkdoc opt">,</span>
+						   NULL<span class="gtkdoc opt">),</span>
+				     <span class="string">&quot;signal::event&quot;</span><span class="gtkdoc opt">,</span> gtk_menu_window_event<span class="gtkdoc opt">,</span> menu<span class="gtkdoc opt">,</span>
+				     <span class="string">&quot;signal::size_request&quot;</span><span class="gtkdoc opt">,</span> gtk_menu_window_size_request<span class="gtkdoc opt">,</span> menu<span class="gtkdoc opt">,</span>
+				     <span class="string">&quot;signal::destroy&quot;</span><span class="gtkdoc opt">,</span> gtk_widget_destroyed<span class="gtkdoc opt">, &amp;</span>menu<span class="gtkdoc opt">-&gt;</span>toplevel<span class="gtkdoc opt">,</span>
+				     NULL<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -2448,6 +2533,56 @@ name/value pairs, followed by <a href="../glib-Standard-Macros.html#NULL:CAPS"><
 </div>
 <hr>
 <div class="refsect2">
+<a name="g-object-setv"></a><h3>g_object_setv ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+g_object_setv (<em class="parameter"><code><a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *object</code></em>,
+               <em class="parameter"><code><a href="../glib-Basic-Types.html#guint"><span class="type">guint</span></a> n_properties</code></em>,
+               <em class="parameter"><code>const <a href="../glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *names[]</code></em>,
+               <em class="parameter"><code>const <a class="link" href="gobject-Generic-values.html#GValue" title="GValue"><span class="type">GValue</span></a> values[]</code></em>);</pre>
+<p>Sets <em class="parameter"><code>n_properties</code></em>
+ properties for an <em class="parameter"><code>object</code></em>
+.
+Properties to be set will be taken from <em class="parameter"><code>values</code></em>
+. All properties must be
+valid. Warnings will be emitted and undefined behaviour may result if invalid
+properties are passed in.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="g-object-setv.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n_properties</p></td>
+<td class="parameter_description"><p>the number of properties</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>names</p></td>
+<td class="parameter_description"><p> the names of each property to be set. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=n_properties]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>values</p></td>
+<td class="parameter_description"><p> the values of each property to be set. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=n_properties]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: 2.54</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="g-object-get"></a><h3>g_object_get ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>
 g_object_get (<em class="parameter"><code><a href="../glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> object</code></em>,
@@ -2477,20 +2612,20 @@ of three properties: an integer, a string and an object:</p>
 12
 13
 14</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="usertype">gint</span><span class="normal"> intval</span><span class="symbol">;</span>
-<span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">strval</span><span class="symbol">;</span>
-<span class="usertype">GObject</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">objval</span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting">gint intval<span class="gtkdoc opt">;</span>
+gchar <span class="gtkdoc opt">*</span>strval<span class="gtkdoc opt">;</span>
+GObject <span class="gtkdoc opt">*</span>objval<span class="gtkdoc opt">;</span>
 
-<span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-get">g_object_get</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">my_object</span><span class="symbol">,</span>
-<span class="normal">              </span><span class="string">"int-property"</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">intval</span><span class="symbol">,</span>
-<span class="normal">              </span><span class="string">"str-property"</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">strval</span><span class="symbol">,</span>
-<span class="normal">              </span><span class="string">"obj-property"</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">objval</span><span class="symbol">,</span>
-<span class="normal">              <a href="../glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">);</span>
+<span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-get">g_object_get</a></span> <span class="gtkdoc opt">(</span>my_object<span class="gtkdoc opt">,</span>
+              <span class="string">&quot;int-property&quot;</span><span class="gtkdoc opt">, &amp;</span>intval<span class="gtkdoc opt">,</span>
+              <span class="string">&quot;str-property&quot;</span><span class="gtkdoc opt">, &amp;</span>strval<span class="gtkdoc opt">,</span>
+              <span class="string">&quot;obj-property&quot;</span><span class="gtkdoc opt">, &amp;</span>objval<span class="gtkdoc opt">,</span>
+              NULL<span class="gtkdoc opt">);</span>
 
-<span class="comment">// Do something with intval, strval, objval</span>
+<span class="gtkdoc slc">// Do something with intval, strval, objval</span>
 
-<span class="function"><a href="../glib-Memory-Allocation.html#g-free">g_free</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">strval</span><span class="symbol">);</span>
-<span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">objval</span><span class="symbol">);</span></pre></td>
+<span class="function"><a href="../glib-Memory-Allocation.html#g-free">g_free</a></span> <span class="gtkdoc opt">(</span>strval<span class="gtkdoc opt">);</span>
+<span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-unref">g_object_unref</a></span> <span class="gtkdoc opt">(</span>objval<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -2526,6 +2661,55 @@ name/return location pairs, followed by <a href="../glib-Standard-Macros.html#NU
 </tbody>
 </table></div>
 </div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-getv"></a><h3>g_object_getv ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+g_object_getv (<em class="parameter"><code><a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a> *object</code></em>,
+               <em class="parameter"><code><a href="../glib-Basic-Types.html#guint"><span class="type">guint</span></a> n_properties</code></em>,
+               <em class="parameter"><code>const <a href="../glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *names[]</code></em>,
+               <em class="parameter"><code><a class="link" href="gobject-Generic-values.html#GValue" title="GValue"><span class="type">GValue</span></a> values[]</code></em>);</pre>
+<p>Gets <em class="parameter"><code>n_properties</code></em>
+ properties for an <em class="parameter"><code>object</code></em>
+.
+Obtained properties will be set to <em class="parameter"><code>values</code></em>
+. All properties must be valid.
+Warnings will be emitted and undefined behaviour may result if invalid
+properties are passed in.</p>
+<div class="refsect3">
+<a name="g-object-getv.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gobject-The-Base-Object-Type.html#GObject"><span class="type">GObject</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n_properties</p></td>
+<td class="parameter_description"><p>the number of properties</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>names</p></td>
+<td class="parameter_description"><p> the names of each property to get. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=n_properties]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>values</p></td>
+<td class="parameter_description"><p> the values of each property to get. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> length=n_properties]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: 2.54</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -2606,26 +2790,26 @@ instead, is to store the GParamSpec used with
 18
 19
 20</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="keyword">enum</span>
-<span class="cbracket">{</span>
-<span class="normal">  PROP_0</span><span class="symbol">,</span>
-<span class="normal">  PROP_FOO</span><span class="symbol">,</span>
-<span class="normal">  PROP_LAST</span>
-<span class="cbracket">}</span><span class="symbol">;</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">enum</span>
+<span class="gtkdoc opt">{</span>
+  PROP_0<span class="gtkdoc opt">,</span>
+  PROP_FOO<span class="gtkdoc opt">,</span>
+  PROP_LAST
+<span class="gtkdoc opt">};</span>
 
-<span class="keyword">static</span><span class="normal"> </span><span class="usertype">GParamSpec</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">properties</span><span class="symbol">[</span><span class="normal">PROP_LAST</span><span class="symbol">];</span>
+<span class="gtkdoc kwb">static</span> GParamSpec <span class="gtkdoc opt">*</span>properties<span class="gtkdoc opt">[</span>PROP_LAST<span class="gtkdoc opt">];</span>
 
-<span class="keyword">static</span><span class="normal"> </span><span class="type">void</span>
-<span class="function">my_object_class_init</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">MyObjectClass</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">klass</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  properties</span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]</span><span class="normal"> </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-Standard-Parameter-and-Value-Types.html#g-param-spec-int">g_param_spec_int</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"foo"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Foo"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"The foo"</span><span class="symbol">,</span>
-<span class="normal">                                           </span><span class="number">0</span><span class="symbol">,</span><span class="normal"> </span><span class="number">100</span><span class="symbol">,</span>
-<span class="normal">                                           </span><span class="number">50</span><span class="symbol">,</span>
-<span class="normal">                                           <a href="gobject-GParamSpec.html#G-PARAM-READWRITE:CAPS">G_PARAM_READWRITE</a></span><span class="symbol">);</span>
-<span class="normal">  </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-class-install-property">g_object_class_install_property</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">gobject_class</span><span class="symbol">,</span>
-<span class="normal">                                   PROP_FOO</span><span class="symbol">,</span>
-<span class="normal">                                   properties</span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]);</span>
-<span class="cbracket">}</span></pre></td>
+<span class="gtkdoc kwb">static void</span>
+<span class="function">my_object_class_init</span> <span class="gtkdoc opt">(</span>MyObjectClass <span class="gtkdoc opt">*</span>klass<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  properties<span class="gtkdoc opt">[</span>PROP_FOO<span class="gtkdoc opt">] =</span> <span class="function"><a href="gobject-Standard-Parameter-and-Value-Types.html#g-param-spec-int">g_param_spec_int</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;foo&quot;</span><span class="gtkdoc opt">,</span> <span class="string">&quot;Foo&quot;</span><span class="gtkdoc opt">,</span> <span class="string">&quot;The foo&quot;</span><span class="gtkdoc opt">,</span>
+                                           <span class="number">0</span><span class="gtkdoc opt">,</span> <span class="number">100</span><span class="gtkdoc opt">,</span>
+                                           <span class="number">50</span><span class="gtkdoc opt">,</span>
+                                           G_PARAM_READWRITE<span class="gtkdoc opt">);</span>
+  <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-class-install-property">g_object_class_install_property</a></span> <span class="gtkdoc opt">(</span>gobject_class<span class="gtkdoc opt">,</span>
+                                   PROP_FOO<span class="gtkdoc opt">,</span>
+                                   properties<span class="gtkdoc opt">[</span>PROP_FOO<span class="gtkdoc opt">]);</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -2638,7 +2822,7 @@ instead, is to store the GParamSpec used with
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-notify-by-pspec">g_object_notify_by_pspec</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">self</span><span class="symbol">,</span><span class="normal"> properties</span><span class="symbol">[</span><span class="normal">PROP_FOO</span><span class="symbol">]);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-notify-by-pspec">g_object_notify_by_pspec</a></span> <span class="gtkdoc opt">(</span>self<span class="gtkdoc opt">,</span> properties<span class="gtkdoc opt">[</span>PROP_FOO<span class="gtkdoc opt">]);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -2934,13 +3118,13 @@ object.</p>
 <tr>
 <td class="parameter_name"><p>dup_func</p></td>
 <td class="parameter_description"><p> function to dup the value. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>user_data</p></td>
 <td class="parameter_description"><p> passed as user_data to <em class="parameter"><code>dup_func</code></em>
 . </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 </tbody>
 </table></div>
@@ -3009,22 +3193,22 @@ should not destroy the object in the normal way.</p>
 <tr>
 <td class="parameter_name"><p>oldval</p></td>
 <td class="parameter_description"><p> the old value to compare against. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>newval</p></td>
 <td class="parameter_description"><p> the new value. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>destroy</p></td>
 <td class="parameter_description"><p> a destroy notify for the new value. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>old_destroy</p></td>
 <td class="parameter_description"><p> destroy notify for the existing value. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 </tbody>
 </table></div>
@@ -3212,29 +3396,29 @@ user data pointers with a destroy notifier, for example:</p>
 21
 22
 23</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="type">void</span>
-<span class="function">object_add_to_user_list</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">GObject</span><span class="normal">     </span><span class="symbol">*</span><span class="normal">object</span><span class="symbol">,</span>
-<span class="normal">                         </span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">new_string</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="comment">// the quark, naming the object data</span>
-<span class="normal">  </span><span class="usertype">GQuark</span><span class="normal"> quark_string_list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="../glib-Quarks.html#g-quark-from-static-string">g_quark_from_static_string</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"my-string-list"</span><span class="symbol">);</span>
-<span class="normal">  </span><span class="comment">// retrive the old string list</span>
-<span class="normal">  </span><span class="usertype">GList</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-steal-qdata">g_object_steal_qdata</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">,</span><span class="normal"> quark_string_list</span><span class="symbol">);</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc kwb">void</span>
+<span class="function">object_add_to_user_list</span> <span class="gtkdoc opt">(</span>GObject     <span class="gtkdoc opt">*</span>object<span class="gtkdoc opt">,</span>
+                         <span class="gtkdoc kwb">const</span> gchar <span class="gtkdoc opt">*</span>new_string<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  <span class="gtkdoc slc">// the quark, naming the object data</span>
+  GQuark quark_string_list <span class="gtkdoc opt">=</span> <span class="function"><a href="../glib-Quarks.html#g-quark-from-static-string">g_quark_from_static_string</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;my-string-list&quot;</span><span class="gtkdoc opt">);</span>
+  <span class="gtkdoc slc">// retrive the old string list</span>
+  GList <span class="gtkdoc opt">*</span>list <span class="gtkdoc opt">=</span> <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-steal-qdata">g_object_steal_qdata</a></span> <span class="gtkdoc opt">(</span>object<span class="gtkdoc opt">,</span> quark_string_list<span class="gtkdoc opt">);</span>
 
-<span class="normal">  </span><span class="comment">// prepend new string</span>
-<span class="normal">  list </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="../glib-Doubly-Linked-Lists.html#g-list-prepend">g_list_prepend</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">list</span><span class="symbol">,</span><span class="normal"> </span><span class="function"><a href="../glib-String-Utility-Functions.html#g-strdup">g_strdup</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">new_string</span><span class="symbol">));</span>
-<span class="normal">  </span><span class="comment">// this changed 'list', so we need to set it again</span>
-<span class="normal">  </span><span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-set-qdata-full">g_object_set_qdata_full</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">object</span><span class="symbol">,</span><span class="normal"> quark_string_list</span><span class="symbol">,</span><span class="normal"> list</span><span class="symbol">,</span><span class="normal"> free_string_list</span><span class="symbol">);</span>
-<span class="cbracket">}</span>
-<span class="keyword">static</span><span class="normal"> </span><span class="type">void</span>
-<span class="function">free_string_list</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">gpointer</span><span class="normal"> data</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="usertype">GList</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">node</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">list </span><span class="symbol">=</span><span class="normal"> data</span><span class="symbol">;</span>
+  <span class="gtkdoc slc">// prepend new string</span>
+  list <span class="gtkdoc opt">=</span> <span class="function"><a href="../glib-Doubly-Linked-Lists.html#g-list-prepend">g_list_prepend</a></span> <span class="gtkdoc opt">(</span>list<span class="gtkdoc opt">,</span> <span class="function"><a href="../glib-String-Utility-Functions.html#g-strdup">g_strdup</a></span> <span class="gtkdoc opt">(</span>new_string<span class="gtkdoc opt">));</span>
+  <span class="gtkdoc slc">// this changed &apos;list&apos;, so we need to set it again</span>
+  <span class="function"><a href="gobject-The-Base-Object-Type.html#g-object-set-qdata-full">g_object_set_qdata_full</a></span> <span class="gtkdoc opt">(</span>object<span class="gtkdoc opt">,</span> quark_string_list<span class="gtkdoc opt">,</span> list<span class="gtkdoc opt">,</span> free_string_list<span class="gtkdoc opt">);</span>
+<span class="gtkdoc opt">}</span>
+<span class="gtkdoc kwb">static void</span>
+<span class="function">free_string_list</span> <span class="gtkdoc opt">(</span>gpointer data<span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  GList <span class="gtkdoc opt">*</span>node<span class="gtkdoc opt">, *</span>list <span class="gtkdoc opt">=</span> data<span class="gtkdoc opt">;</span>
 
-<span class="normal">  </span><span class="keyword">for</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">node </span><span class="symbol">=</span><span class="normal"> list</span><span class="symbol">;</span><span class="normal"> node</span><span class="symbol">;</span><span class="normal"> node </span><span class="symbol">=</span><span class="normal"> node</span><span class="symbol">-&gt;</span><span class="normal">next</span><span class="symbol">)</span>
-<span class="normal">    </span><span class="function"><a href="../glib-Memory-Allocation.html#g-free">g_free</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">node</span><span class="symbol">-&gt;</span><span class="normal">data</span><span class="symbol">);</span>
-<span class="normal">  </span><span class="function"><a href="../glib-Doubly-Linked-Lists.html#g-list-free">g_list_free</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">list</span><span class="symbol">);</span>
-<span class="cbracket">}</span></pre></td>
+  <span class="keyword">for</span> <span class="gtkdoc opt">(</span>node <span class="gtkdoc opt">=</span> list<span class="gtkdoc opt">;</span> node<span class="gtkdoc opt">;</span> node <span class="gtkdoc opt">=</span> node<span class="gtkdoc opt">-&gt;</span>next<span class="gtkdoc opt">)</span>
+    <span class="function"><a href="../glib-Memory-Allocation.html#g-free">g_free</a></span> <span class="gtkdoc opt">(</span>node<span class="gtkdoc opt">-&gt;</span>data<span class="gtkdoc opt">);</span>
+  <span class="function"><a href="../glib-Doubly-Linked-Lists.html#g-list-free">g_list_free</a></span> <span class="gtkdoc opt">(</span>list<span class="gtkdoc opt">);</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -3319,13 +3503,13 @@ object.</p>
 <tr>
 <td class="parameter_name"><p>dup_func</p></td>
 <td class="parameter_description"><p> function to dup the value. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>user_data</p></td>
 <td class="parameter_description"><p> passed as user_data to <em class="parameter"><code>dup_func</code></em>
 . </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 </tbody>
 </table></div>
@@ -3394,22 +3578,22 @@ should not destroy the object in the normal way.</p>
 <tr>
 <td class="parameter_name"><p>oldval</p></td>
 <td class="parameter_description"><p> the old value to compare against. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>newval</p></td>
 <td class="parameter_description"><p> the new value. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>destroy</p></td>
 <td class="parameter_description"><p> a destroy notify for the new value. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>old_destroy</p></td>
 <td class="parameter_description"><p> destroy notify for the existing value. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 </tbody>
 </table></div>
@@ -4076,6 +4260,10 @@ a <a class="link" href="gobject-The-Base-Object-Type.html#GObjectClass" title="s
   GValue       value;
 };
 </pre>
+<div class="warning">
+<p><code class="literal">GParameter</code> has been deprecated since version 2.54 and should not be used in newly-written code.</p>
+<p>This type is not introspectable.</p>
+</div>
 <p>The GParameter struct is an auxiliary structure used
 to hand parameter name/value pairs to <a class="link" href="gobject-The-Base-Object-Type.html#g-object-newv" title="g_object_newv ()"><code class="function">g_object_newv()</code></a>.</p>
 <div class="refsect3">
@@ -4172,9 +4360,9 @@ single property, by specifying the property name as a detail in the
         <td class="listing_lines" align="right"><pre>1
 2
 3</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-Signals.html#g-signal-connect">g_signal_connect</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">text_view</span><span class="symbol">-&gt;</span><span class="normal">buffer</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"notify::paste-target-list"</span><span class="symbol">,</span>
-<span class="normal">                  </span><span class="function"><a href="gobject-Closures.html#G-CALLBACK:CAPS">G_CALLBACK</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">gtk_text_view_target_list_notify</span><span class="symbol">),</span>
-<span class="normal">                  text_view</span><span class="symbol">)</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="function"><a href="gobject-Signals.html#g-signal-connect">g_signal_connect</a></span> <span class="gtkdoc opt">(</span>text_view<span class="gtkdoc opt">-&gt;</span>buffer<span class="gtkdoc opt">,</span> <span class="string">&quot;notify::paste-target-list&quot;</span><span class="gtkdoc opt">,</span>
+                  <span class="function"><a href="gobject-Closures.html#G-CALLBACK:CAPS">G_CALLBACK</a></span> <span class="gtkdoc opt">(</span>gtk_text_view_target_list_notify<span class="gtkdoc opt">),</span>
+                  text_view<span class="gtkdoc opt">)</span></pre></td>
       </tr>
     </tbody>
   </table>

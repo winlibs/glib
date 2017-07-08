@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>gsettings: GIO Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GIO Reference Manual">
 <link rel="up" href="tools.html" title="GIO Tools">
 <link rel="prev" href="gio-querymodules.html" title="gio-querymodules">
@@ -34,6 +34,7 @@
 <div class="cmdsynopsis"><p><code class="command">gsettings</code>   monitor   <em class="replaceable"><code>SCHEMA</code></em> [:<em class="replaceable"><code>PATH</code></em>]  [<em class="replaceable"><code>KEY</code></em>]</p></div>
 <div class="cmdsynopsis"><p><code class="command">gsettings</code>   writable   <em class="replaceable"><code>SCHEMA</code></em> [:<em class="replaceable"><code>PATH</code></em>]   <em class="replaceable"><code>KEY</code></em> </p></div>
 <div class="cmdsynopsis"><p><code class="command">gsettings</code>   range   <em class="replaceable"><code>SCHEMA</code></em> [:<em class="replaceable"><code>PATH</code></em>]   <em class="replaceable"><code>KEY</code></em> </p></div>
+<div class="cmdsynopsis"><p><code class="command">gsettings</code>   describe   <em class="replaceable"><code>SCHEMA</code></em> [:<em class="replaceable"><code>PATH</code></em>]   <em class="replaceable"><code>KEY</code></em> </p></div>
 <div class="cmdsynopsis"><p><code class="command">gsettings</code>   set   <em class="replaceable"><code>SCHEMA</code></em> [:<em class="replaceable"><code>PATH</code></em>]   <em class="replaceable"><code>KEY</code></em>   <em class="replaceable"><code>VALUE</code></em> </p></div>
 <div class="cmdsynopsis"><p><code class="command">gsettings</code>   reset   <em class="replaceable"><code>SCHEMA</code></em> [:<em class="replaceable"><code>PATH</code></em>]   <em class="replaceable"><code>KEY</code></em> </p></div>
 <div class="cmdsynopsis"><p><code class="command">gsettings</code>   reset-recursively   <em class="replaceable"><code>SCHEMA</code></em> [:<em class="replaceable"><code>PATH</code></em>] </p></div>
@@ -104,6 +105,12 @@ Finds out whether <em class="replaceable"><code>KEY</code></em> is writable.
 <td><p><span class="term"><code class="option">range</code></span></p></td>
 <td><p>
 Queries the range of valid values for <em class="replaceable"><code>KEY</code></em>.
+</p></td>
+</tr>
+<tr>
+<td><p><span class="term"><code class="option">describe</code></span></p></td>
+<td><p>
+Queries the description of valid values for <em class="replaceable"><code>KEY</code></em>.
 </p></td>
 </tr>
 <tr>

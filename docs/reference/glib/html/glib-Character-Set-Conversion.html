@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Character Set Conversion: GLib Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GLib Reference Manual">
 <link rel="up" href="glib-utilities.html" title="GLib Utilities">
 <link rel="prev" href="glib-String-Utility-Functions.html" title="String Utility Functions">
@@ -210,8 +210,8 @@ ISO-8859-1 for its encoding,</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal">Character</span><span class="symbol">:</span><span class="normal">  P  r  e  s  e  n  t  a  c  i  ó  n  </span><span class="symbol">.</span><span class="normal">  s  x  i</span>
-<span class="usertype">Hex</span><span class="normal"> code</span><span class="symbol">:</span><span class="normal">   </span><span class="number">50</span><span class="normal"> </span><span class="number">72</span><span class="normal"> </span><span class="number">65</span><span class="normal"> </span><span class="number">73</span><span class="normal"> </span><span class="number">65</span><span class="normal"> 6e </span><span class="number">74</span><span class="normal"> </span><span class="number">61</span><span class="normal"> </span><span class="number">63</span><span class="normal"> </span><span class="number">69</span><span class="normal"> f3 6e 2e </span><span class="number">73</span><span class="normal"> </span><span class="number">78</span><span class="normal"> </span><span class="number">69</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">Character<span class="gtkdoc opt">:</span>  P  r  e  s  e  n  t  a  c  i  ó  n  <span class="gtkdoc opt">.</span>  s  x  i
+Hex code<span class="gtkdoc opt">:</span>   <span class="number">50 72 65 73 65 6</span>e <span class="number">74 61 63 69</span> f3 <span class="number">6</span>e <span class="number">2</span>e <span class="number">73 78 69</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -226,8 +226,8 @@ disk would look like this:</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="normal">Character</span><span class="symbol">:</span><span class="normal">  P  r  e  s  e  n  t  a  c  i  ó     n  </span><span class="symbol">.</span><span class="normal">  s  x  i</span>
-<span class="usertype">Hex</span><span class="normal"> code</span><span class="symbol">:</span><span class="normal">   </span><span class="number">50</span><span class="normal"> </span><span class="number">72</span><span class="normal"> </span><span class="number">65</span><span class="normal"> </span><span class="number">73</span><span class="normal"> </span><span class="number">65</span><span class="normal"> 6e </span><span class="number">74</span><span class="normal"> </span><span class="number">61</span><span class="normal"> </span><span class="number">63</span><span class="normal"> </span><span class="number">69</span><span class="normal"> c3 b3 6e 2e </span><span class="number">73</span><span class="normal"> </span><span class="number">78</span><span class="normal"> </span><span class="number">69</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">Character<span class="gtkdoc opt">:</span>  P  r  e  s  e  n  t  a  c  i  ó     n  <span class="gtkdoc opt">.</span>  s  x  i
+Hex code<span class="gtkdoc opt">:</span>   <span class="number">50 72 65 73 65 6</span>e <span class="number">74 61 63 69</span> c3 b3 <span class="number">6</span>e <span class="number">2</span>e <span class="number">73 78 69</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -260,7 +260,7 @@ ISO-8859-1 for file names, you can put this in your <code class="literal">~/.pro
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="usertype">export</span><span class="normal"> G_FILENAME_ENCODING</span><span class="symbol">=</span><span class="normal">ISO</span><span class="symbol">-</span><span class="number">8859</span><span class="symbol">-</span><span class="number">1</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">export G_FILENAME_ENCODING<span class="gtkdoc opt">=</span>ISO<span class="gtkdoc opt">-</span><span class="number">8859</span><span class="gtkdoc opt">-</span><span class="number">1</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -286,7 +286,7 @@ encoding for file names in the file system.</p>
 name encodings correctly.</p>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem"><p>If you get a file name from the file system from a function
-such as <code class="function">readdir()</code> or <a href="http://developer.gnome.org/gtk3/GtkFileChooser.html#gtk-file-chooser-get-filename"><code class="function">gtk_file_chooser_get_filename()</code></a>, you do
+such as <code class="function">readdir()</code> or <a href="../gtk4/GtkFileChooser.html#gtk-file-chooser-get-filename"><code class="function">gtk_file_chooser_get_filename()</code></a>, you do
 not need to do any conversion to pass that file name to
 functions like <code class="function">open()</code>, <code class="function">rename()</code>, or <code class="function">fopen()</code> -- those are "raw"
 file names which the file system understands.</p></li>

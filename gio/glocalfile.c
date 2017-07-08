@@ -5,7 +5,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,6 +51,7 @@
 
 #include "gfileattribute.h"
 #include "glocalfile.h"
+#include "glocalfileprivate.h"
 #include "glocalfileinfo.h"
 #include "glocalfileenumerator.h"
 #include "glocalfileinputstream.h"
@@ -1167,11 +1168,11 @@ g_local_file_find_enclosing_mount (GFile         *file,
     return mount;
 
 error:
-  /* Translators: This is an error message when trying to find
-   * the enclosing (user visible) mount of a file, but none
-   * exists.
-   */
   g_set_io_error (error,
+		  /* Translators: This is an error message when trying to find
+		   * the enclosing (user visible) mount of a file, but none
+		   * exists.
+		   */
 		  _("Containing mount for file %s not found"),
                   file, 0);
 
@@ -1195,7 +1196,7 @@ g_local_file_set_display_name (GFile         *file,
   if (parent == NULL)
     {
       g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                           _("Can't rename root directory"));
+                           _("Can’t rename root directory"));
       return NULL;
     }
   
@@ -1220,7 +1221,7 @@ g_local_file_set_display_name (GFile         *file,
   else
     {
       g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_EXISTS,
-                           _("Can't rename file, filename already exists"));
+                           _("Can’t rename file, filename already exists"));
       return NULL;
     }
 
@@ -1706,8 +1707,8 @@ find_mountpoint_for (const char *file,
     }
 }
 
-static char *
-find_topdir_for (const char *file)
+char *
+_g_local_file_find_topdir_for (const char *file)
 {
   char *dir;
   char *mountpoint = NULL;
@@ -1961,8 +1962,8 @@ g_local_file_trash (GFile         *file,
 
       uid = geteuid ();
       g_snprintf (uid_str, sizeof (uid_str), "%lu", (unsigned long)uid);
-      
-      topdir = find_topdir_for (local->filename);
+
+      topdir = _g_local_file_find_topdir_for (local->filename);
       if (topdir == NULL)
 	{
           g_set_io_error (error,
@@ -2366,12 +2367,12 @@ g_local_file_move (GFile                  *source,
 		g_set_error_literal (error,
                                      G_IO_ERROR,
                                      G_IO_ERROR_WOULD_MERGE,
-                                     _("Can't move directory over directory"));
+                                     _("Can’t move directory over directory"));
               else
 		g_set_error_literal (error,
                                      G_IO_ERROR,
                                      G_IO_ERROR_IS_DIRECTORY,
-                                     _("Can't copy over directory"));
+                                     _("Can’t copy over directory"));
 	      return FALSE;
 	    }
 	}

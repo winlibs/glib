@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GDBusError: GIO Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GIO Reference Manual">
 <link rel="up" href="gdbus-lowlevel.html" title="Low-level D-Bus Support">
 <link rel="prev" href="gio-D-Bus-Introspection-Data.html" title="D-Bus Introspection Data">
@@ -206,41 +206,41 @@ error domain:</p>
 33
 34
 35</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="comment">// foo-bar-error.h:</span>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc slc">// foo-bar-error.h:</span>
 
-<span class="preproc">#define</span><span class="normal"> </span><span class="function">FOO_BAR_ERROR</span><span class="normal"> </span><span class="symbol">(</span><span class="function">foo_bar_error_quark</span><span class="normal"> </span><span class="symbol">())</span>
-<span class="usertype">GQuark</span><span class="normal"> </span><span class="function">foo_bar_error_quark</span><span class="normal"> </span><span class="symbol">(</span><span class="type">void</span><span class="symbol">);</span>
+<span class="gtkdoc ppc">#define FOO_BAR_ERROR (foo_bar_error_quark ())</span>
+GQuark <span class="function">foo_bar_error_quark</span> <span class="gtkdoc opt">(</span><span class="gtkdoc kwb">void</span><span class="gtkdoc opt">);</span>
 
-<span class="keyword">typedef</span><span class="normal"> </span><span class="keyword">enum</span>
-<span class="cbracket">{</span>
-<span class="normal">  FOO_BAR_ERROR_FAILED</span><span class="symbol">,</span>
-<span class="normal">  FOO_BAR_ERROR_ANOTHER_ERROR</span><span class="symbol">,</span>
-<span class="normal">  FOO_BAR_ERROR_SOME_THIRD_ERROR</span><span class="symbol">,</span>
-<span class="normal">  FOO_BAR_N_ERRORS </span><span class="symbol">/</span><span class="normal"> </span><span class="symbol">*&lt;</span><span class="normal"> skip </span><span class="symbol">&gt;*</span><span class="normal"> </span><span class="symbol">/</span>
-<span class="cbracket">}</span><span class="normal"> FooBarError</span><span class="symbol">;</span>
+<span class="gtkdoc kwc">typedef</span> <span class="gtkdoc kwb">enum</span>
+<span class="gtkdoc opt">{</span>
+  FOO_BAR_ERROR_FAILED<span class="gtkdoc opt">,</span>
+  FOO_BAR_ERROR_ANOTHER_ERROR<span class="gtkdoc opt">,</span>
+  FOO_BAR_ERROR_SOME_THIRD_ERROR<span class="gtkdoc opt">,</span>
+  FOO_BAR_N_ERRORS <span class="gtkdoc opt">/ *&lt;</span> skip <span class="gtkdoc opt">&gt;* /</span>
+<span class="gtkdoc opt">}</span> FooBarError<span class="gtkdoc opt">;</span>
 
-<span class="comment">// foo-bar-error.c:</span>
+<span class="gtkdoc slc">// foo-bar-error.c:</span>
 
-<span class="keyword">static</span><span class="normal"> </span><span class="keyword">const</span><span class="normal"> </span><span class="usertype">GDBusErrorEntry</span><span class="normal"> foo_bar_error_entries</span><span class="symbol">[]</span><span class="normal"> </span><span class="symbol">=</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="cbracket">{</span><span class="normal">FOO_BAR_ERROR_FAILED</span><span class="symbol">,</span><span class="normal">           </span><span class="string">"org.project.Foo.Bar.Error.Failed"</span><span class="cbracket">}</span><span class="symbol">,</span>
-<span class="normal">  </span><span class="cbracket">{</span><span class="normal">FOO_BAR_ERROR_ANOTHER_ERROR</span><span class="symbol">,</span><span class="normal">    </span><span class="string">"org.project.Foo.Bar.Error.AnotherError"</span><span class="cbracket">}</span><span class="symbol">,</span>
-<span class="normal">  </span><span class="cbracket">{</span><span class="normal">FOO_BAR_ERROR_SOME_THIRD_ERROR</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"org.project.Foo.Bar.Error.SomeThirdError"</span><span class="cbracket">}</span><span class="symbol">,</span>
-<span class="cbracket">}</span><span class="symbol">;</span>
+<span class="gtkdoc kwb">static const</span> GDBusErrorEntry foo_bar_error_entries<span class="gtkdoc opt">[] =</span>
+<span class="gtkdoc opt">{</span>
+  <span class="gtkdoc opt">{</span>FOO_BAR_ERROR_FAILED<span class="gtkdoc opt">,</span>           <span class="string">&quot;org.project.Foo.Bar.Error.Failed&quot;</span><span class="gtkdoc opt">},</span>
+  <span class="gtkdoc opt">{</span>FOO_BAR_ERROR_ANOTHER_ERROR<span class="gtkdoc opt">,</span>    <span class="string">&quot;org.project.Foo.Bar.Error.AnotherError&quot;</span><span class="gtkdoc opt">},</span>
+  <span class="gtkdoc opt">{</span>FOO_BAR_ERROR_SOME_THIRD_ERROR<span class="gtkdoc opt">,</span> <span class="string">&quot;org.project.Foo.Bar.Error.SomeThirdError&quot;</span><span class="gtkdoc opt">},</span>
+<span class="gtkdoc opt">};</span>
 
-<span class="comment">// Ensure that every error code has an associated D-Bus error name</span>
-<span class="function"><a href="../glib-Miscellaneous-Macros.html#G-STATIC-ASSERT:CAPS">G_STATIC_ASSERT</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="../glib-Standard-Macros.html#G-N-ELEMENTS:CAPS">G_N_ELEMENTS</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">foo_bar_error_entries</span><span class="symbol">)</span><span class="normal"> </span><span class="symbol">==</span><span class="normal"> FOO_BAR_N_ERRORS</span><span class="symbol">);</span>
+<span class="gtkdoc slc">// Ensure that every error code has an associated D-Bus error name</span>
+<span class="function"><a href="../glib-Miscellaneous-Macros.html#G-STATIC-ASSERT:CAPS">G_STATIC_ASSERT</a></span> <span class="gtkdoc opt">(</span><span class="function"><a href="../glib-Standard-Macros.html#G-N-ELEMENTS:CAPS">G_N_ELEMENTS</a></span> <span class="gtkdoc opt">(</span>foo_bar_error_entries<span class="gtkdoc opt">) ==</span> FOO_BAR_N_ERRORS<span class="gtkdoc opt">);</span>
 
-<span class="normal"><a href="../glib-Quarks.html#GQuark">GQuark</a></span>
-<span class="function">foo_bar_error_quark</span><span class="normal"> </span><span class="symbol">(</span><span class="type">void</span><span class="symbol">)</span>
-<span class="cbracket">{</span>
-<span class="normal">  </span><span class="keyword">static</span><span class="normal"> </span><span class="keyword">volatile</span><span class="normal"> </span><span class="usertype">gsize</span><span class="normal"> quark_volatile </span><span class="symbol">=</span><span class="normal"> </span><span class="number">0</span><span class="symbol">;</span>
-<span class="normal">  </span><span class="function"><a href="gio-GDBusError.html#g-dbus-error-register-error-domain">g_dbus_error_register_error_domain</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"foo-bar-error-quark"</span><span class="symbol">,</span>
-<span class="normal">                                      </span><span class="symbol">&amp;</span><span class="normal">quark_volatile</span><span class="symbol">,</span>
-<span class="normal">                                      foo_bar_error_entries</span><span class="symbol">,</span>
-<span class="normal">                                      </span><span class="function"><a href="../glib-Standard-Macros.html#G-N-ELEMENTS:CAPS">G_N_ELEMENTS</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">foo_bar_error_entries</span><span class="symbol">));</span>
-<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="symbol">(</span><span class="normal"><a href="../glib-Quarks.html#GQuark">GQuark</a></span><span class="symbol">)</span><span class="normal"> quark_volatile</span><span class="symbol">;</span>
-<span class="cbracket">}</span></pre></td>
+GQuark
+<span class="function">foo_bar_error_quark</span> <span class="gtkdoc opt">(</span><span class="gtkdoc kwb">void</span><span class="gtkdoc opt">)</span>
+<span class="gtkdoc opt">{</span>
+  <span class="gtkdoc kwb">static</span> <span class="gtkdoc kwc">volatile</span> gsize quark_volatile <span class="gtkdoc opt">=</span> <span class="number">0</span><span class="gtkdoc opt">;</span>
+  <span class="function"><a href="gio-GDBusError.html#g-dbus-error-register-error-domain">g_dbus_error_register_error_domain</a></span> <span class="gtkdoc opt">(</span><span class="string">&quot;foo-bar-error-quark&quot;</span><span class="gtkdoc opt">,</span>
+                                      <span class="gtkdoc opt">&amp;</span>quark_volatile<span class="gtkdoc opt">,</span>
+                                      foo_bar_error_entries<span class="gtkdoc opt">,</span>
+                                      <span class="function"><a href="../glib-Standard-Macros.html#G-N-ELEMENTS:CAPS">G_N_ELEMENTS</a></span> <span class="gtkdoc opt">(</span>foo_bar_error_entries<span class="gtkdoc opt">));</span>
+  <span class="keyword">return</span> <span class="gtkdoc opt">(</span>GQuark<span class="gtkdoc opt">)</span> quark_volatile<span class="gtkdoc opt">;</span>
+<span class="gtkdoc opt">}</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -596,7 +596,7 @@ with <em class="parameter"><code>dbus_error_message</code></em>
 <td class="parameter_name"><p>format</p></td>
 <td class="parameter_description"><p> <code class="function">printf()</code>-style format to prepend to <em class="parameter"><code>dbus_error_message</code></em>
 or <a href="../glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>...</p></td>
@@ -647,7 +647,7 @@ g_dbus_error_set_dbus_error_valist (<em class="parameter"><code><a href="../glib
 <td class="parameter_name"><p>format</p></td>
 <td class="parameter_description"><p> <code class="function">printf()</code>-style format to prepend to <em class="parameter"><code>dbus_error_message</code></em>
 or <a href="../glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 <tr>
 <td class="parameter_name"><p>var_args</p></td>

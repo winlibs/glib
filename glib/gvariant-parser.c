@@ -4,7 +4,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the licence, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -209,7 +209,10 @@ token_stream_prepare (TokenStream *stream)
           break;
         }
 
-      else    /* ↓↓↓ */;
+      else
+        {
+          /* ↓↓↓ */
+        }
 
     case 'a': /* 'b' */ case 'c': case 'd': case 'e': case 'f':
     case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
@@ -2317,11 +2320,11 @@ parse (TokenStream  *stream,
 
 /**
  * g_variant_parse:
- * @type: (allow-none): a #GVariantType, or %NULL
+ * @type: (nullable): a #GVariantType, or %NULL
  * @text: a string containing a GVariant in text form
- * @limit: (allow-none): a pointer to the end of @text, or %NULL
- * @endptr: (allow-none): a location to store the end pointer, or %NULL
- * @error: (allow-none): a pointer to a %NULL #GError pointer, or %NULL
+ * @limit: (nullable): a pointer to the end of @text, or %NULL
+ * @endptr: (nullable): a location to store the end pointer, or %NULL
+ * @error: (nullable): a pointer to a %NULL #GError pointer, or %NULL
  *
  * Parses a #GVariant from a text representation.
  *

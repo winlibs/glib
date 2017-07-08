@@ -3,7 +3,9 @@ include $(top_srcdir)/glib.mk
 SUBDIRS = gdbus-2.0/codegen
 
 if OS_UNIX
+if !OS_COCOA
 SUBDIRS += xdgmime
+endif
 endif
 
 if OS_WIN32_AND_DLL_COMPILATION
@@ -193,6 +195,7 @@ local_sources = \
 	ghttpproxy.h			\
 	glocalfile.c 			\
 	glocalfile.h 			\
+	glocalfileprivate.h		\
 	glocalfileenumerator.c 		\
 	glocalfileenumerator.h 		\
 	glocalfileinfo.c 		\
@@ -220,6 +223,8 @@ local_sources = \
 platform_libadd =
 platform_deps =
 appinfo_sources =
+appinfo_headers =
+contenttype_sources =
 
 if HAVE_INOTIFY
 SUBDIRS += inotify
@@ -246,9 +251,14 @@ SUBDIRS += fam
 endif
 
 if OS_UNIX
-unix_appinfo_sources = gdesktopappinfo.c
+if !OS_COCOA
 platform_libadd += xdgmime/libxdgmime.la
 platform_deps += xdgmime/libxdgmime.la
+
+appinfo_headers += gdesktopappinfo.h
+endif
+
+
 unix_sources = \
 	gfiledescriptorbased.c  \
 	gunixconnection.c	\
@@ -265,27 +275,27 @@ unix_sources = \
 	gunixvolumemonitor.h 	\
 	gunixinputstream.c 	\
 	gunixoutputstream.c 	\
-	gcontenttype.c 		\
 	gcontenttypeprivate.h 	\
 	gfdonotificationbackend.c \
 	ggtknotificationbackend.c \
 	gportalnotificationbackend.c \
 	gdocumentportal.c	\
 	gdocumentportal.h	\
+	gopenuriportal.c	\
+	gopenuriportal.h	\
 	gportalsupport.c	\
 	gportalsupport.h	\
 	$(portal_sources)	\
 	$(NULL)
 
-appinfo_sources += $(unix_appinfo_sources)
-
 if OS_COCOA
+if MAC_OS_X_9
 unix_sources += gcocoanotificationbackend.c
+endif
 endif
 
 giounixincludedir=$(includedir)/gio-unix-2.0/gio
 giounixinclude_HEADERS = \
-	gdesktopappinfo.h	\
 	gfiledescriptorbased.h  \
 	gunixconnection.h	\
 	gunixcredentialsmessage.h	\
@@ -295,6 +305,7 @@ giounixinclude_HEADERS = \
 	gunixinputstream.h 	\
 	gunixoutputstream.h 	\
 	gunixsocketaddress.h	\
+	$(appinfo_headers) \
 	$(NULL)
 
 if HAVE_NETLINK
@@ -318,7 +329,6 @@ win32_actual_sources = \
 	$(gdbus_daemon_sources) \
 	gwin32registrykey.c \
 	gwin32registrykey.h \
-	gcontenttype-win32.c \
 	gwin32mount.c \
 	gwin32mount.h \
 	gwin32volumemonitor.c \
@@ -331,6 +341,7 @@ win32_actual_sources = \
 
 win32_more_sources_for_vcproj = \
 	gwin32appinfo.c \
+	gcontenttype-win32.c \
 	gregistrysettingsbackend.c \
 	win32/gwinhttpfile.c \
 	win32/gwinhttpfileinputstream.c \
@@ -340,10 +351,10 @@ win32_more_sources_for_vcproj = \
 	win32/gwin32filemonitor.c
 
 if OS_WIN32
-win32_appinfo_sources = gwin32appinfo.c gwin32appinfo.h
+appinfo_sources += gwin32appinfo.c gwin32appinfo.h
+contenttype_sources += gcontenttype-win32.c
 platform_libadd += -lshlwapi -lws2_32 -ldnsapi -liphlpapi
 win32_sources = $(win32_actual_sources)
-appinfo_sources += $(win32_appinfo_sources)
 
 giowin32includedir=$(includedir)/gio-win32-2.0/gio
 giowin32include_HEADERS = \
@@ -359,6 +370,7 @@ CLEANFILES += $(xdp_dbus_built_sources)
 
 portal_interfaces = \
 	org.freedesktop.portal.Documents.xml \
+	org.freedesktop.portal.OpenURI.xml \
 	org.freedesktop.portal.NetworkMonitor.xml \
 	org.freedesktop.portal.ProxyResolver.xml \
 	$(NULL)
@@ -374,6 +386,8 @@ $(xdp_dbus_built_sources) : $(portal_interfaces)
 		--generate-c-code $(builddir)/xdp-dbus			\
 		--annotate "org.freedesktop.portal.Documents.Add()" "org.gtk.GDBus.C.UnixFD" "true" \
 		--annotate "org.freedesktop.portal.Documents.AddNamed()" "org.gtk.GDBus.C.UnixFD" "true" \
+		--annotate "org.freedesktop.portal.Documents.AddFull()" "org.gtk.GDBus.C.UnixFD" "true" \
+		--annotate "org.freedesktop.portal.OpenURI.OpenFile()" "org.gtk.GDBus.C.UnixFD" "true" \
 		$^
 
 portal_sources = \
@@ -383,6 +397,18 @@ portal_sources = \
 	gproxyresolverportal.h		\
 	$(xdp_dbus_built_sources)	\
 	$(NULL)
+
+if OS_COCOA
+contenttype_sources += gosxcontenttype.c
+appinfo_sources += gosxappinfo.c gosxappinfo.h
+endif
+
+if OS_UNIX
+if !OS_COCOA
+contenttype_sources += gcontenttype.c
+appinfo_sources += gdesktopappinfo.c
+endif
+endif
 
 gio_base_sources =		\
 	gappinfo.c 		\
@@ -539,6 +565,7 @@ gio_base_sources =		\
 libgio_2_0_la_SOURCES =		\
 	$(gio_base_sources)	\
 	$(appinfo_sources) 	\
+	$(contenttype_sources) \
 	$(unix_sources) 	\
 	$(win32_sources) 	\
 	$(settings_sources) 	\
@@ -584,6 +611,11 @@ if OS_COCOA
 # This is dumb.  The ObjC source file should be properly named .m
 libgio_2_0_la_CFLAGS += -xobjective-c
 libgio_2_0_la_LDFLAGS += -Wl,-framework,Foundation -Wl,-framework,AppKit
+endif
+
+if HAVE_LIBMOUNT
+libgio_2_0_la_CFLAGS += $(LIBMOUNT_CFLAGS)
+libgio_2_0_la_LIBADD += $(LIBMOUNT_LIBS)
 endif
 
 libgio_2_0_la_DEPENDENCIES = $(gio_win32_res) $(gio_def) $(platform_deps)
@@ -813,7 +845,10 @@ dist_its_DATA = gschema.loc gschema.its
 if ENABLE_DTRACE
 gio_probes.h: gio_probes.d
 	$(AM_V_GEN) $(DTRACE) -C -h -s $< -o $@.tmp
-	@$(SED) -e "s,define STAP_HAS_SEMAPHORES 1,undef STAP_HAS_SEMAPHORES," < $@.tmp > $@ && rm -f $@.tmp
+	@$(SED) \
+		-e "s,define STAP_HAS_SEMAPHORES 1,undef STAP_HAS_SEMAPHORES," \
+		-e "s,define _SDT_HAS_SEMAPHORES 1,undef _SDT_HAS_SEMAPHORES," \
+		< $@.tmp > $@ && rm -f $@.tmp
 
 gio_probes.lo: gio_probes.d
 	$(AM_V_GEN) $(LIBTOOL) --mode=compile $(AM_V_lt) --tag=CC $(DTRACE) -G -s $< -o $@
@@ -850,6 +885,7 @@ gdbus_LDADD = libgio-2.0.la 				\
 	$(NULL)
 
 if OS_UNIX
+if !OS_COCOA
 # ------------------------------------------------------------------------
 # gapplication(1) tool
 bin_PROGRAMS += gapplication
@@ -859,6 +895,7 @@ gapplication_LDADD = libgio-2.0.la 			\
 	$(top_builddir)/gmodule/libgmodule-2.0.la 	\
 	$(top_builddir)/glib/libglib-2.0.la		\
 	$(NULL)
+endif
 endif
 
 completiondir = $(datadir)/bash-completion/completions
@@ -938,15 +975,15 @@ glib_compile_schemas_EXCLUDES = dummy
 gio_tool_FILES = $(gio_SOURCES)
 gio_tool_EXCLUDES = dummy
 
-include $(top_srcdir)/build/Makefile.msvcproj
+include $(top_srcdir)/win32/Makefile.msvcproj
 
 dist-hook: \
 	$(BUILT_EXTRA_DIST)						\
-	$(top_builddir)/build/win32/vs9/gio.vcproj			\
-	$(top_builddir)/build/win32/vs9/gio.headers			\
-	$(top_builddir)/build/win32/vs9/glib-compile-schemas.vcproj	\
-	$(top_builddir)/build/win32/vs9/glib-compile-resources.vcproj	\
-	$(top_builddir)/build/win32/vs9/gio-tool.vcproj
+	$(top_builddir)/win32/vs9/gio.vcproj			\
+	$(top_builddir)/win32/vs9/gio.headers			\
+	$(top_builddir)/win32/vs9/glib-compile-schemas.vcproj	\
+	$(top_builddir)/win32/vs9/glib-compile-resources.vcproj	\
+	$(top_builddir)/win32/vs9/gio-tool.vcproj
 	files='$(BUILT_EXTRA_DIST)'; \
 	for f in $$files; do \
 	  if test -f $$f; then d=.; else d=$(srcdir); fi; \

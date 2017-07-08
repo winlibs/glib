@@ -5,7 +5,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -96,7 +96,7 @@ G_DEFINE_TYPE_WITH_CODE (GResourceFile, g_resource_file, G_TYPE_OBJECT,
 						g_resource_file_file_iface_init))
 
 #define g_resource_file_enumerator_get_type _g_resource_file_enumerator_get_type
-G_DEFINE_TYPE (GResourceFileEnumerator, g_resource_file_enumerator, G_TYPE_FILE_ENUMERATOR);
+G_DEFINE_TYPE (GResourceFileEnumerator, g_resource_file_enumerator, G_TYPE_FILE_ENUMERATOR)
 
 static GFileEnumerator *_g_resource_file_enumerator_new (GResourceFile *file,
 							 const char           *attributes,
@@ -450,7 +450,7 @@ g_resource_file_query_info (GFile                *file,
 	  if (g_error_matches (my_error, G_RESOURCE_ERROR, G_RESOURCE_ERROR_NOT_FOUND))
 	    {
 	      g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
-			   _("The resource at '%s' does not exist"),
+			   _("The resource at “%s” does not exist"),
 			   resource->path);
 	    }
 	  else
@@ -573,7 +573,7 @@ g_resource_file_read (GFile         *file,
       if (g_error_matches (my_error, G_RESOURCE_ERROR, G_RESOURCE_ERROR_NOT_FOUND))
 	{
 	  g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
-		       _("The resource at '%s' does not exist"),
+		       _("The resource at “%s” does not exist"),
 		       resource->path);
 	}
       else
@@ -706,11 +706,11 @@ _g_resource_file_enumerator_new (GResourceFile *file,
       res = g_resources_get_info (file->path, 0, NULL, NULL, NULL);
       if (res)
 	g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_DIRECTORY,
-		     _("The resource at '%s' is not a directory"),
+		     _("The resource at “%s” is not a directory"),
 		     file->path);
       else
 	g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
-		     _("The resource at '%s' does not exist"),
+		     _("The resource at “%s” does not exist"),
 		     file->path);
       return NULL;
     }
@@ -778,7 +778,7 @@ struct _GResourceFileInputStreamClass
 };
 
 #define g_resource_file_input_stream_get_type _g_resource_file_input_stream_get_type
-G_DEFINE_TYPE (GResourceFileInputStream, g_resource_file_input_stream, G_TYPE_FILE_INPUT_STREAM);
+G_DEFINE_TYPE (GResourceFileInputStream, g_resource_file_input_stream, G_TYPE_FILE_INPUT_STREAM)
 
 static gssize     g_resource_file_input_stream_read       (GInputStream      *stream,
 							   void              *buffer,
@@ -914,7 +914,7 @@ g_resource_file_input_stream_seek (GFileInputStream  *stream,
   if (!G_IS_SEEKABLE (file->stream))
     {
       g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
-			   _("Input stream doesn't implement seek"));
+			   _("Input stream doesn’t implement seek"));
       return FALSE;
     }
 

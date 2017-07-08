@@ -49,13 +49,6 @@ test_guess (void)
   g_free (res);
   g_free (expected);
 
-  res = g_content_type_guess ("foo.desktop", data, sizeof (data) - 1, &uncertain);
-  expected = g_content_type_from_mime_type ("application/x-desktop");
-  g_assert_content_type_equals (expected, res);
-  g_assert (!uncertain);
-  g_free (res);
-  g_free (expected);
-
   res = g_content_type_guess ("foo.txt", data, sizeof (data) - 1, &uncertain);
   expected = g_content_type_from_mime_type ("text/plain");
   g_assert_content_type_equals (expected, res);
@@ -65,6 +58,15 @@ test_guess (void)
 
   res = g_content_type_guess ("foo", data, sizeof (data) - 1, &uncertain);
   expected = g_content_type_from_mime_type ("text/plain");
+  g_assert_content_type_equals (expected, res);
+  g_assert (!uncertain);
+  g_free (res);
+  g_free (expected);
+
+/* Sadly OSX just doesn't have as large and robust of a mime type database as Linux */
+#ifndef __APPLE__
+  res = g_content_type_guess ("foo.desktop", data, sizeof (data) - 1, &uncertain);
+  expected = g_content_type_from_mime_type ("application/x-desktop");
   g_assert_content_type_equals (expected, res);
   g_assert (!uncertain);
   g_free (res);
@@ -115,6 +117,7 @@ test_guess (void)
   g_assert (!uncertain);
   g_free (res);
   g_free (expected);
+#endif
 }
 
 static void
@@ -141,6 +144,7 @@ test_subtype (void)
   xml = g_content_type_from_mime_type ("application/xml");
 
   g_assert (g_content_type_is_a (xml, plain));
+  g_assert (g_content_type_is_mime_type (xml, "text/plain"));
 
   g_free (plain);
   g_free (xml);
@@ -160,6 +164,11 @@ test_list (void)
   GList *types;
   gchar *plain;
   gchar *xml;
+
+#ifdef __APPLE__
+  g_test_skip ("The OSX backend does not implement g_content_types_get_registered()");
+  return;
+#endif
 
   plain = g_content_type_from_mime_type ("text/plain");
   xml = g_content_type_from_mime_type ("application/xml");
@@ -299,6 +308,11 @@ test_tree (void)
   gchar **types;
   gint i;
 
+#ifdef __APPLE__
+  g_test_skip ("The OSX backend does not implement g_content_type_guess_for_tree()");
+  return;
+#endif
+
   for (i = 0; i < G_N_ELEMENTS (tests); i++)
     {
       path = g_test_get_filename (G_TEST_DIST, tests[i], NULL);
@@ -310,10 +324,26 @@ test_tree (void)
    }
 }
 
+static void
+test_type_is_a_special_case (void)
+{
+  gboolean res;
+
+  g_test_bug ("782311");
+
+  /* Everything but the inode type is application/octet-stream */
+  res = g_content_type_is_a ("inode/directory", "application/octet-stream");
+  g_assert_false (res);
+  res = g_content_type_is_a ("anything", "application/octet-stream");
+  g_assert_true (res);
+}
+
 int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
+
+  g_test_bug_base ("http://bugzilla.gnome.org/");
 
   g_test_add_func ("/contenttype/guess", test_guess);
   g_test_add_func ("/contenttype/unknown", test_unknown);
@@ -324,6 +354,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/contenttype/icon", test_icon);
   g_test_add_func ("/contenttype/symbolic-icon", test_symbolic_icon);
   g_test_add_func ("/contenttype/tree", test_tree);
+  g_test_add_func ("/contenttype/test_type_is_a_special_case",
+                   test_type_is_a_special_case);
 
   return g_test_run ();
 }

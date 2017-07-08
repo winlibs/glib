@@ -15,10 +15,8 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
  * License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
- * USA.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, see <http://www.gnu.org/licenses/>.
  *
  * Authors: Christian Hergert <chris@dronelabs.com>
  *          Thiago Santos <thiago.sousa.santos@collabora.co.uk>
@@ -131,6 +129,8 @@ struct _GDateTime
   ((instant)/USEC_PER_SECOND - UNIX_EPOCH_START * SEC_PER_DAY)
 #define UNIX_TO_INSTANT(unix) \
   (((unix) + UNIX_EPOCH_START * SEC_PER_DAY) * USEC_PER_SECOND)
+#define UNIX_TO_INSTANT_IS_VALID(unix) \
+  ((gint64) (unix) <= INSTANT_TO_UNIX (G_MAXINT64))
 
 #define DAYS_IN_4YEARS    1461    /* days in 4 years */
 #define DAYS_IN_100YEARS  36524   /* days in 100 years */
@@ -196,11 +196,7 @@ static const gint month_item[2][12] =
 
 #else
 
-#define GET_AMPM(d)          ((g_date_time_get_hour (d) < 12)  \
-                                       /* Translators: 'before midday' indicator */ \
-                                ? C_("GDateTime", "AM") \
-                                  /* Translators: 'after midday' indicator */ \
-                                : C_("GDateTime", "PM"))
+#define GET_AMPM(d)          (get_fallback_ampm (g_date_time_get_hour (d)))
 
 /* Translators: this is the preferred format for expressing the date and the time */
 #define PREFERRED_DATE_TIME_FMT C_("GDateTime", "%a %b %e %H:%M:%S %Y")
@@ -348,6 +344,18 @@ get_weekday_name_abbr (gint day)
 }
 
 #endif  /* HAVE_LANGINFO_TIME */
+
+/* Format AM/PM indicator if the locale does not have a localized version. */
+static const gchar *
+get_fallback_ampm (gint hour)
+{
+  if (hour < 12)
+    /* Translators: 'before midday' indicator */
+    return C_("GDateTime", "AM");
+  else
+    /* Translators: 'after midday' indicator */
+    return C_("GDateTime", "PM");
+}
 
 static inline gint
 ymd_to_days (gint year,
@@ -644,6 +652,10 @@ static GDateTime *
 g_date_time_new_from_timeval (GTimeZone      *tz,
                               const GTimeVal *tv)
 {
+  if ((gint64) tv->tv_sec > G_MAXINT64 - 1 ||
+      !UNIX_TO_INSTANT_IS_VALID ((gint64) tv->tv_sec + 1))
+    return NULL;
+
   return g_date_time_from_instant (tz, tv->tv_usec +
                                    UNIX_TO_INSTANT (tv->tv_sec));
 }
@@ -673,6 +685,9 @@ static GDateTime *
 g_date_time_new_from_unix (GTimeZone *tz,
                            gint64     secs)
 {
+  if (!UNIX_TO_INSTANT_IS_VALID (secs))
+    return NULL;
+
   return g_date_time_from_instant (tz, UNIX_TO_INSTANT (secs));
 }
 
@@ -1458,9 +1473,9 @@ g_date_time_equal (gconstpointer dt1,
 /**
  * g_date_time_get_ymd:
  * @datetime: a #GDateTime.
- * @year: (out) (allow-none): the return location for the gregorian year, or %NULL.
- * @month: (out) (allow-none): the return location for the month of the year, or %NULL.
- * @day: (out) (allow-none): the return location for the day of the month, or %NULL.
+ * @year: (out) (optional): the return location for the gregorian year, or %NULL.
+ * @month: (out) (optional): the return location for the month of the year, or %NULL.
+ * @day: (out) (optional): the return location for the day of the month, or %NULL.
  *
  * Retrieves the Gregorian day, month, and year of a given #GDateTime.
  *
@@ -2198,6 +2213,52 @@ format_number (GString  *str,
     g_string_append (str, tmp[--i]);
 }
 
+static gboolean
+format_ampm (GDateTime *datetime,
+             GString   *outstr,
+             gboolean   locale_is_utf8,
+             gboolean   uppercase)
+{
+  const gchar *ampm;
+  gchar       *tmp, *ampm_dup;
+  gsize        len;
+
+  ampm = GET_AMPM (datetime);
+
+  if (!ampm || ampm[0] == '\0')
+    ampm = get_fallback_ampm (g_date_time_get_hour (datetime));
+
+#if defined (HAVE_LANGINFO_TIME)
+  if (!locale_is_utf8)
+    {
+      /* This assumes that locale encoding can't have embedded NULs */
+      ampm = tmp = g_locale_to_utf8 (ampm, -1, NULL, NULL, NULL);
+      if (!tmp)
+        return FALSE;
+    }
+#endif
+  if (uppercase)
+    ampm_dup = g_utf8_strup (ampm, -1);
+  else
+    ampm_dup = g_utf8_strdown (ampm, -1);
+  len = strlen (ampm_dup);
+  if (!locale_is_utf8)
+    {
+#if defined (HAVE_LANGINFO_TIME)
+      g_free (tmp);
+#endif
+      tmp = g_locale_from_utf8 (ampm_dup, -1, NULL, &len, NULL);
+      g_free (ampm_dup);
+      if (!tmp)
+        return FALSE;
+      ampm_dup = tmp;
+    }
+  g_string_append_len (outstr, ampm_dup, len);
+  g_free (ampm_dup);
+
+  return TRUE;
+}
+
 static gboolean g_date_time_format_locale (GDateTime   *datetime,
 					   const gchar *format,
 					   GString     *outstr,
@@ -2246,7 +2307,6 @@ g_date_time_format_locale (GDateTime   *datetime,
   gboolean  alt_digits = FALSE;
   gboolean  pad_set = FALSE;
   gchar    *pad = "";
-  gchar    *ampm;
   const gchar *name;
   const gchar *tz;
 
@@ -2438,58 +2498,12 @@ g_date_time_format_locale (GDateTime   *datetime,
 	  alt_digits = TRUE;
 	  goto next_mod;
 	case 'p':
-	  ampm = (gchar *) GET_AMPM (datetime);
-#if defined (HAVE_LANGINFO_TIME)
-	  if (!locale_is_utf8)
-	    {
-	      /* This assumes that locale encoding can't have embedded NULs */
-	      ampm = tmp = g_locale_to_utf8 (ampm, -1, NULL, NULL, NULL);
-	      if (!tmp)
-		return FALSE;
-	    }
-#endif
-	  ampm = g_utf8_strup (ampm, -1);
-	  tmp_len = strlen (ampm);
-	  if (!locale_is_utf8)
-	    {
-#if defined (HAVE_LANGINFO_TIME)
-	      g_free (tmp);
-#endif
-	      tmp = g_locale_from_utf8 (ampm, -1, NULL, &tmp_len, NULL);
-	      g_free (ampm);
-	      if (!tmp)
-		return FALSE;
-	      ampm = tmp;
-	    }
-	  g_string_append_len (outstr, ampm, tmp_len);
-	  g_free (ampm);
-	  break;
+          if (!format_ampm (datetime, outstr, locale_is_utf8, TRUE))
+            return FALSE;
+          break;
 	case 'P':
-	  ampm = (gchar *) GET_AMPM (datetime);
-#if defined (HAVE_LANGINFO_TIME)
-	  if (!locale_is_utf8)
-	    {
-	      /* This assumes that locale encoding can't have embedded NULs */
-	      ampm = tmp = g_locale_to_utf8 (ampm, -1, NULL, NULL, NULL);
-	      if (!tmp)
-		return FALSE;
-	    }
-#endif
-	  ampm = g_utf8_strdown (ampm, -1);
-	  tmp_len = strlen (ampm);
-	  if (!locale_is_utf8)
-	    {
-#if defined (HAVE_LANGINFO_TIME)
-	      g_free (tmp);
-#endif
-	      tmp = g_locale_from_utf8 (ampm, -1, NULL, &tmp_len, NULL);
-	      g_free (ampm);
-	      if (!tmp)
-		return FALSE;
-	      ampm = tmp;
-	    }
-	  g_string_append_len (outstr, ampm, tmp_len);
-	  g_free (ampm);
+          if (!format_ampm (datetime, outstr, locale_is_utf8, FALSE))
+            return FALSE;
 	  break;
 	case 'r':
 	  {
@@ -2556,10 +2570,7 @@ g_date_time_format_locale (GDateTime   *datetime,
 	case 'z':
 	  {
 	    gint64 offset;
-	    if (datetime->tz != NULL)
-	      offset = g_date_time_get_utc_offset (datetime) / USEC_PER_SECOND;
-	    else
-	      offset = 0;
+	    offset = g_date_time_get_utc_offset (datetime) / USEC_PER_SECOND;
 	    if (!format_z (outstr, (int) offset, colons))
 	      return FALSE;
 	  }

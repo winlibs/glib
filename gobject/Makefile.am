@@ -113,7 +113,10 @@ if ENABLE_DTRACE
 
 gobject_probes.h: gobject_probes.d
 	$(AM_V_GEN) $(DTRACE) -C -h -s $< -o $@.tmp
-	@$(SED) -e "s,define STAP_HAS_SEMAPHORES 1,undef STAP_HAS_SEMAPHORES," < $@.tmp > $@ && rm -f $@.tmp
+	@$(SED) \
+		-e "s,define STAP_HAS_SEMAPHORES 1,undef STAP_HAS_SEMAPHORES," \
+		-e "s,define _SDT_HAS_SEMAPHORES 1,undef _SDT_HAS_SEMAPHORES," \
+		< $@.tmp > $@ && rm -f $@.tmp
 
 gobject_probes.lo: gobject_probes.d
 	$(AM_V_GEN) $(LIBTOOL) --mode=compile $(AM_V_lt) --tag=CC $(DTRACE) -G -s $< -o $@
@@ -239,9 +242,9 @@ gobject_HEADERS_DIR = $(libgobjectincludedir)
 gobject_HEADERS_INST = $(gobject_public_h_sources)
 gobject_HEADERS_EXCLUDES = dummy
 
-include $(top_srcdir)/build/Makefile.msvcproj
+include $(top_srcdir)/win32/Makefile.msvcproj
 
-dist-hook: $(BUILT_EXTRA_DIST) $(top_builddir)/build/win32/vs9/gobject.vcproj $(top_builddir)/build/win32/vs9/gobject.headers
+dist-hook: $(BUILT_EXTRA_DIST) $(top_builddir)/win32/vs9/gobject.vcproj $(top_builddir)/win32/vs9/gobject.headers
 	files='$(BUILT_EXTRA_DIST)'; \
 	for f in $$files; do \
 	  if test -f $$f; then d=.; else d=$(srcdir); fi; \
@@ -258,7 +261,7 @@ distclean-local:
 
 # install gdb scripts
 gdbdir = $(datadir)/glib-2.0/gdb
-dist_gdb_SCRIPTS = gobject_gdb.py
+dist_gdb_DATA = gobject_gdb.py
 
 libgobject-gdb.py: libgobject-gdb.py.in
 	$(AM_V_GEN) $(SED) -e "s|\@datadir\@|$(datadir)|" $(srcdir)/libgobject-gdb.py.in > $(builddir)/libgobject-gdb.py

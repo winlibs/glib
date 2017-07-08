@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>GSettingsBackend: GIO Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GIO Reference Manual">
 <link rel="up" href="settings.html" title="Settings">
 <link rel="prev" href="GSettings.html" title="GSettings">
@@ -537,7 +537,7 @@ location to save the relative keys. </p></td>
 <tr>
 <td class="parameter_name"><p>values</p></td>
 <td class="parameter_description"><p>         the location to save the values, or <a href="../glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>][<acronym title="Free data container after the code is done."><span class="acronym">transfer container</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="NULL may be passed instead of a pointer to a location."><span class="acronym">optional</span></acronym>][<acronym title="Free data container after the code is done."><span class="acronym">transfer container</span></acronym>][<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym> zero-terminated=1]</span></td>
 </tr>
 </tbody>
 </table></div>
@@ -574,8 +574,8 @@ of <a href="../glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="symbol">[</span><span class="normal">toplevel</span><span class="symbol">]</span>
-<span class="normal">enabled</span><span class="symbol">=</span><span class="normal">true</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc opt">[</span>toplevel<span class="gtkdoc opt">]</span>
+enabled<span class="gtkdoc opt">=</span><span class="keyword">true</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -598,8 +598,8 @@ the name of the keyfile group.  To continue the example, if
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="symbol">[</span><span class="normal">profiles</span><span class="symbol">/</span><span class="keyword">default</span><span class="symbol">]</span>
-<span class="normal">font</span><span class="symbol">-</span><span class="normal">size</span><span class="symbol">=</span><span class="number">12</span></pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="gtkdoc opt">[</span>profiles<span class="gtkdoc opt">/</span><span class="keyword">default</span><span class="gtkdoc opt">]</span>
+font<span class="gtkdoc opt">-</span>size<span class="gtkdoc opt">=</span><span class="number">12</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -643,7 +643,7 @@ trouble.</p>
 <td class="parameter_description"><p> the group name corresponding to
 <em class="parameter"><code>root_path</code></em>
 , or <a href="../glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 </tbody>
 </table></div>

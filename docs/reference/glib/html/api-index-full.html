@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Index: GLib Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GLib Reference Manual">
 <link rel="up" href="index.html" title="GLib Reference Manual">
 <link rel="prev" href="gtester-report.html" title="gtester-report">
@@ -227,6 +227,14 @@
 <dd></dd>
 <dt>
 <a class="link" href="glib-String-Utility-Functions.html#g-ascii-strdown" title="g_ascii_strdown ()">g_ascii_strdown</a>, function in <a class="link" href="glib-String-Utility-Functions.html" title="String Utility Functions">String Utility Functions</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="glib-String-Utility-Functions.html#g-ascii-string-to-signed" title="g_ascii_string_to_signed ()">g_ascii_string_to_signed</a>, function in <a class="link" href="glib-String-Utility-Functions.html" title="String Utility Functions">String Utility Functions</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="glib-String-Utility-Functions.html#g-ascii-string-to-unsigned" title="g_ascii_string_to_unsigned ()">g_ascii_string_to_unsigned</a>, function in <a class="link" href="glib-String-Utility-Functions.html" title="String Utility Functions">String Utility Functions</a>
 </dt>
 <dd></dd>
 <dt>
@@ -755,7 +763,7 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#G-BREAKPOINT:CAPS" title="G_BREAKPOINT">G_BREAKPOINT</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#G-BREAKPOINT:CAPS" title="G_BREAKPOINT">G_BREAKPOINT</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
@@ -1180,7 +1188,7 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-critical" title="g_critical()">g_critical</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-critical" title="g_critical()">g_critical</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
@@ -1765,7 +1773,7 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-debug" title="g_debug()">g_debug</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-debug" title="g_debug()">g_debug</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
@@ -1773,7 +1781,7 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#G-DEBUG-HERE:CAPS" title="G_DEBUG_HERE">G_DEBUG_HERE</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#G-DEBUG-HERE:CAPS" title="G_DEBUG_HERE">G_DEBUG_HERE</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
@@ -1914,7 +1922,7 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-error" title="g_error()">g_error</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-error" title="g_error()">g_error</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
@@ -2758,7 +2766,7 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-info" title="g_info()">g_info</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-info" title="g_info()">g_info</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
@@ -3684,31 +3692,31 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log" title="g_log ()">g_log</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log" title="g_log ()">g_log</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#GLogField" title="struct GLogField">GLogField</a>, struct in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#GLogField" title="struct GLogField">GLogField</a>, struct in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#GLogFunc" title="GLogFunc ()">GLogFunc</a>, user_function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#GLogFunc" title="GLogFunc ()">GLogFunc</a>, user_function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#GLogLevelFlags" title="enum GLogLevelFlags">GLogLevelFlags</a>, enum in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#GLogLevelFlags" title="enum GLogLevelFlags">GLogLevelFlags</a>, enum in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-logv" title="g_logv ()">g_logv</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-logv" title="g_logv ()">g_logv</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#GLogWriterFunc" title="GLogWriterFunc ()">GLogWriterFunc</a>, user_function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#GLogWriterFunc" title="GLogWriterFunc ()">GLogWriterFunc</a>, user_function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#GLogWriterOutput" title="enum GLogWriterOutput">GLogWriterOutput</a>, enum in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#GLogWriterOutput" title="enum GLogWriterOutput">GLogWriterOutput</a>, enum in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
@@ -3716,79 +3724,83 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-default-handler" title="g_log_default_handler ()">g_log_default_handler</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-default-handler" title="g_log_default_handler ()">g_log_default_handler</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#G-LOG-DOMAIN:CAPS" title="G_LOG_DOMAIN">G_LOG_DOMAIN</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#G-LOG-DOMAIN:CAPS" title="G_LOG_DOMAIN">G_LOG_DOMAIN</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#G-LOG-FATAL-MASK:CAPS" title="G_LOG_FATAL_MASK">G_LOG_FATAL_MASK</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#G-LOG-FATAL-MASK:CAPS" title="G_LOG_FATAL_MASK">G_LOG_FATAL_MASK</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#G-LOG-LEVEL-USER-SHIFT:CAPS" title="G_LOG_LEVEL_USER_SHIFT">G_LOG_LEVEL_USER_SHIFT</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#G-LOG-LEVEL-USER-SHIFT:CAPS" title="G_LOG_LEVEL_USER_SHIFT">G_LOG_LEVEL_USER_SHIFT</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-remove-handler" title="g_log_remove_handler ()">g_log_remove_handler</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-remove-handler" title="g_log_remove_handler ()">g_log_remove_handler</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-set-always-fatal" title="g_log_set_always_fatal ()">g_log_set_always_fatal</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-set-always-fatal" title="g_log_set_always_fatal ()">g_log_set_always_fatal</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-set-default-handler" title="g_log_set_default_handler ()">g_log_set_default_handler</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-set-default-handler" title="g_log_set_default_handler ()">g_log_set_default_handler</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-set-fatal-mask" title="g_log_set_fatal_mask ()">g_log_set_fatal_mask</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-set-fatal-mask" title="g_log_set_fatal_mask ()">g_log_set_fatal_mask</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-set-handler" title="g_log_set_handler ()">g_log_set_handler</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-set-handler" title="g_log_set_handler ()">g_log_set_handler</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-set-handler-full" title="g_log_set_handler_full ()">g_log_set_handler_full</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-set-handler-full" title="g_log_set_handler_full ()">g_log_set_handler_full</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-set-writer-func" title="g_log_set_writer_func ()">g_log_set_writer_func</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-set-writer-func" title="g_log_set_writer_func ()">g_log_set_writer_func</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-structured" title="g_log_structured ()">g_log_structured</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-structured" title="g_log_structured ()">g_log_structured</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-structured-array" title="g_log_structured_array ()">g_log_structured_array</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-structured-array" title="g_log_structured_array ()">g_log_structured_array</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-writer-default" title="g_log_writer_default ()">g_log_writer_default</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-variant" title="g_log_variant ()">g_log_variant</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-writer-format-fields" title="g_log_writer_format_fields ()">g_log_writer_format_fields</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-writer-default" title="g_log_writer_default ()">g_log_writer_default</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-writer-is-journald" title="g_log_writer_is_journald ()">g_log_writer_is_journald</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-writer-format-fields" title="g_log_writer_format_fields ()">g_log_writer_format_fields</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-writer-journald" title="g_log_writer_journald ()">g_log_writer_journald</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-writer-is-journald" title="g_log_writer_is_journald ()">g_log_writer_is_journald</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-writer-standard-streams" title="g_log_writer_standard_streams ()">g_log_writer_standard_streams</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-writer-journald" title="g_log_writer_journald ()">g_log_writer_journald</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-log-writer-supports-color" title="g_log_writer_supports_color ()">g_log_writer_supports_color</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-log-writer-standard-streams" title="g_log_writer_standard_streams ()">g_log_writer_standard_streams</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="glib-Message-Logging.html#g-log-writer-supports-color" title="g_log_writer_supports_color ()">g_log_writer_supports_color</a>, function in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
@@ -4325,7 +4337,7 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-message" title="g_message()">g_message</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-message" title="g_message()">g_message</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
@@ -4702,6 +4714,14 @@
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="glib-String-Utility-Functions.html#GNumberParserError" title="enum GNumberParserError">GNumberParserError</a>, enum in <a class="link" href="glib-String-Utility-Functions.html" title="String Utility Functions">String Utility Functions</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="glib-String-Utility-Functions.html#G-NUMBER-PARSER-ERROR:CAPS" title="G_NUMBER_PARSER_ERROR">G_NUMBER_PARSER_ERROR</a>, macro in <a class="link" href="glib-String-Utility-Functions.html" title="String Utility Functions">String Utility Functions</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="glib-I18N.html#N-:CAPS" title="N_()">N_</a>, macro in <a class="link" href="glib-I18N.html" title="Internationalization">I18N</a>
 </dt>
 <dd></dd>
@@ -4739,11 +4759,11 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-on-error-query" title="g_on_error_query ()">g_on_error_query</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-on-error-query" title="g_on_error_query ()">g_on_error_query</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-on-error-stack-trace" title="g_on_error_stack_trace ()">g_on_error_stack_trace</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-on-error-stack-trace" title="g_on_error_stack_trace ()">g_on_error_stack_trace</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
@@ -5048,11 +5068,11 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-print" title="g_print ()">g_print</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-print" title="g_print ()">g_print</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-printerr" title="g_printerr ()">g_printerr</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-printerr" title="g_printerr ()">g_printerr</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
@@ -5060,7 +5080,7 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#GPrintFunc" title="GPrintFunc ()">GPrintFunc</a>, user_function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#GPrintFunc" title="GPrintFunc ()">GPrintFunc</a>, user_function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
@@ -5125,6 +5145,14 @@
 <dd></dd>
 <dt>
 <a class="link" href="glib-Pointer-Arrays.html#g-ptr-array-add" title="g_ptr_array_add ()">g_ptr_array_add</a>, function in <a class="link" href="glib-Pointer-Arrays.html" title="Pointer Arrays">Pointer Arrays</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="glib-Pointer-Arrays.html#g-ptr-array-find" title="g_ptr_array_find ()">g_ptr_array_find</a>, function in <a class="link" href="glib-Pointer-Arrays.html" title="Pointer Arrays">Pointer Arrays</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="glib-Pointer-Arrays.html#g-ptr-array-find-with-equal-func" title="g_ptr_array_find_with_equal_func ()">g_ptr_array_find_with_equal_func</a>, function in <a class="link" href="glib-Pointer-Arrays.html" title="Pointer Arrays">Pointer Arrays</a>
 </dt>
 <dd></dd>
 <dt>
@@ -5690,19 +5718,19 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-return-if-fail" title="g_return_if_fail()">g_return_if_fail</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-return-if-fail" title="g_return_if_fail()">g_return_if_fail</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-return-if-reached" title="g_return_if_reached">g_return_if_reached</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-return-if-reached" title="g_return_if_reached">g_return_if_reached</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-return-val-if-fail" title="g_return_val_if_fail()">g_return_val_if_fail</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-return-val-if-fail" title="g_return_val_if_fail()">g_return_val_if_fail</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-return-val-if-reached" title="g_return_val_if_reached()">g_return_val_if_reached</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-return-val-if-reached" title="g_return_val_if_reached()">g_return_val_if_reached</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
@@ -6059,11 +6087,11 @@
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-set-printerr-handler" title="g_set_printerr_handler ()">g_set_printerr_handler</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-set-printerr-handler" title="g_set_printerr_handler ()">g_set_printerr_handler</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-set-print-handler" title="g_set_print_handler ()">g_set_print_handler</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-set-print-handler" title="g_set_print_handler ()">g_set_print_handler</a>, function in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
@@ -8321,6 +8349,10 @@
 </dt>
 <dd></dd>
 <dt>
+<a class="link" href="glib-Unicode-Manipulation.html#g-utf8-make-valid" title="g_utf8_make_valid ()">g_utf8_make_valid</a>, function in <a class="link" href="glib-Unicode-Manipulation.html" title="Unicode Manipulation">Unicode Manipulation</a>
+</dt>
+<dd></dd>
+<dt>
 <a class="link" href="glib-Unicode-Manipulation.html#g-utf8-next-char" title="g_utf8_next_char()">g_utf8_next_char</a>, macro in <a class="link" href="glib-Unicode-Manipulation.html" title="Unicode Manipulation">Unicode Manipulation</a>
 </dt>
 <dd></dd>
@@ -8390,6 +8422,14 @@
 <dd></dd>
 <dt>
 <a class="link" href="glib-File-Utilities.html#g-utime" title="g_utime ()">g_utime</a>, function in <a class="link" href="glib-File-Utilities.html" title="File Utilities">File Utilities</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="glib-GUuid.html#g-uuid-string-is-valid" title="g_uuid_string_is_valid ()">g_uuid_string_is_valid</a>, function in <a class="link" href="glib-GUuid.html" title="GUuid">GUuid</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="glib-GUuid.html#g-uuid-string-random" title="g_uuid_string_random ()">g_uuid_string_random</a>, function in <a class="link" href="glib-GUuid.html" title="GUuid">GUuid</a>
 </dt>
 <dd></dd>
 <a name="idxV"></a><h3 class="title">V</h3>
@@ -9163,15 +9203,15 @@
 <dd></dd>
 <a name="idxW"></a><h3 class="title">W</h3>
 <dt>
-<a class="link" href="glib-Message-Logging.html#g-warning" title="g_warning()">g_warning</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Logging">Message Logging</a>
+<a class="link" href="glib-Message-Logging.html#g-warning" title="g_warning()">g_warning</a>, macro in <a class="link" href="glib-Message-Logging.html" title="Message Output and Debugging Functions">Message Logging</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-warn-if-fail" title="g_warn_if_fail()">g_warn_if_fail</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-warn-if-fail" title="g_warn_if_fail()">g_warn_if_fail</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>
-<a class="link" href="glib-Warnings-and-Assertions.html#g-warn-if-reached" title="g_warn_if_reached">g_warn_if_reached</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Message Output and Debugging Functions">Warnings and Assertions</a>
+<a class="link" href="glib-Warnings-and-Assertions.html#g-warn-if-reached" title="g_warn_if_reached">g_warn_if_reached</a>, macro in <a class="link" href="glib-Warnings-and-Assertions.html" title="Warnings and Assertions">Warnings and Assertions</a>
 </dt>
 <dd></dd>
 <dt>

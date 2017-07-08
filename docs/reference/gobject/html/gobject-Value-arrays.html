@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Value arrays: GObject Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
 <link rel="home" href="index.html" title="GObject Reference Manual">
 <link rel="up" href="rn01.html" title="API Reference">
 <link rel="prev" href="gobject-Closures.html" title="Closures">
@@ -157,7 +157,7 @@ for instance, the following code:</p>
     <tbody>
       <tr>
         <td class="listing_lines" align="right"><pre>1</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="usertype">GValueArray</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">array </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="gobject-Value-arrays.html#g-value-array-new">g_value_array_new</a></span><span class="normal"> </span><span class="symbol">(</span><span class="number">10</span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">GValueArray <span class="gtkdoc opt">*</span>array <span class="gtkdoc opt">=</span> <span class="function"><a href="gobject-Value-arrays.html#g-value-array-new">g_value_array_new</a></span> <span class="gtkdoc opt">(</span><span class="number">10</span><span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -171,8 +171,8 @@ for instance, the following code:</p>
       <tr>
         <td class="listing_lines" align="right"><pre>1
 2</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="usertype">GArray</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">array </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="../glib-Arrays.html#g-array-sized-new">g_array_sized_new</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal"><a href="../glib-Standard-Macros.html#FALSE:CAPS">FALSE</a></span><span class="symbol">,</span><span class="normal"> <a href="../glib-Standard-Macros.html#TRUE:CAPS">TRUE</a></span><span class="symbol">,</span><span class="normal"> </span><span class="keyword">sizeof</span><span class="normal"> </span><span class="symbol">(</span><span class="normal"><a href="gobject-Generic-values.html#GValue">GValue</a></span><span class="symbol">),</span><span class="normal"> </span><span class="number">10</span><span class="symbol">);</span>
-<span class="function"><a href="../glib-Arrays.html#g-array-set-clear-func">g_array_set_clear_func</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">array</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">(</span><span class="normal"><a href="../glib-Datasets.html#GDestroyNotify">GDestroyNotify</a></span><span class="symbol">)</span><span class="normal"> <a href="gobject-Generic-values.html#g-value-unset">g_value_unset</a></span><span class="symbol">);</span></pre></td>
+        <td class="listing_code"><pre class="programlisting">GArray <span class="gtkdoc opt">*</span>array <span class="gtkdoc opt">=</span> <span class="function"><a href="../glib-Arrays.html#g-array-sized-new">g_array_sized_new</a></span> <span class="gtkdoc opt">(</span>FALSE<span class="gtkdoc opt">,</span> TRUE<span class="gtkdoc opt">,</span> <span class="keyword">sizeof</span> <span class="gtkdoc opt">(</span>GValue<span class="gtkdoc opt">),</span> <span class="number">10</span><span class="gtkdoc opt">);</span>
+<span class="function"><a href="../glib-Arrays.html#g-array-set-clear-func">g_array_set_clear_func</a></span> <span class="gtkdoc opt">(</span>array<span class="gtkdoc opt">, (</span>GDestroyNotify<span class="gtkdoc opt">)</span> g_value_unset<span class="gtkdoc opt">);</span></pre></td>
       </tr>
     </tbody>
   </table>
@@ -348,7 +348,7 @@ g_value_array_append (<em class="parameter"><code><a class="link" href="gobject-
 <tr>
 <td class="parameter_name"><p>value</p></td>
 <td class="parameter_description"><p> <a class="link" href="gobject-Generic-values.html#GValue" title="GValue"><span class="type">GValue</span></a> to copy into <a class="link" href="gobject-Value-arrays.html#GValueArray" title="struct GValueArray"><span class="type">GValueArray</span></a>, or <a href="../glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 </tbody>
 </table></div>
@@ -392,7 +392,7 @@ g_value_array_prepend (<em class="parameter"><code><a class="link" href="gobject
 <tr>
 <td class="parameter_name"><p>value</p></td>
 <td class="parameter_description"><p> <a class="link" href="gobject-Generic-values.html#GValue" title="GValue"><span class="type">GValue</span></a> to copy into <a class="link" href="gobject-Value-arrays.html#GValueArray" title="struct GValueArray"><span class="type">GValueArray</span></a>, or <a href="../glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 </tbody>
 </table></div>
@@ -442,7 +442,7 @@ is <a href="../glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</
 <tr>
 <td class="parameter_name"><p>value</p></td>
 <td class="parameter_description"><p> <a class="link" href="gobject-Generic-values.html#GValue" title="GValue"><span class="type">GValue</span></a> to copy into <a class="link" href="gobject-Value-arrays.html#GValueArray" title="struct GValueArray"><span class="type">GValueArray</span></a>, or <a href="../glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. </p></td>
-<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></td>
 </tr>
 </tbody>
 </table></div>

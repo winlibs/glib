@@ -7,7 +7,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -772,7 +772,7 @@ set_xattr (char                       *filename,
     {
       g_set_error (error, G_IO_ERROR,
 		   g_io_error_from_errno (errsv),
-		   _("Error setting extended attribute '%s': %s"),
+		   _("Error setting extended attribute “%s”: %s"),
 		   escaped_attribute, g_strerror (errsv));
       return FALSE;
     }
@@ -1259,7 +1259,7 @@ get_content_type (const char          *basename,
 
       content_type = g_content_type_guess (basename, NULL, 0, &result_uncertain);
       
-#ifndef G_OS_WIN32
+#if !defined(G_OS_WIN32) && !defined(HAVE_COCOA)
       if (!fast && result_uncertain && path != NULL)
 	{
 	  guchar sniff_buffer[4096];
@@ -1763,7 +1763,7 @@ _g_local_file_info_get (const char             *basename,
           g_object_unref (info);
           g_set_error (error, G_IO_ERROR,
 		       g_io_error_from_errno (errsv),
-		       _("Error when getting information for file '%s': %s"),
+		       _("Error when getting information for file “%s”: %s"),
 		       display_name, g_strerror (errsv));
           g_free (display_name);
           return NULL;

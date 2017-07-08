@@ -286,16 +286,17 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INSTOBJEXT = @INSTOBJEXT@
 INTLLIBS = @INTLLIBS@
+INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBELF_CFLAGS = @LIBELF_CFLAGS@
 LIBELF_LIBS = @LIBELF_LIBS@
 LIBFFI_CFLAGS = @LIBFFI_CFLAGS@
 LIBFFI_LIBS = @LIBFFI_LIBS@
+LIBMOUNT_CFLAGS = @LIBMOUNT_CFLAGS@
+LIBMOUNT_LIBS = @LIBMOUNT_LIBS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
-LIBSYSTEMD_CFLAGS = @LIBSYSTEMD_CFLAGS@
-LIBSYSTEMD_LIBS = @LIBSYSTEMD_LIBS@
 LIBTOOL = @LIBTOOL@
 LIB_EXE_MACHINE_FLAG = @LIB_EXE_MACHINE_FLAG@
 LIPO = @LIPO@
@@ -436,19 +437,11 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = \
-	dirent 	\
-	vs9     \
-	vs10	\
-	vs11	\
-	vs12	\
-	vs14
+	dirent
 
 EXTRA_DIST = \
-	glibpc.py	\
 	make.msc 	\
-	module.defs	\
-	pc_base.py	\
-	replace.py
+	module.defs
 
 all: all-recursive
 

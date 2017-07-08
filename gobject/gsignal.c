@@ -4,7 +4,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -1389,7 +1389,7 @@ g_signal_query (guint         signal_id,
  *  not associate a class method slot with this signal.
  * @accumulator: the accumulator for this signal; may be %NULL.
  * @accu_data: user data for the @accumulator.
- * @c_marshaller: (allow-none): the function to translate arrays of parameter
+ * @c_marshaller: (nullable): the function to translate arrays of parameter
  *  values to signal emissions into C language callback invocations or %NULL.
  * @return_type: the type of return value, or #G_TYPE_NONE for a signal
  *  without a return value.
@@ -1457,7 +1457,7 @@ g_signal_new (const gchar	 *signal_name,
  *  not associate a class method with this signal.
  * @accumulator: the accumulator for this signal; may be %NULL.
  * @accu_data: user data for the @accumulator.
- * @c_marshaller: (allow-none): the function to translate arrays of parameter
+ * @c_marshaller: (nullable): the function to translate arrays of parameter
  *  values to signal emissions into C language callback invocations or %NULL.
  * @return_type: the type of return value, or #G_TYPE_NONE for a signal
  *  without a return value.
@@ -1590,11 +1590,11 @@ signal_add_class_closure (SignalNode *node,
  * @signal_flags: a combination of #GSignalFlags specifying detail of when
  *     the default handler is to be invoked. You should at least specify
  *     %G_SIGNAL_RUN_FIRST or %G_SIGNAL_RUN_LAST
- * @class_closure: (allow-none): The closure to invoke on signal emission;
+ * @class_closure: (nullable): The closure to invoke on signal emission;
  *     may be %NULL
- * @accumulator: (allow-none): the accumulator for this signal; may be %NULL
+ * @accumulator: (nullable): the accumulator for this signal; may be %NULL
  * @accu_data: user data for the @accumulator
- * @c_marshaller: (allow-none): the function to translate arrays of
+ * @c_marshaller: (nullable): the function to translate arrays of
  *     parameter values to signal emissions into C language callback
  *     invocations or %NULL
  * @return_type: the type of return value, or #G_TYPE_NONE for a signal
@@ -1628,6 +1628,7 @@ g_signal_newv (const gchar       *signal_name,
   guint signal_id, i;
   SignalNode *node;
   GSignalCMarshaller builtin_c_marshaller;
+  GSignalCVaMarshaller builtin_va_marshaller;
   GSignalCVaMarshaller va_marshaller;
   
   g_return_val_if_fail (signal_name != NULL, 0);
@@ -1736,14 +1737,14 @@ g_signal_newv (const gchar       *signal_name,
     node->accumulator = NULL;
 
   builtin_c_marshaller = NULL;
-  va_marshaller = NULL;
+  builtin_va_marshaller = NULL;
 
   /* Pick up built-in va marshallers for standard types, and
      instead of generic marshaller if no marshaller specified */
   if (n_params == 0 && return_type == G_TYPE_NONE)
     {
       builtin_c_marshaller = g_cclosure_marshal_VOID__VOID;
-      va_marshaller = g_cclosure_marshal_VOID__VOIDv;
+      builtin_va_marshaller = g_cclosure_marshal_VOID__VOIDv;
     }
   else if (n_params == 1 && return_type == G_TYPE_NONE)
     {
@@ -1751,7 +1752,7 @@ g_signal_newv (const gchar       *signal_name,
       else if (g_type_is_a (param_types[0] & ~G_SIGNAL_TYPE_STATIC_SCOPE, G_TYPE_ ##__type__))         \
 	{                                                                \
 	  builtin_c_marshaller = g_cclosure_marshal_VOID__ ## __type__;  \
-	  va_marshaller = g_cclosure_marshal_VOID__ ## __type__ ##v;     \
+	  builtin_va_marshaller = g_cclosure_marshal_VOID__ ## __type__ ##v;     \
 	}
 
       if (0) {}
@@ -1777,13 +1778,18 @@ g_signal_newv (const gchar       *signal_name,
   if (c_marshaller == NULL)
     {
       if (builtin_c_marshaller)
-	c_marshaller = builtin_c_marshaller;
+        {
+	  c_marshaller = builtin_c_marshaller;
+          va_marshaller = builtin_va_marshaller;
+        }
       else
 	{
 	  c_marshaller = g_cclosure_marshal_generic;
 	  va_marshaller = g_cclosure_marshal_generic_va;
 	}
     }
+  else
+    va_marshaller = NULL;
 
   node->c_marshaller = c_marshaller;
   node->va_marshaller = va_marshaller;
@@ -1851,7 +1857,7 @@ g_signal_set_va_marshaller (guint              signal_id,
  * @class_closure: The closure to invoke on signal emission; may be %NULL.
  * @accumulator: the accumulator for this signal; may be %NULL.
  * @accu_data: user data for the @accumulator.
- * @c_marshaller: (allow-none): the function to translate arrays of parameter
+ * @c_marshaller: (nullable): the function to translate arrays of parameter
  *  values to signal emissions into C language callback invocations or %NULL.
  * @return_type: the type of return value, or #G_TYPE_NONE for a signal
  *  without a return value.
@@ -2306,7 +2312,7 @@ g_signal_get_invocation_hint (gpointer instance)
  *
  * Connects a closure to a signal for a particular object.
  *
- * Returns: the handler id (always greater than 0 for successful connections)
+ * Returns: the handler ID (always greater than 0 for successful connections)
  */
 gulong
 g_signal_connect_closure_by_id (gpointer  instance,
@@ -2365,7 +2371,7 @@ g_signal_connect_closure_by_id (gpointer  instance,
  *
  * Connects a closure to a signal for a particular object.
  *
- * Returns: the handler id (always greater than 0 for successful connections)
+ * Returns: the handler ID (always greater than 0 for successful connections)
  */
 gulong
 g_signal_connect_closure (gpointer     instance,
@@ -2458,7 +2464,7 @@ node_check_deprecated (const SignalNode *node)
  * used. Specify @connect_flags if you need `..._after()` or
  * `..._swapped()` variants of this function.
  *
- * Returns: the handler id (always greater than 0 for successful connections)
+ * Returns: the handler ID (always greater than 0 for successful connections)
  */
 gulong
 g_signal_connect_data (gpointer       instance,
@@ -2639,9 +2645,9 @@ g_signal_handler_disconnect (gpointer instance,
 /**
  * g_signal_handler_is_connected:
  * @instance: (type GObject.Object): The instance where a signal handler is sought.
- * @handler_id: the handler id.
+ * @handler_id: the handler ID.
  *
- * Returns whether @handler_id is the id of a handler connected to @instance.
+ * Returns whether @handler_id is the ID of a handler connected to @instance.
  *
  * Returns: whether @handler_id identifies a handler connected to @instance.
  */
@@ -2721,7 +2727,7 @@ g_signal_handlers_destroy (gpointer instance)
  *  and/or @data the handler has to match.
  * @signal_id: Signal the handler has to be connected to.
  * @detail: Signal detail the handler has to be connected to.
- * @closure: (allow-none): The closure the handler will invoke.
+ * @closure: (nullable): The closure the handler will invoke.
  * @func: The C closure callback of the handler (useless for non-C closures).
  * @data: The closure data of the handler's closure.
  *
@@ -2801,7 +2807,7 @@ signal_handlers_foreach_matched_R (gpointer         instance,
  *  and/or @data the handlers have to match.
  * @signal_id: Signal the handlers have to be connected to.
  * @detail: Signal detail the handlers have to be connected to.
- * @closure: (allow-none): The closure the handlers will invoke.
+ * @closure: (nullable): The closure the handlers will invoke.
  * @func: The C closure callback of the handlers (useless for non-C closures).
  * @data: The closure data of the handlers' closures.
  *
@@ -2848,7 +2854,7 @@ g_signal_handlers_block_matched (gpointer         instance,
  *  and/or @data the handlers have to match.
  * @signal_id: Signal the handlers have to be connected to.
  * @detail: Signal detail the handlers have to be connected to.
- * @closure: (allow-none): The closure the handlers will invoke.
+ * @closure: (nullable): The closure the handlers will invoke.
  * @func: The C closure callback of the handlers (useless for non-C closures).
  * @data: The closure data of the handlers' closures.
  *
@@ -2896,7 +2902,7 @@ g_signal_handlers_unblock_matched (gpointer         instance,
  *  and/or @data the handlers have to match.
  * @signal_id: Signal the handlers have to be connected to.
  * @detail: Signal detail the handlers have to be connected to.
- * @closure: (allow-none): The closure the handlers will invoke.
+ * @closure: (nullable): The closure the handlers will invoke.
  * @func: The C closure callback of the handlers (useless for non-C closures).
  * @data: The closure data of the handlers' closures.
  *
