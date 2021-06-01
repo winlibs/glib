@@ -5,15 +5,13 @@ jobs:
     strategy:
       matrix:
           architecture: [x64, x86]
-    runs-on: windows-2016
+    runs-on: windows-2019
     steps:
       - uses: actions/checkout@v2
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{matrix.arch}}
           toolset: 14.16
-      - run: echo $Env:PATH
-      - uses: microsoft/setup-msbuild@v1.0.2
       - run: powershell ./.github/workflows/build.ps1 -vs vc15 -arch ${{matrix.architecture}} -libffi 3.2.1-4 -libintl 0.18.3-3 -zlib 1.2.11
       - uses: actions/upload-artifact@v2
         with:
