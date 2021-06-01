@@ -8,6 +8,10 @@ jobs:
     runs-on: windows-2019
     steps:
       - uses: actions/checkout@v2
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{matrix.arch}}
+          toolset: 14.16
       - uses: microsoft/setup-msbuild@v1.0.2
       - run: dir "C:\Program Files (x86)\Windows Kits\10\Include"
       - run: powershell ./.github/workflows/build.ps1 -vs vc15 -arch ${{matrix.architecture}} -libffi 3.2.1-4 -libintl 0.18.3-3 -zlib 1.2.11
