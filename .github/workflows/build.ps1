@@ -24,6 +24,6 @@ Expand-Archive $temp -DestinationPath "winlib_deps"
 
 $Env:INCLUDE="$deps\include;$Env:INCLUDE"
 $Env:LIB="$deps\lib;$Env:LIB"
-msbuild "/p:Configuration=Release_BundledPCRE" "/p:Platform=$arch" "/p:useenv=true" "win32\vs$($vs.substring(2))\glib.sln"
+msbuild "/p:Configuration=Release_BundledPCRE" "/p:Platform=$arch" "/p:useenv=true" "/p:WindowsTargetPlatformVersion=" "win32\vs$($vs.substring(2))\glib.sln"
 
 xcopy "/e" "..\vs$($vs.substring(2))\$arch" "winlib_build\*"
