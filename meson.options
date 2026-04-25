@@ -109,6 +109,16 @@ option('nls',
        yield: true,
        description : 'Enable native language support (translations)')
 
+option('winlib_deps_root',
+       type : 'string',
+       value : '',
+       description : 'Path to PHP SDK dependencies used by winlib-builder')
+
+option('winlib_legacy_dll_names',
+       type : 'boolean',
+       value : false,
+       description : 'Use PHP SDK-compatible MSVC DLL names in winlib-builder')
+
 option('oss_fuzz',
        type : 'feature',
        value : 'disabled',

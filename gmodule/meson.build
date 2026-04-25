@@ -81,7 +81,7 @@ gmodule_sources = [gmodule_c, gmodule_visibility_h, gmodule_deprecated_c]
 if host_system == 'windows' and glib_build_shared
   gmodule_rc_conf = configuration_data({
     'NAME': 'GModule',
-    'FILENAME': (cc.get_argument_syntax() == 'msvc' ? '' : 'lib') + 'gmodule-' + glib_api_version + '-' + soversion.to_string() + '.dll',
+    'FILENAME': gmodule_dll_filename,
     'DESCRIPTION': 'Portable API for dynamically loading modules',
   })
   gmodule_rc_conf.merge_from(rc_conf_base)
@@ -96,17 +96,15 @@ if host_system == 'windows' and glib_build_shared
   )]
 endif
 
-libgmodule = library('gmodule-2.0',
+libgmodule = library(gmodule_lib_name,
   sources : gmodule_sources,
-  version : library_version,
-  soversion : soversion,
-  darwin_versions : darwin_versions,
   install : true,
   include_directories : [configinc, gmoduleinc],
   dependencies : [libdl_dep, libglib_dep],
   c_args : ['-DG_LOG_DOMAIN="GModule"', '-DGMODULE_COMPILATION', warning_sign_conversion_args],
   gnu_symbol_visibility : 'hidden',
   link_args : [glib_link_flags],
+  kwargs : library_version_kwargs,
 )
 
 supported_var = 'gmodule_supported=@0@'.format(g_module_impl != '0')
