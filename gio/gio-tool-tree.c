@@ -1,6 +1,8 @@
 /*
  * Copyright 2015 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -31,7 +33,7 @@ static gboolean follow_symlinks = FALSE;
 static const GOptionEntry entries[] = {
   { "hidden", 'h', 0, G_OPTION_ARG_NONE, &show_hidden, N_("Show hidden files"), NULL },
   { "follow-symlinks", 'l', 0, G_OPTION_ARG_NONE, &follow_symlinks, N_("Follow symbolic links, mounts and shortcuts"), NULL },
-  { NULL }
+  G_OPTION_ENTRY_NULL
 };
 
 static gint
@@ -52,7 +54,7 @@ sort_info_by_name (GFileInfo *a, GFileInfo *b)
 }
 
 static void
-do_tree (GFile *f, int level, guint64 pattern)
+do_tree (GFile *f, unsigned int level, guint64 pattern)
 {
   GFileEnumerator *enumerator;
   GError *error = NULL;
@@ -93,7 +95,9 @@ do_tree (GFile *f, int level, guint64 pattern)
       info_list = NULL;
       while ((info = g_file_enumerator_next_file (enumerator, NULL, NULL)) != NULL)
 	{
-	  if (g_file_info_get_is_hidden (info) && !show_hidden)
+	  if (g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN) &&
+	      g_file_info_get_is_hidden (info) &&
+	      !show_hidden)
 	    {
 	      g_object_unref (info);
 	    }
@@ -102,7 +106,7 @@ do_tree (GFile *f, int level, guint64 pattern)
 	      info_list = g_list_prepend (info_list, info);
 	    }
 	}
-      g_file_enumerator_close (enumerator, NULL, NULL);
+      g_object_unref (enumerator);
 
       info_list = g_list_sort (info_list, (GCompareFunc) sort_info_by_name);
 
@@ -149,7 +153,8 @@ do_tree (GFile *f, int level, guint64 pattern)
 		}
 	      else
 		{
-		  if (g_file_info_get_is_symlink (info))
+		  if (g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_IS_SYMLINK) &&
+		      g_file_info_get_is_symlink (info))
 		    {
 		      const char *target;
 		      target = g_file_info_get_symlink_target (info);
@@ -160,7 +165,9 @@ do_tree (GFile *f, int level, guint64 pattern)
 	      g_print ("\n");
 
 	      if ((type & G_FILE_TYPE_DIRECTORY) &&
-		  (follow_symlinks || !g_file_info_get_is_symlink (info)))
+		  (follow_symlinks ||
+		   !(g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_IS_SYMLINK) &&
+		     g_file_info_get_is_symlink (info))))
 		{
 		  guint64 new_pattern;
 		  GFile *child;
@@ -236,7 +243,7 @@ handle_tree (int argc, char *argv[], gboolean do_help)
   g_set_prgname ("gio tree");
 
   /* Translators: commandline placeholder */
-  param = g_strdup_printf ("[%s...]", _("LOCATION"));
+  param = g_strdup_printf ("[%s…]", _("LOCATION"));
   context = g_option_context_new (param);
   g_free (param);
   g_option_context_set_help_enabled (context, FALSE);

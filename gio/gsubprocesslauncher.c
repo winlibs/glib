@@ -3,6 +3,8 @@
  * Copyright © 2012 Red Hat, Inc.
  * Copyright © 2012-2013 Canonical Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -15,16 +17,13 @@
  */
 
 /**
- * SECTION:gsubprocesslauncher
- * @title: GSubprocess Launcher
- * @short_description: Environment options for launching a child process
- * @include: gio/gio.h
+ * GSubprocessLauncher:
  *
  * This class contains a set of options for launching child processes,
  * such as where its standard input and output will be directed, the
  * argument list, the environment, and more.
  *
- * While the #GSubprocess class has high level functions covering
+ * While the [class@Gio.Subprocess] class has high level functions covering
  * popular cases, use of this class allows access to more advanced
  * options.  It can also be used to launch multiple subprocesses with
  * a similar configuration.
@@ -46,6 +45,7 @@
 #include "gioenumtypes.h"
 #include "gsubprocess.h"
 #include "ginitable.h"
+#include "gioerror.h"
 
 #ifdef G_OS_UNIX
 #include <unistd.h>
@@ -131,47 +131,27 @@ g_subprocess_launcher_set_property (GObject *object, guint prop_id,
 }
 
 static void
-g_subprocess_launcher_finalize (GObject *object)
+g_subprocess_launcher_dispose (GObject *object)
 {
   GSubprocessLauncher *self = G_SUBPROCESS_LAUNCHER (object);
 
 #ifdef G_OS_UNIX
-  guint i;
+  g_clear_pointer (&self->stdin_path, g_free);
+  g_clear_pointer (&self->stdout_path, g_free);
+  g_clear_pointer (&self->stderr_path, g_free);
 
-  g_free (self->stdin_path);
-  g_free (self->stdout_path);
-  g_free (self->stderr_path);
-
-  if (self->stdin_fd != -1)
-    close (self->stdin_fd);
-
-  if (self->stdout_fd != -1)
-    close (self->stdout_fd);
-
-  if (self->stderr_fd != -1)
-    close (self->stderr_fd);
-
-  if (self->basic_fd_assignments)
-    {
-      for (i = 0; i < self->basic_fd_assignments->len; i++)
-        (void) close (g_array_index (self->basic_fd_assignments, int, i));
-      g_array_unref (self->basic_fd_assignments);
-    }
-  if (self->needdup_fd_assignments)
-    {
-      for (i = 0; i < self->needdup_fd_assignments->len; i += 2)
-        (void) close (g_array_index (self->needdup_fd_assignments, int, i));
-      g_array_unref (self->needdup_fd_assignments);
-    }
+  g_subprocess_launcher_close (self);
 
   if (self->child_setup_destroy_notify)
     (* self->child_setup_destroy_notify) (self->child_setup_user_data);
+  self->child_setup_destroy_notify = NULL;
+  self->child_setup_user_data = NULL;
 #endif
 
-  g_strfreev (self->envp);
-  g_free (self->cwd);
+  g_clear_pointer (&self->envp, g_strfreev);
+  g_clear_pointer (&self->cwd, g_free);
 
-  G_OBJECT_CLASS (g_subprocess_launcher_parent_class)->finalize (object);
+  G_OBJECT_CLASS (g_subprocess_launcher_parent_class)->dispose (object);
 }
 
 static void
@@ -183,8 +163,8 @@ g_subprocess_launcher_init (GSubprocessLauncher  *self)
   self->stdin_fd = -1;
   self->stdout_fd = -1;
   self->stderr_fd = -1;
-  self->basic_fd_assignments = g_array_new (FALSE, 0, sizeof (int));
-  self->needdup_fd_assignments = g_array_new (FALSE, 0, sizeof (int));
+  self->source_fds = g_array_new (FALSE, 0, sizeof (int));
+  self->target_fds = g_array_new (FALSE, 0, sizeof (int));
 #endif
 }
 
@@ -194,10 +174,17 @@ g_subprocess_launcher_class_init (GSubprocessLauncherClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
 
   gobject_class->set_property = g_subprocess_launcher_set_property;
-  gobject_class->finalize = g_subprocess_launcher_finalize;
+  gobject_class->dispose = g_subprocess_launcher_dispose;
 
+  /**
+   * GSubprocessLauncher:flags:
+   *
+   * [flags@Gio.SubprocessFlags] for launched processes.
+   *
+   * Since: 2.40
+   */
   g_object_class_install_property (gobject_class, 1,
-                                   g_param_spec_flags ("flags", "Flags", "GSubprocessFlags for launched processes",
+                                   g_param_spec_flags ("flags", NULL, NULL,
                                                        G_TYPE_SUBPROCESS_FLAGS, 0, G_PARAM_WRITABLE |
                                                        G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY));
 }
@@ -227,8 +214,9 @@ g_subprocess_launcher_new (GSubprocessFlags flags)
 
 /**
  * g_subprocess_launcher_set_environ:
- * @self: a #GSubprocess
- * @env: (array zero-terminated=1): the replacement environment
+ * @self: a #GSubprocessLauncher
+ * @env: (array zero-terminated=1) (element-type filename) (transfer none):
+ *     the replacement environment
  *
  * Replace the entire environment of processes launched from this
  * launcher with the given 'environ' variable.
@@ -265,9 +253,10 @@ g_subprocess_launcher_set_environ (GSubprocessLauncher  *self,
 
 /**
  * g_subprocess_launcher_setenv:
- * @self: a #GSubprocess
- * @variable: the environment variable to set, must not contain '='
- * @value: the new value for the variable
+ * @self: a #GSubprocessLauncher
+ * @variable: (type filename): the environment variable to set,
+ *     must not contain '='
+ * @value: (type filename): the new value for the variable
  * @overwrite: whether to change the variable if it already exists
  *
  * Sets the environment variable @variable in the environment of
@@ -290,8 +279,9 @@ g_subprocess_launcher_setenv (GSubprocessLauncher *self,
 
 /**
  * g_subprocess_launcher_unsetenv:
- * @self: a #GSubprocess
- * @variable: the environment variable to unset, must not contain '='
+ * @self: a #GSubprocessLauncher
+ * @variable: (type filename): the environment variable to unset,
+ *     must not contain '='
  *
  * Removes the environment variable @variable from the environment of
  * processes launched from this launcher.
@@ -310,8 +300,8 @@ g_subprocess_launcher_unsetenv (GSubprocessLauncher *self,
 
 /**
  * g_subprocess_launcher_getenv:
- * @self: a #GSubprocess
- * @variable: the environment variable to get
+ * @self: a #GSubprocessLauncher
+ * @variable: (type filename): the environment variable to get
  *
  * Returns the value of the environment variable @variable in the
  * environment of processes launched from this launcher.
@@ -319,7 +309,8 @@ g_subprocess_launcher_unsetenv (GSubprocessLauncher *self,
  * On UNIX, the returned string can be an arbitrary byte string.
  * On Windows, it will be UTF-8.
  *
- * Returns: the value of the environment variable, %NULL if unset
+ * Returns: (nullable) (type filename): the value of the environment variable,
+ *     %NULL if unset
  *
  * Since: 2.40
  **/
@@ -332,7 +323,7 @@ g_subprocess_launcher_getenv (GSubprocessLauncher *self,
 
 /**
  * g_subprocess_launcher_set_cwd:
- * @self: a #GSubprocess
+ * @self: a #GSubprocessLauncher
  * @cwd: (type filename): the cwd for launched processes
  *
  * Sets the current working directory that processes will be launched
@@ -416,7 +407,7 @@ assign_fd (gint *fd_ptr, gint fd)
 /**
  * g_subprocess_launcher_set_stdin_file_path:
  * @self: a #GSubprocessLauncher
- * @path: (type filename) (nullable: a filename or %NULL
+ * @path: (type filename) (nullable): a filename or %NULL
  *
  * Sets the file path to use as the stdin for spawned processes.
  *
@@ -611,16 +602,16 @@ g_subprocess_launcher_take_stderr_fd (GSubprocessLauncher *self,
  * @target_fd: Target descriptor for child process
  *
  * Transfer an arbitrary file descriptor from parent process to the
- * child.  This function takes "ownership" of the fd; it will be closed
+ * child.  This function takes ownership of the @source_fd; it will be closed
  * in the parent when @self is freed.
  *
  * By default, all file descriptors from the parent will be closed.
- * This function allows you to create (for example) a custom pipe() or
- * socketpair() before launching the process, and choose the target
+ * This function allows you to create (for example) a custom `pipe()` or
+ * `socketpair()` before launching the process, and choose the target
  * descriptor in the child.
  *
  * An example use case is GNUPG, which has a command line argument
- * --passphrase-fd providing a file descriptor number where it expects
+ * `--passphrase-fd` providing a file descriptor number where it expects
  * the passphrase to be written.
  */
 void
@@ -628,21 +619,70 @@ g_subprocess_launcher_take_fd (GSubprocessLauncher   *self,
                                gint                   source_fd,
                                gint                   target_fd)
 {
-  if (source_fd == target_fd)
+  if (self->source_fds != NULL && self->target_fds != NULL)
     {
-      g_array_append_val (self->basic_fd_assignments, source_fd);
-    }
-  else
-    {
-      g_array_append_val (self->needdup_fd_assignments, source_fd);
-      g_array_append_val (self->needdup_fd_assignments, target_fd);
+      g_array_append_val (self->source_fds, source_fd);
+      g_array_append_val (self->target_fds, target_fd);
     }
 }
 
 /**
- * g_subprocess_launcher_set_child_setup:
+ * g_subprocess_launcher_close:
  * @self: a #GSubprocessLauncher
- * @child_setup: a #GSpawnChildSetupFunc to use as the child setup function
+ *
+ * Closes all the file descriptors previously passed to the object with
+ * g_subprocess_launcher_take_fd(), g_subprocess_launcher_take_stderr_fd(), etc.
+ *
+ * After calling this method, any subsequent calls to g_subprocess_launcher_spawn() or g_subprocess_launcher_spawnv() will
+ * return %G_IO_ERROR_CLOSED. This method is idempotent if
+ * called more than once.
+ *
+ * This function is called automatically when the #GSubprocessLauncher
+ * is disposed, but is provided separately so that garbage collected
+ * language bindings can call it earlier to guarantee when FDs are closed.
+ *
+ * Since: 2.68
+ */
+void
+g_subprocess_launcher_close (GSubprocessLauncher *self)
+{
+  guint i;
+
+  g_return_if_fail (G_IS_SUBPROCESS_LAUNCHER (self));
+
+  if (self->stdin_fd != -1)
+    close (self->stdin_fd);
+  self->stdin_fd = -1;
+
+  if (self->stdout_fd != -1)
+    close (self->stdout_fd);
+  self->stdout_fd = -1;
+
+  if (self->stderr_fd != -1)
+    close (self->stderr_fd);
+  self->stderr_fd = -1;
+
+  if (self->source_fds)
+    {
+      g_assert (self->target_fds != NULL);
+      g_assert (self->source_fds->len == self->target_fds->len);
+
+      /* Note: Don’t close the target_fds, as they’re only valid FDs in the
+       * child process. This code never executes in the child process. */
+      for (i = 0; i < self->source_fds->len; i++)
+        (void) close (g_array_index (self->source_fds, int, i));
+
+      g_clear_pointer (&self->source_fds, g_array_unref);
+      g_clear_pointer (&self->target_fds, g_array_unref);
+    }
+
+  self->closed_fd = TRUE;
+}
+
+/**
+ * g_subprocess_launcher_set_child_setup: (skip)
+ * @self: a #GSubprocessLauncher
+ * @child_setup: (closure user_data): a #GSpawnChildSetupFunc to use as the child setup function
  * @user_data: user data for @child_setup
  * @destroy_notify: a #GDestroyNotify for @user_data
  *
@@ -724,7 +764,7 @@ g_subprocess_launcher_spawn (GSubprocessLauncher  *launcher,
 /**
  * g_subprocess_launcher_spawnv:
  * @self: a #GSubprocessLauncher
- * @argv: (array zero-terminated=1) (element-type utf8): Command line arguments
+ * @argv: (array zero-terminated=1) (element-type filename): Command line arguments
  * @error: Error
  *
  * Creates a #GSubprocess given a provided array of arguments.
@@ -740,6 +780,17 @@ g_subprocess_launcher_spawnv (GSubprocessLauncher  *launcher,
   GSubprocess *subprocess;
 
   g_return_val_if_fail (argv != NULL && argv[0] != NULL && argv[0][0] != '\0', NULL);
+
+#ifdef G_OS_UNIX
+  if (launcher->closed_fd)
+    {
+      g_set_error (error,
+                   G_IO_ERROR,
+                   G_IO_ERROR_CLOSED,
+                   "Can't spawn a new child because a passed file descriptor has been closed.");
+      return NULL;
+    }
+#endif
 
   subprocess = g_object_new (G_TYPE_SUBPROCESS,
                              "argv", argv,

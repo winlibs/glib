@@ -1,6 +1,8 @@
 /*
  * Copyright © 2013 Canonical Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -47,10 +49,12 @@ static const struct help_topic topics[] = {
                     N_("[COMMAND]")
   },
   { "version",      N_("Print version"),
-                    N_("Print version information and exit")
+                    N_("Print version information and exit"),
+                    NULL
   },
   { "list-apps",    N_("List applications"),
-                    N_("List the installed D-Bus activatable applications (by .desktop files)")
+                    N_("List the installed D-Bus activatable applications (by .desktop files)"),
+                    NULL
   },
   { "launch",       N_("Launch an application"),
                     N_("Launch the application (with optional files to open)"),
@@ -85,7 +89,7 @@ app_help (gboolean     requested,
 
   if (command)
     {
-      gint i;
+      gsize i;
 
       for (i = 0; i < G_N_ELEMENTS (topics); i++)
         if (g_str_equal (topics[i].command, command))
@@ -102,8 +106,8 @@ app_help (gboolean     requested,
 
   if (topic)
     {
-      gint maxwidth;
-      gint i;
+      guint maxwidth;
+      gsize i;
 
       g_string_append_printf (string, "\n  %s %s %s\n\n", "gapplication",
                               topic->command, topic->synopsis ? _(topic->synopsis) : "");
@@ -127,8 +131,8 @@ app_help (gboolean     requested,
     }
   else
     {
-      gint maxwidth;
-      gint i;
+      guint maxwidth;
+      gsize i;
 
       g_string_append_printf (string, "\n  %s %s %s\n\n", "gapplication", _("COMMAND"), _("[ARGS…]"));
       g_string_append_printf (string, _("Commands:\n"));
@@ -295,10 +299,13 @@ app_get_platform_data (void)
   GVariantBuilder builder;
   const gchar *startup_id;
 
-  g_variant_builder_init (&builder, G_VARIANT_TYPE_VARDICT);
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE_VARDICT);
 
   if ((startup_id = g_getenv ("DESKTOP_STARTUP_ID")))
     g_variant_builder_add (&builder, "{sv}", "desktop-startup-id", g_variant_new_string (startup_id));
+
+  if ((startup_id = g_getenv ("XDG_ACTIVATION_TOKEN")))
+    g_variant_builder_add (&builder, "{sv}", "activation-token", g_variant_new_string (startup_id));
 
   return g_variant_builder_end (&builder);
 }
@@ -327,7 +334,7 @@ app_action (gchar **args)
       return 1;
     }
 
-  g_variant_builder_init (&params, G_VARIANT_TYPE ("av"));
+  g_variant_builder_init_static (&params, G_VARIANT_TYPE ("av"));
 
   if (args[2])
     {
@@ -380,7 +387,7 @@ app_launch (gchar **args)
   if (args[1] == NULL)
     return app_activate (args[0]);
 
-  g_variant_builder_init (&files, G_VARIANT_TYPE_STRING_ARRAY);
+  g_variant_builder_init_static (&files, G_VARIANT_TYPE_STRING_ARRAY);
 
   for (i = 1; args[i]; i++)
     {
@@ -463,7 +470,7 @@ main (int argc, char **argv)
   if (g_str_equal (argv[1], "list-actions"))
     return app_list_actions (argv + 2);
 
-  g_printerr (_("unrecognised command: %s\n\n"), argv[1]);
+  g_printerr (_("unrecognized command: %s\n\n"), argv[1]);
 
   return app_help (FALSE, NULL);
 }

@@ -1,6 +1,8 @@
 /*
  * Copyright 2015 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -24,20 +26,21 @@
 
 #include "gio-tool.h"
 
-
-static char *attributes = NULL;
+static char *global_attributes = NULL;
 static gboolean show_hidden = FALSE;
 static gboolean show_long = FALSE;
 static gboolean nofollow_symlinks = FALSE;
+static gboolean print_display_names = FALSE;
 static gboolean print_uris = FALSE;
 
 static const GOptionEntry entries[] = {
-  { "attributes", 'a', 0, G_OPTION_ARG_STRING, &attributes, N_("The attributes to get"), N_("ATTRIBUTES") },
+  { "attributes", 'a', 0, G_OPTION_ARG_STRING, &global_attributes, N_("The attributes to get"), N_("ATTRIBUTES") },
   { "hidden", 'h', 0, G_OPTION_ARG_NONE, &show_hidden, N_("Show hidden files"), NULL },
   { "long", 'l', 0, G_OPTION_ARG_NONE, &show_long, N_("Use a long listing format"), NULL },
   { "nofollow-symlinks", 'n', 0, G_OPTION_ARG_NONE, &nofollow_symlinks, N_("Don’t follow symbolic links"), NULL},
+  { "print-display-names", 'd', 0, G_OPTION_ARG_NONE, &print_display_names, N_("Print display names"), NULL },
   { "print-uris", 'u', 0, G_OPTION_ARG_NONE, &print_uris, N_("Print full URIs"), NULL},
-  { NULL }
+  G_OPTION_ENTRY_NULL
 };
 
 static void
@@ -51,10 +54,16 @@ show_file_listing (GFileInfo *info, GFile *parent)
   gboolean first_attr;
   GFile *child;
 
-  if ((g_file_info_get_is_hidden (info)) && !show_hidden)
+  if (g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN) &&
+      g_file_info_get_is_hidden (info) &&
+      !show_hidden)
     return;
 
-  name = g_file_info_get_name (info);
+  if (print_display_names && g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME))
+    name = g_file_info_get_display_name (info);
+  else
+    name = g_file_info_get_name (info);
+
   if (name == NULL)
     name = "";
 
@@ -64,7 +73,8 @@ show_file_listing (GFileInfo *info, GFile *parent)
     g_object_unref (child);
   }
 
-  size = g_file_info_get_size (info);
+  size = g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_SIZE) ?
+         g_file_info_get_size (info) : 0;
   type = file_type_to_string (g_file_info_get_file_type (info));
   if (show_long)
     g_print ("%s\t%"G_GUINT64_FORMAT"\t(%s)", print_uris? uri: name, (guint64)size, type);
@@ -81,7 +91,8 @@ show_file_listing (GFileInfo *info, GFile *parent)
       char *val_as_string;
 
       if (!show_long ||
-          strcmp (attributes[i], G_FILE_ATTRIBUTE_STANDARD_NAME) == 0 ||
+          (!print_display_names && strcmp (attributes[i], G_FILE_ATTRIBUTE_STANDARD_NAME) == 0) ||
+          (print_display_names && strcmp (attributes[i], G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME) == 0) ||
           strcmp (attributes[i], G_FILE_ATTRIBUTE_STANDARD_SIZE) == 0 ||
           strcmp (attributes[i], G_FILE_ATTRIBUTE_STANDARD_TYPE) == 0 ||
           strcmp (attributes[i], G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN) == 0)
@@ -114,7 +125,7 @@ list (GFile *file)
 
   error = NULL;
   enumerator = g_file_enumerate_children (file,
-                                          attributes,
+                                          global_attributes,
                                           nofollow_symlinks ? G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS : 0,
                                           NULL,
                                           &error);
@@ -146,6 +157,8 @@ list (GFile *file)
       res = FALSE;
     }
 
+  g_object_unref (enumerator);
+
   return res;
 }
 
@@ -162,7 +175,7 @@ handle_list (int argc, char *argv[], gboolean do_help)
   g_set_prgname ("gio list");
 
   /* Translators: commandline placeholder */
-  param = g_strdup_printf ("[%s...]", _("LOCATION"));
+  param = g_strdup_printf ("[%s…]", _("LOCATION"));
   context = g_option_context_new (param);
   g_free (param);
   g_option_context_set_help_enabled (context, FALSE);
@@ -192,16 +205,15 @@ handle_list (int argc, char *argv[], gboolean do_help)
 
   g_option_context_free (context);
 
-  if (attributes != NULL)
+  if (global_attributes != NULL)
     show_long = TRUE;
 
-  attributes = g_strconcat (G_FILE_ATTRIBUTE_STANDARD_NAME ","
-                            G_FILE_ATTRIBUTE_STANDARD_TYPE ","
-                            G_FILE_ATTRIBUTE_STANDARD_SIZE ","
-                            G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN,
-                            attributes != NULL ? "," : "",
-                            attributes,
-                            NULL);
+  global_attributes = g_strconcat (!print_display_names ? G_FILE_ATTRIBUTE_STANDARD_NAME "," : "",
+                                   print_display_names ? G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME "," : "",
+                                   G_FILE_ATTRIBUTE_STANDARD_TYPE "," G_FILE_ATTRIBUTE_STANDARD_SIZE "," G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN,
+                                   global_attributes != NULL ? "," : "",
+                                   global_attributes,
+                                   NULL);
 
   res = TRUE;
   if (argc > 1)
@@ -224,7 +236,7 @@ handle_list (int argc, char *argv[], gboolean do_help)
       g_free (cwd);
     }
 
-  g_free (attributes);
+  g_free (global_attributes);
 
   return res ? 0 : 2;
 }

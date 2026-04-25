@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2013-2015, 2017 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -61,7 +63,6 @@ int
 main (int argc, char **argv)
 {
   g_test_init (&argc, &argv, NULL);
-  g_test_bug_base ("http://bugzilla.gnome.org/");
 
   /* GUuid Tests */
   g_test_add_func ("/uuid/string", test_guuid_string);

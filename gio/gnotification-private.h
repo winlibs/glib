@@ -1,6 +1,8 @@
 /*
  * Copyright © 2013 Lars Uebernickel
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -27,6 +29,8 @@ const gchar *           g_notification_get_id                           (GNotifi
 const gchar *           g_notification_get_title                        (GNotification *notification);
 
 const gchar *           g_notification_get_body                         (GNotification *notification);
+
+const gchar *           g_notification_get_category                     (GNotification *notification);
 
 GIcon *                 g_notification_get_icon                         (GNotification *notification);
 

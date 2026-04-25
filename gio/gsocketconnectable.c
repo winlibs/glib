@@ -2,6 +2,8 @@
  * 
  * Copyright (C) 2008 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -22,17 +24,15 @@
 
 
 /**
- * SECTION:gsocketconnectable
- * @short_description: Interface for potential socket endpoints
- * @include: gio/gio.h
+ * GSocketConnectable:
  *
  * Objects that describe one or more potential socket endpoints
- * implement #GSocketConnectable. Callers can then use
- * g_socket_connectable_enumerate() to get a #GSocketAddressEnumerator
- * to try out each socket address in turn until one succeeds, as shown
- * in the sample code below.
+ * implement `GSocketConnectable`. Callers can then use
+ * [method@Gio.SocketConnectable.enumerate] to get a
+ * [class@Gio.SocketAddressEnumerator] to try out each socket address in turn
+ * until one succeeds, as shown in the sample code below.
  *
- * |[<!-- language="C" -->
+ * ```c
  * MyConnectionType *
  * connect_to_host (const char    *hostname,
  *                  guint16        port,
@@ -82,7 +82,7 @@
  *       return NULL;
  *     }
  * }
- * ]|
+ * ```
  */
 
 
@@ -121,7 +121,7 @@ g_socket_connectable_enumerate (GSocketConnectable *connectable)
  * @connectable: a #GSocketConnectable
  *
  * Creates a #GSocketAddressEnumerator for @connectable that will
- * return #GProxyAddresses for addresses that you must connect
+ * return a #GProxyAddress for each of its addresses that you must connect
  * to via a proxy.
  *
  * If @connectable does not implement

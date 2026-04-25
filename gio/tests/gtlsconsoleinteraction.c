@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2011 Collabora, Ltd.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -32,7 +34,7 @@
 
 /*
  * WARNING: This is not the example you're looking for [slow hand wave]. This
- * is not industrial strength, it's just for testing. It uses embarassing
+ * is not industrial strength, it's just for testing. It uses embarrassing
  * functions like getpass() and does lazy things with threads.
  */
 
@@ -45,7 +47,7 @@ G_DEFINE_TYPE (GTlsConsoleInteraction, g_tls_console_interaction, G_TYPE_TLS_INT
 #define BUFSIZ 8192
 #endif
 static gchar *
-getpass (const gchar *prompt)
+static_getpass (const gchar *prompt)
 {
   static gchar buf[BUFSIZ];
   gint i;
@@ -69,6 +71,9 @@ getpass (const gchar *prompt)
 
   return &buf[0];
 }
+#undef getpass
+#define getpass static_getpass /* avoid overloading a potential
+                                  build environment definition of getpass */
 #endif
 
 static GTlsInteractionResult

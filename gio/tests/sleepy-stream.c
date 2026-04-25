@@ -1,6 +1,8 @@
 /*
  * Copyright © 2009 Codethink Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -33,12 +35,14 @@ cook_piece (void)
         {
          case 26:
           buffer[i++] = '\n';
+          G_GNUC_FALLTHROUGH;
          case 27:
           buffer[i++] = '\r';
           break;
 
          case 28:
           buffer[i++] = '\r';
+          G_GNUC_FALLTHROUGH;
          case 29:
           buffer[i++] = '\n';
           break;
@@ -283,7 +287,6 @@ int
 main (int argc, char **argv)
 {
   g_test_init (&argc, &argv, NULL);
-  g_test_bug_base ("http://bugzilla.gnome.org/");
 
   g_test_add_func ("/filter-stream/input", test);
   g_test_add_func ("/filter-stream/async", asynch);

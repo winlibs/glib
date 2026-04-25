@@ -1,6 +1,8 @@
 /*
  * Copyright 2015 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -20,14 +22,41 @@
 #include "config.h"
 
 #include <gio/gio.h>
+
+#if defined(G_OS_UNIX) && !defined(__APPLE__)
+#include <gio/gdesktopappinfo.h>
+#endif
+
 #include <gi18n.h>
 
 #include "gio-tool.h"
 
+static int n_outstanding = 0;
+static gboolean success = TRUE;
 
 static const GOptionEntry entries[] = {
-  { NULL }
+  G_OPTION_ENTRY_NULL
 };
+
+static void
+launch_default_for_uri_cb (GObject *source_object,
+                           GAsyncResult *res,
+                           gpointer user_data)
+{
+  GError *error = NULL;
+  gchar *uri = user_data;
+
+  if (!g_app_info_launch_default_for_uri_finish (res, &error))
+    {
+       print_error ("%s: %s", uri, error->message);
+       g_clear_error (&error);
+       success = FALSE;
+    }
+
+  n_outstanding--;
+
+  g_free (uri);
+}
 
 int
 handle_open (int argc, char *argv[], gboolean do_help)
@@ -36,13 +65,11 @@ handle_open (int argc, char *argv[], gboolean do_help)
   gchar *param;
   GError *error = NULL;
   int i;
-  gboolean success;
-  gboolean res;
 
   g_set_prgname ("gio open");
 
   /* Translators: commandline placeholder */
-  param = g_strdup_printf ("%s...", _("LOCATION"));
+  param = g_strdup_printf ("%s…", _("LOCATION"));
   context = g_option_context_new (param);
   g_free (param);
   g_option_context_set_help_enabled (context, FALSE);
@@ -75,26 +102,41 @@ handle_open (int argc, char *argv[], gboolean do_help)
 
   g_option_context_free (context);
 
-  success = TRUE;
   for (i = 1; i < argc; i++)
     {
-      GFile *file;
-      char *uri;
+      char *uri = NULL;
+      char *uri_scheme;
 
-      file = g_file_new_for_commandline_arg (argv[i]);
-      uri = g_file_get_uri (file);
-      res = g_app_info_launch_default_for_uri (uri, NULL, &error);
+      /* Workaround to handle non-URI locations. We still use the original
+       * location for other cases, because GFile might modify the URI in ways
+       * we don't want. See:
+       * https://bugzilla.gnome.org/show_bug.cgi?id=779182 */
+      uri_scheme = g_uri_parse_scheme (argv[i]);
+      if (!uri_scheme || uri_scheme[0] == '\0')
+        {
+          GFile *file;
 
-      if (!res)
-	{
-          print_file_error (file, error->message);
-	  g_clear_error (&error);
-	  success = FALSE;
-	}
+          file = g_file_new_for_commandline_arg (argv[i]);
+          uri = g_file_get_uri (file);
+          g_object_unref (file);
+        }
+      else
+        uri = g_strdup (argv[i]);
+      g_free (uri_scheme);
 
-      g_object_unref (file);
+      g_app_info_launch_default_for_uri_async (uri,
+                                               NULL,
+                                               NULL,
+                                               launch_default_for_uri_cb,
+                                               g_strdup (uri));
+
+      n_outstanding++;
+
       g_free (uri);
     }
+
+  while (n_outstanding > 0)
+    g_main_context_iteration (NULL, TRUE);
 
   return success ? 0 : 2;
 }

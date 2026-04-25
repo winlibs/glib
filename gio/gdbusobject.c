@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2008-2010 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -27,21 +29,12 @@
 #include "glibintl.h"
 
 /**
- * SECTION:gdbusobject
- * @short_description: Base type for D-Bus objects
- * @include: gio/gio.h
- *
- * The #GDBusObject type is the base type for D-Bus objects on both
- * the service side (see #GDBusObjectSkeleton) and the client side
- * (see #GDBusObjectProxy). It is essentially just a container of
- * interfaces.
- */
-
-/**
  * GDBusObject:
  *
- * #GDBusObject is an opaque data structure and can only be accessed
- * using the following functions.
+ * The `GDBusObject` type is the base type for D-Bus objects on both
+ * the service side (see [class@Gio.DBusObjectSkeleton]) and the client side
+ * (see [class@Gio.DBusObjectProxy]). It is essentially just a container of
+ * interfaces.
  */
 
 typedef GDBusObjectIface GDBusObjectInterface;
@@ -65,7 +58,7 @@ g_dbus_object_default_init (GDBusObjectIface *iface)
                 G_STRUCT_OFFSET (GDBusObjectIface, interface_added),
                 NULL,
                 NULL,
-                g_cclosure_marshal_VOID__OBJECT,
+                NULL,
                 G_TYPE_NONE,
                 1,
                 G_TYPE_DBUS_INTERFACE);
@@ -85,7 +78,7 @@ g_dbus_object_default_init (GDBusObjectIface *iface)
                 G_STRUCT_OFFSET (GDBusObjectIface, interface_removed),
                 NULL,
                 NULL,
-                g_cclosure_marshal_VOID__OBJECT,
+                NULL,
                 G_TYPE_NONE,
                 1,
                 G_TYPE_DBUS_INTERFACE);
@@ -137,7 +130,7 @@ g_dbus_object_get_interfaces (GDBusObject *object)
  * Gets the D-Bus interface with name @interface_name associated with
  * @object, if any.
  *
- * Returns: (transfer full): %NULL if not found, otherwise a
+ * Returns: (nullable) (transfer full): %NULL if not found, otherwise a
  *   #GDBusInterface that must be freed with g_object_unref().
  *
  * Since: 2.30

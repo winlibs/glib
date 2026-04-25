@@ -4,6 +4,8 @@
  * 
  * Copyright (C) 2006-2008 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -35,30 +37,33 @@
 
 
 /**
- * SECTION:gmount
- * @short_description: Mount management
- * @include: gio/gio.h
- * @see_also: GVolume, GUnixMountEntry, GUnixMountPoint
+ * GMount:
  *
- * The #GMount interface represents user-visible mounts. Note, when 
- * porting from GnomeVFS, #GMount is the moral equivalent of #GnomeVFSVolume.
+ * The `GMount` interface represents a user-visible mount, such as a mounted
+ * file system.
  *
- * #GMount is a "mounted" filesystem that you can access. Mounted is in
- * quotes because it's not the same as a unix mount, it might be a gvfs
- * mount, but you can still access the files on it if you use GIO. Might or
- * might not be related to a volume object.
+ * `GMount` is a ‘mounted’ filesystem that you can access. Mounted is in
+ * quotes because it’s not the same as a UNIX mount, it might be a GVFS
+ * mount, but you can still access the files on it if you use GIO.
+ *
+ * A `GMount` might be associated with a [iface@Gio.Volume] (such as a USB flash
+ * drive) which hosts it.
  * 
- * Unmounting a #GMount instance is an asynchronous operation. For
- * more information about asynchronous operations, see #GAsyncResult
- * and #GTask. To unmount a #GMount instance, first call
- * g_mount_unmount_with_operation() with (at least) the #GMount instance and a
- * #GAsyncReadyCallback.  The callback will be fired when the
- * operation has resolved (either with success or failure), and a
- * #GAsyncReady structure will be passed to the callback.  That
- * callback should then call g_mount_unmount_with_operation_finish() with the #GMount
- * and the #GAsyncReady data to see if the operation was completed
- * successfully.  If an @error is present when g_mount_unmount_with_operation_finish() 
- * is called, then it will be filled with any error information.
+ * Unmounting a `GMount` instance is an asynchronous operation. For
+ * more information about asynchronous operations, see [iface@Gio.AsyncResult]
+ * and [class@Gio.Task]. To unmount a `GMount` instance, first call
+ * [method@Gio.Mount.unmount_with_operation] with (at least) the `GMount`
+ * instance and a [type@Gio.AsyncReadyCallback].  The callback will be fired
+ * when the operation has resolved (either with success or failure), and a
+ * [iface@Gio.AsyncResult] structure will be passed to the callback.  That
+ * callback should then call [method@Gio.Mount.unmount_with_operation_finish]
+ * with the `GMount` and the [iface@Gio.AsyncResult] data to see if the
+ * operation was completed successfully.  If an `error` is present when
+ * [method@Gio.Mount.unmount_with_operation_finish] is called, then it will be
+ * filled with any error information.
+ *
+ * Note, when [porting from GnomeVFS](migrating-gnome-vfs.html), `GMount` is the
+ * moral equivalent of `GnomeVFSVolume`.
  **/
 
 typedef GMountIface GMountInterface;
@@ -78,7 +83,7 @@ g_mount_default_init (GMountInterface *iface)
                 G_SIGNAL_RUN_LAST,
                 G_STRUCT_OFFSET (GMountIface, changed),
                 NULL, NULL,
-                g_cclosure_marshal_VOID__VOID,
+                NULL,
                 G_TYPE_NONE, 0);
 
   /**
@@ -95,14 +100,17 @@ g_mount_default_init (GMountInterface *iface)
                 G_SIGNAL_RUN_LAST,
                 G_STRUCT_OFFSET (GMountIface, unmounted),
                 NULL, NULL,
-                g_cclosure_marshal_VOID__VOID,
+                NULL,
                 G_TYPE_NONE, 0);
   /**
    * GMount::pre-unmount:
    * @mount: the object on which the signal is emitted
    *
-   * This signal is emitted when the #GMount is about to be
+   * This signal may be emitted when the #GMount is about to be
    * unmounted.
+   *
+   * This signal depends on the backend and is only emitted if
+   * GIO was used to unmount.
    *
    * Since: 2.22
    **/
@@ -111,7 +119,7 @@ g_mount_default_init (GMountInterface *iface)
                 G_SIGNAL_RUN_LAST,
                 G_STRUCT_OFFSET (GMountIface, pre_unmount),
                 NULL, NULL,
-                g_cclosure_marshal_VOID__VOID,
+                NULL,
                 G_TYPE_NONE, 0);
 }
 
@@ -252,7 +260,8 @@ g_mount_get_symbolic_icon (GMount *mount)
  * considered an opaque string. Returns %NULL if there is no UUID
  * available.
  * 
- * Returns: the UUID for @mount or %NULL if no UUID can be computed.
+ * Returns: (nullable) (transfer full): the UUID for @mount or %NULL if no UUID
+ *     can be computed.
  *     The returned string should be freed with g_free()
  *     when no longer needed.
  **/
@@ -273,8 +282,9 @@ g_mount_get_uuid (GMount *mount)
  * @mount: a #GMount.
  * 
  * Gets the volume for the @mount.
- * 
- * Returns: (transfer full): a #GVolume or %NULL if @mount is not associated with a volume.
+ *
+ * Returns: (transfer full) (nullable): a #GVolume or %NULL if @mount is not
+ *      associated with a volume.
  *      The returned object should be unreffed with 
  *      g_object_unref() when no longer needed.
  **/
@@ -299,7 +309,8 @@ g_mount_get_volume (GMount *mount)
  * This is a convenience method for getting the #GVolume and then
  * using that object to get the #GDrive.
  * 
- * Returns: (transfer full): a #GDrive or %NULL if @mount is not associated with a volume or a drive.
+ * Returns: (transfer full) (nullable): a #GDrive or %NULL if @mount is not
+ *      associated with a volume or a drive.
  *      The returned object should be unreffed with 
  *      g_object_unref() when no longer needed.
  **/
@@ -859,7 +870,7 @@ g_mount_guess_content_type_finish (GMount        *mount,
  * [shared-mime-info](http://www.freedesktop.org/wiki/Specifications/shared-mime-info-spec)
  * specification for more on x-content types.
  *
- * This is an synchronous operation and as such may block doing IO;
+ * This is a synchronous operation and as such may block doing IO;
  * see g_mount_guess_content_type() for the asynchronous version.
  *
  * Returns: (transfer full) (element-type utf8): a %NULL-terminated array of content types or %NULL on error.
@@ -1034,7 +1045,7 @@ g_mount_unshadow (GMount *mount)
  *
  * Gets the sort key for @mount, if any.
  *
- * Returns: Sorting key for @mount or %NULL if no such key is available.
+ * Returns: (nullable): Sorting key for @mount or %NULL if no such key is available.
  *
  * Since: 2.32
  */

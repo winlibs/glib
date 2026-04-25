@@ -1,6 +1,8 @@
 /* GObject - GLib Type, Object, Parameter and Signal Library
  * Copyright (C) 2001 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -28,41 +30,39 @@
 
 
 /**
- * SECTION:value_arrays
- * @short_description: A container structure to maintain an array of
- *     generic values
- * @see_also: #GValue, #GParamSpecValueArray, g_param_spec_value_array()
- * @title: Value arrays
+ * GValueArray:
+ * @n_values: number of values contained in the array
+ * @values: array of values
  *
- * The prime purpose of a #GValueArray is for it to be used as an
- * object property that holds an array of values. A #GValueArray wraps
- * an array of #GValue elements in order for it to be used as a boxed
- * type through %G_TYPE_VALUE_ARRAY.
+ * A `GValueArray` is a container structure to hold an array of generic values.
  *
- * #GValueArray is deprecated in favour of #GArray since GLib 2.32. It
- * is possible to create a #GArray that behaves like a #GValueArray by
- * using the size of #GValue as the element size, and by setting
- * g_value_unset() as the clear function using g_array_set_clear_func(),
- * for instance, the following code:
+ * The prime purpose of a `GValueArray` is for it to be used as an
+ * object property that holds an array of values. A `GValueArray` wraps
+ * an array of `GValue` elements in order for it to be used as a boxed
+ * type through `G_TYPE_VALUE_ARRAY`.
  *
- * |[<!-- language="C" --> 
+ * `GValueArray` is deprecated in favour of `GArray` since GLib 2.32.
+ * It is possible to create a `GArray` that behaves like a `GValueArray`
+ * by using the size of `GValue` as the element size, and by setting
+ * [method@GObject.Value.unset] as the clear function using
+ * [func@GLib.Array.set_clear_func], for instance, the following code:
+ *
+ * ```c
  *   GValueArray *array = g_value_array_new (10);
- * ]|
+ * ```
  *
  * can be replaced by:
  *
- * |[<!-- language="C" --> 
+ * ```c
  *   GArray *array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 10);
  *   g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
- * ]|
+ * ```
+ *
+ * Deprecated: 2.32: Use `GArray` instead, if possible for the given use case,
+ *    as described above.
  */
 
-
-#ifdef	DISABLE_MEM_POOLS
-#  define	GROUP_N_VALUES	(1)	/* power of 2 !! */
-#else
-#  define	GROUP_N_VALUES	(8)	/* power of 2 !! */
-#endif
+#define	GROUP_N_VALUES	(8u)	/* power of 2 !! */
 
 
 /* --- functions --- */
@@ -71,7 +71,7 @@
  * @value_array: #GValueArray to get a value from
  * @index_: index of the value of interest
  *
- * Return a pointer to the value at @index_ containd in @value_array.
+ * Return a pointer to the value at @index_ contained in @value_array.
  *
  * Returns: (transfer none): pointer to a value at @index_ in @value_array
  *
@@ -99,6 +99,7 @@ value_array_grow (GValueArray *value_array,
     {
       guint i = value_array->n_prealloced;
 
+      /* round up to the next multiple of GROUP_N_VALUES */
       value_array->n_prealloced = (value_array->n_values + GROUP_N_VALUES - 1) & ~(GROUP_N_VALUES - 1);
       value_array->values = g_renew (GValue, value_array->values, value_array->n_prealloced);
       if (!zero_init)
@@ -106,18 +107,6 @@ value_array_grow (GValueArray *value_array,
       memset (value_array->values + i, 0,
 	      (value_array->n_prealloced - i) * sizeof (value_array->values[0]));
     }
-}
-
-static inline void
-value_array_shrink (GValueArray *value_array)
-{
-#ifdef  DISABLE_MEM_POOLS
-  if (value_array->n_prealloced >= value_array->n_values + GROUP_N_VALUES)
-    {
-      value_array->n_prealloced = (value_array->n_values + GROUP_N_VALUES - 1) & ~(GROUP_N_VALUES - 1);
-      value_array->values = g_renew (GValue, value_array->values, value_array->n_prealloced);
-    }
-#endif
 }
 
 /**
@@ -147,7 +136,7 @@ g_value_array_new (guint n_prealloced)
 }
 
 /**
- * g_value_array_free:
+ * g_value_array_free: (skip)
  * @value_array: #GValueArray to free
  *
  * Free a #GValueArray including its contents.
@@ -316,7 +305,6 @@ g_value_array_remove (GValueArray *value_array,
   if (index < value_array->n_values)
     memmove (value_array->values + index, value_array->values + index + 1,
              (value_array->n_values - index) * sizeof (value_array->values[0]));
-  value_array_shrink (value_array);
   if (value_array->n_prealloced > value_array->n_values)
     memset (value_array->values + value_array->n_values, 0, sizeof (value_array->values[0]));
 
@@ -377,9 +365,9 @@ g_value_array_sort_with_data (GValueArray     *value_array,
   g_return_val_if_fail (compare_func != NULL, NULL);
 
   if (value_array->n_values)
-    g_qsort_with_data (value_array->values,
-		       value_array->n_values,
-		       sizeof (value_array->values[0]),
-		       compare_func, user_data);
+    g_sort_array (value_array->values,
+		  value_array->n_values,
+		  sizeof (value_array->values[0]),
+		  compare_func, user_data);
   return value_array;
 }

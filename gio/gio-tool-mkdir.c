@@ -1,6 +1,8 @@
 /*
  * Copyright 2015 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -29,7 +31,7 @@ static gboolean parent = FALSE;
 
 static const GOptionEntry entries[] = {
   { "parent", 'p', 0, G_OPTION_ARG_NONE, &parent, N_("Create parent directories"), NULL },
-  { NULL }
+  G_OPTION_ENTRY_NULL
 };
 
 int
@@ -45,7 +47,7 @@ handle_mkdir (int argc, char *argv[], gboolean do_help)
   g_set_prgname ("gio mkdir");
 
   /* Translators: commandline placeholder */
-  param = g_strdup_printf ("%s...", _("LOCATION"));
+  param = g_strdup_printf ("%s…", _("LOCATION"));
   context = g_option_context_new (param);
   g_free (param);
   g_option_context_set_help_enabled (context, FALSE);
@@ -108,4 +110,3 @@ handle_mkdir (int argc, char *argv[], gboolean do_help)
   return retval;
 
 }
-

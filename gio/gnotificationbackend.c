@@ -1,6 +1,8 @@
 /*
  * Copyright © 2013 Lars Uebernickel
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -27,8 +29,22 @@
 G_DEFINE_TYPE (GNotificationBackend, g_notification_backend, G_TYPE_OBJECT)
 
 static void
+g_notification_backend_dispose (GObject *obj)
+{
+  GNotificationBackend *backend = G_NOTIFICATION_BACKEND (obj);
+
+  backend->application = NULL;  /* no reference held, but clear the pointer anyway to avoid it dangling */
+  g_clear_object (&backend->dbus_connection);
+
+  G_OBJECT_CLASS (g_notification_backend_parent_class)->dispose (obj);
+}
+
+static void
 g_notification_backend_class_init (GNotificationBackendClass *class)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  object_class->dispose = g_notification_backend_dispose;
 }
 
 static void

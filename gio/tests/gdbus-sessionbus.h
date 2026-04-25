@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2012 Collabora Ltd. <http://www.collabora.co.uk/>
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -29,6 +31,7 @@ void session_bus_up   (void);
 void session_bus_stop (void);
 void session_bus_down (void);
 gint session_bus_run (void);
+const char *session_bus_get_address (void);
 
 G_END_DECLS
 

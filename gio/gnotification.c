@@ -1,6 +1,8 @@
 /*
  * Copyright © 2013 Lars Uebernickel
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -26,40 +28,56 @@
 #include "gioenumtypes.h"
 
 /**
- * SECTION:gnotification
- * @short_description: User Notifications (pop up messages)
- * @include: gio/gio.h
+ * GNotification:
  *
- * #GNotification is a mechanism for creating a notification to be shown
- * to the user -- typically as a pop-up notification presented by the
+ * `GNotification` is a mechanism for creating a notification to be shown
+ * to the user — typically as a pop-up notification presented by the
  * desktop environment shell.
  *
- * The key difference between #GNotification and other similar APIs is
+ * The key difference between `GNotification` and other similar APIs is
  * that, if supported by the desktop environment, notifications sent
- * with #GNotification will persist after the application has exited,
+ * with `GNotification` will persist after the application has exited,
  * and even across system reboots.
  *
  * Since the user may click on a notification while the application is
- * not running, applications using #GNotification should be able to be
- * started as a D-Bus service, using #GApplication.
+ * not running, applications using `GNotification` should be able to be
+ * started as a D-Bus service, using [class@Gio.Application].
+ *
+ * In order for `GNotification` to work, the application must have installed
+ * a `.desktop` file. For example:
+ * ```
+ * [Desktop Entry]
+ * Name=Test Application
+ * Comment=Description of what Test Application does
+ * Exec=gnome-test-application
+ * Icon=org.gnome.TestApplication
+ * Terminal=false
+ * Type=Application
+ * Categories=GNOME;GTK;TestApplication Category;
+ * StartupNotify=true
+ * DBusActivatable=true
+ * X-GNOME-UsesNotifications=true
+ * ```
+ *
+ * The `X-GNOME-UsesNotifications` key indicates to GNOME Control Center
+ * that this application uses notifications, so it can be listed in the
+ * Control Center’s ‘Notifications’ panel.
+ *
+ * The `.desktop` file must be named as `org.gnome.TestApplication.desktop`,
+ * where `org.gnome.TestApplication` is the ID passed to
+ * [ctor@Gio.Application.new].
  *
  * User interaction with a notification (either the default action, or
  * buttons) must be associated with actions on the application (ie:
- * "app." actions).  It is not possible to route user interaction
+ * `app.` actions).  It is not possible to route user interaction
  * through the notification itself, because the object will not exist if
  * the application is autostarted as a result of a notification being
  * clicked.
  *
- * A notification can be sent with g_application_send_notification().
+ * A notification can be sent with [method@Gio.Application.send_notification].
  *
- * Since: 2.40
- **/
-
-/**
- * GNotification:
- *
- * This structure type is private and should only be accessed using the
- * public APIs.
+ * In Windows, notification actions are unsupported, when sending the notification
+ * a warning will be printed if a default action or action buttons were added.
  *
  * Since: 2.40
  **/
@@ -74,9 +92,10 @@ struct _GNotification
   gchar *body;
   GIcon *icon;
   GNotificationPriority priority;
+  gchar *category;
   GPtrArray *buttons;
   gchar *default_action;
-  GVariant *default_action_target;
+  GVariant *default_action_target;  /* (nullable) (owned), not floating */
 };
 
 typedef struct
@@ -118,6 +137,7 @@ g_notification_finalize (GObject *object)
 
   g_free (notification->title);
   g_free (notification->body);
+  g_free (notification->category);
   g_free (notification->default_action);
   if (notification->default_action_target)
     g_variant_unref (notification->default_action_target);
@@ -310,6 +330,8 @@ g_notification_get_priority (GNotification *notification)
  * Deprecated in favor of g_notification_set_priority().
  *
  * Since: 2.40
+ * Deprecated: 2.42: Since 2.42, this has been deprecated in favour of
+ *    g_notification_set_priority().
  */
 void
 g_notification_set_urgent (GNotification *notification,
@@ -317,7 +339,55 @@ g_notification_set_urgent (GNotification *notification,
 {
   g_return_if_fail (G_IS_NOTIFICATION (notification));
 
-  g_notification_set_priority (notification, G_NOTIFICATION_PRIORITY_URGENT);
+  notification->priority = urgent ?
+      G_NOTIFICATION_PRIORITY_URGENT :
+      G_NOTIFICATION_PRIORITY_NORMAL;
+}
+
+/*< private >
+ * g_notification_get_category:
+ * @notification: a #GNotification
+ *
+ * Gets the category of @notification.
+ *
+ * This will be %NULL if no category is set.
+ *
+ * Returns: (nullable): the category of @notification
+ *
+ * Since: 2.70
+ */
+const gchar *
+g_notification_get_category (GNotification *notification)
+{
+  g_return_val_if_fail (G_IS_NOTIFICATION (notification), NULL);
+
+  return notification->category;
+}
+
+/**
+ * g_notification_set_category:
+ * @notification: a #GNotification
+ * @category: (nullable): the category for @notification, or %NULL for no category
+ *
+ * Sets the type of @notification to @category. Categories have a main
+ * type like `email`, `im` or `device` and can have a detail separated
+ * by a `.`, e.g. `im.received` or `email.arrived`. Setting the category
+ * helps the notification server to select proper feedback to the user.
+ *
+ * Standard categories are [listed in the specification](https://specifications.freedesktop.org/notification-spec/latest/ar01s06.html).
+ *
+ * Since: 2.70
+ */
+void
+g_notification_set_category (GNotification *notification,
+                             const gchar   *category)
+{
+  g_return_if_fail (G_IS_NOTIFICATION (notification));
+  g_return_if_fail (category == NULL || *category != '\0');
+
+  g_free (notification->category);
+
+  notification->category = g_strdup (category);
 }
 
 /**
@@ -538,10 +608,16 @@ g_notification_get_button_with_action (GNotification *notification,
 /*< private >
  * g_notification_get_default_action:
  * @notification: a #GNotification
- * @action: (nullable): return location for the default action
- * @target: (nullable): return location for the target of the default action
+ * @action: (out) (optional) (nullable) (transfer full): return location for the
+ *   default action, or %NULL if unset
+ * @target: (out) (optional) (nullable) (transfer full): return location for the
+ *   target of the default action, or %NULL if unset
  *
  * Gets the action and target for the default action of @notification.
+ *
+ * If this function returns %TRUE, @action is guaranteed to be set to a non-%NULL
+ * value (if a pointer is passed to @action). @target may still return a %NULL
+ * value, as the default action may have no target.
  *
  * Returns: %TRUE if @notification has a default action
  */
@@ -659,7 +735,7 @@ g_notification_set_default_action_and_target (GNotification *notification,
  * application-wide action (start with "app.").
  *
  * If @target is non-%NULL, @action will be activated with @target as
- * its parameter.
+ * its parameter. If @target is floating, it will be consumed.
  *
  * When no default action is set, the application that the notification
  * was sent on is activated.
@@ -694,7 +770,7 @@ g_notification_serialize_button (Button *button)
 {
   GVariantBuilder builder;
 
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
 
   g_variant_builder_add (&builder, "{sv}", "label", g_variant_new_string (button->label));
   g_variant_builder_add (&builder, "{sv}", "action", g_variant_new_string (button->action_name));
@@ -724,7 +800,7 @@ g_notification_get_priority_nick (GNotification *notification)
 /*< private >
  * g_notification_serialize:
  *
- * Serializes @notification into an floating variant of type a{sv}.
+ * Serializes @notification into a floating variant of type a{sv}.
  *
  * Returns: the serialized @notification as a floating variant.
  */
@@ -733,7 +809,7 @@ g_notification_serialize (GNotification *notification)
 {
   GVariantBuilder builder;
 
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
 
   if (notification->title)
     g_variant_builder_add (&builder, "{sv}", "title", g_variant_new_string (notification->title));
@@ -769,7 +845,7 @@ g_notification_serialize (GNotification *notification)
       GVariantBuilder actions_builder;
       guint i;
 
-      g_variant_builder_init (&actions_builder, G_VARIANT_TYPE ("aa{sv}"));
+      g_variant_builder_init_static (&actions_builder, G_VARIANT_TYPE ("aa{sv}"));
 
       for (i = 0; i < notification->buttons->len; i++)
         {

@@ -1,6 +1,8 @@
 /* GLIB - Library of useful routines for C programming
  * Copyright (C) 1995-1997  Peter Mattis, Spencer Kimball and Josh MacDonald
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -37,7 +39,7 @@ typedef struct _GRand           GRand;
 
 /* GRand - a good and fast random number generator: Mersenne Twister
  * see http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html for more info.
- * The range functions return a value in the intervall [begin, end).
+ * The range functions return a value in the interval [begin, end).
  * int          -> [0..2^32-1]
  * int_range    -> [begin..end-1]
  * double       -> [0..1)

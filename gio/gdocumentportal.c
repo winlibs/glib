@@ -2,6 +2,8 @@
  *
  * Copyright 2016 Endless Mobile, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -31,134 +33,53 @@
 #include "gunixfdlist.h"
 #endif
 
-#ifndef O_PATH
-#define O_PATH 0
-#endif
 #ifndef O_CLOEXEC
 #define O_CLOEXEC 0
 #else
 #define HAVE_O_CLOEXEC 1
 #endif
 
-static GXdpDocuments *documents;
-static char *documents_mountpoint;
-
 static gboolean
-init_document_portal (void)
+get_document_portal (GXdpDocuments **documents,
+                     char          **documents_mountpoint,
+                     GError        **error)
 {
-  static gsize documents_inited = 0;
+  GDBusConnection *connection = NULL;
 
-  if (g_once_init_enter (&documents_inited))
+  *documents = NULL;
+  *documents_mountpoint = NULL;
+
+  connection = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, error);
+  if (connection == NULL)
     {
-      GError *error = NULL;
-      GDBusConnection *connection = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
-
-      if (connection != NULL)
-        {
-          documents = gxdp_documents_proxy_new_sync (connection, 0,
-                                                     "org.freedesktop.portal.Documents",
-                                                     "/org/freedesktop/portal/documents",
-                                                     NULL, &error);
-          if (documents != NULL)
-            {
-              gxdp_documents_call_get_mount_point_sync (documents,
-                                                        &documents_mountpoint,
-                                                        NULL, &error);
-
-              if (error != NULL)
-                {
-                  g_warning ("Cannot get document portal mount point: %s", error->message);
-                  g_error_free (error);
-                }
-            }
-          else
-            {
-              g_warning ("Cannot create document portal proxy: %s", error->message);
-              g_error_free (error);
-            }
-
-          g_object_unref (connection);
-        }
-      else
-        {
-          g_warning ("Cannot connect to session bus when initializing document portal: %s",
-                     error->message);
-          g_error_free (error);
-        }
-
-      g_once_init_leave (&documents_inited, 1);
-    }
-
-  return (documents != NULL && documents_mountpoint != NULL);
-}
-
-char *
-g_document_portal_add_document (GFile   *file,
-                                GError **error)
-{
-  char *doc_path, *basename;
-  char *doc_id = NULL;
-  char *doc_uri = NULL;
-  char *path = NULL;
-  GUnixFDList *fd_list = NULL;
-  int fd, fd_in;
-  gboolean ret;
-
-  if (!init_document_portal ())
-    {
-      g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_INITIALIZED,
-                   "Document portal is not available");
+      g_prefix_error (error, "Cannot connect to session bus when initializing document portal: ");
       goto out;
     }
 
-  path = g_file_get_path (file);
-  fd = g_open (path, O_PATH | O_CLOEXEC);
-
-  if (fd == -1)
+  *documents = gxdp_documents_proxy_new_sync (connection,
+                                              G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
+                                              G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
+                                              "org.freedesktop.portal.Documents",
+                                              "/org/freedesktop/portal/documents",
+                                              NULL, error);
+  if (*documents == NULL)
     {
-      g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errno),
-                   "Failed to open %s", path);
+      g_prefix_error (error, "Cannot create document portal proxy: ");
       goto out;
     }
 
-#ifndef HAVE_O_CLOEXEC
-  fcntl (fd, F_SETFD, FD_CLOEXEC);
-#endif
+  if (!gxdp_documents_call_get_mount_point_sync (*documents,
+                                                 documents_mountpoint,
+                                                 NULL, error))
+    {
+      g_clear_object (documents);
+      g_prefix_error (error, "Cannot get document portal mount point: ");
+      goto out;
+    }
 
-  fd_list = g_unix_fd_list_new ();
-  fd_in = g_unix_fd_list_append (fd_list, fd, error);
-  g_close (fd, NULL);
-
-  if (fd_in == -1)
-    goto out;
-
-  ret = gxdp_documents_call_add_sync (documents,
-                                      g_variant_new_handle (fd_in),
-                                      TRUE,
-                                      TRUE,
-                                      fd_list,
-                                      &doc_id,
-                                      NULL,
-                                      NULL,
-                                      error);
-
-  if (!ret)
-    goto out;
-
-  basename = g_path_get_basename (path);
-  doc_path = g_build_filename (documents_mountpoint, doc_id, basename, NULL);
-  g_free (basename);
-
-  doc_uri = g_filename_to_uri (doc_path, NULL, NULL);
-  g_free (doc_path);
-
- out:
-  if (fd_list)
-    g_object_unref (fd_list);
-  g_free (path);
-  g_free (doc_id);
-
-  return doc_uri;
+out:
+  g_clear_object (&connection);
+  return *documents != NULL;
 }
 
 /* Flags accepted by org.freedesktop.portal.Documents.AddFull */
@@ -167,14 +88,43 @@ enum {
   XDP_ADD_FLAGS_PERSISTENT                 =  (1 << 1),
   XDP_ADD_FLAGS_AS_NEEDED_BY_APP           =  (1 << 2),
   XDP_ADD_FLAGS_FLAGS_ALL                  = ((1 << 3) - 1)
-};
+} G_GNUC_FLAG_ENUM;
+
+/*
+ * Assume that opening a file read/write failed with @saved_errno,
+ * and return TRUE if opening the same file read-only might succeed.
+ */
+static gboolean
+opening_ro_might_succeed (int saved_errno)
+{
+  switch (saved_errno)
+    {
+    case EACCES:
+    case EISDIR:
+#ifdef EPERM
+    case EPERM:
+#endif
+#ifdef EROFS
+    case EROFS:
+#endif
+#ifdef ETXTBSY
+    case ETXTBSY:
+#endif
+      return TRUE;
+
+    default:
+      return FALSE;
+    }
+}
 
 GList *
 g_document_portal_add_documents (GList       *uris,
                                  const char  *app_id,
                                  GError     **error)
 {
-  int length;
+  GXdpDocuments *documents = NULL;
+  char *documents_mountpoint = NULL;
+  unsigned int length;
   GList *ruris = NULL;
   gboolean *as_is;
   GVariantBuilder builder;
@@ -185,31 +135,36 @@ g_document_portal_add_documents (GList       *uris,
   char **doc_ids = NULL;
   GVariant *extra_out = NULL;
 
-  if (!init_document_portal ())
+  if (!get_document_portal (&documents, &documents_mountpoint, error))
     {
-      g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_INITIALIZED,
-                   "Document portal is not available");
       return NULL;
     }
 
   length = g_list_length (uris);
   as_is = g_new0 (gboolean, length);
 
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("ah"));
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("ah"));
 
   fd_list = g_unix_fd_list_new ();
   for (l = uris, i = 0; l; l = l->next, i++)
     {
       const char *uri = l->data;
       int idx = -1;
-      g_autofree char *path = NULL;
+      char *path = NULL;
 
       path = g_filename_from_uri (uri, NULL, NULL);
       if (path != NULL)
         {
           int fd;
 
-          fd = g_open (path, O_CLOEXEC | O_PATH);
+          fd = g_open (path, O_CLOEXEC | O_RDWR);
+          if (fd == -1 && opening_ro_might_succeed (errno))
+            {
+              /* If we don't have write access, fall back to read-only,
+               * and stop requesting the write permission */
+              fd = g_open (path, O_CLOEXEC | O_RDONLY);
+              permissions[1] = NULL;
+            }
           if (fd >= 0)
             {
 #ifndef HAVE_O_CLOEXEC
@@ -219,6 +174,8 @@ g_document_portal_add_documents (GList       *uris,
               close (fd);
             }
         }
+
+      g_free (path);
 
       if (idx != -1)
         g_variant_builder_add (&builder, "h", idx);
@@ -257,11 +214,45 @@ g_document_portal_add_documents (GList       *uris,
             }
           else
             {
-              char *basename = g_path_get_basename (uri + strlen ("file:"));
-              char *doc_path = g_build_filename (documents_mountpoint, doc_ids[j], basename, NULL);
-              ruri = g_strconcat ("file:", doc_path, NULL);
-              g_free (basename);
-              g_free (doc_path);
+              const char *doc_name;
+              char *doc_path;
+              GDir *doc_dir;
+              GError *local_error = NULL;
+
+              doc_path = g_build_filename (documents_mountpoint, doc_ids[j], NULL);
+              doc_dir = g_dir_open (doc_path, 0, &local_error);
+              g_clear_pointer (&doc_path, g_free);
+
+              if (!doc_dir)
+                {
+                  g_set_error_literal (error, G_IO_ERROR,
+                                       g_io_error_from_file_error (local_error->code),
+                                       local_error->message);
+
+                  g_clear_error (&local_error);
+                  g_clear_list (&ruris, g_free);
+                  goto out;
+                }
+
+              doc_name = g_dir_read_name (doc_dir);
+
+              if (!doc_name)
+                {
+                  g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
+                               "Failed to read %s" G_DIR_SEPARATOR_S "%s",
+                               documents_mountpoint, doc_ids[j]);
+
+                  g_clear_pointer (&doc_dir, g_dir_close);
+                  g_clear_list (&ruris, g_free);
+                  goto out;
+                }
+
+              ruri = g_strconcat ("file:",
+                                  documents_mountpoint, G_DIR_SEPARATOR_S,
+                                  doc_ids[j], G_DIR_SEPARATOR_S,
+                                  doc_name, NULL);
+
+              g_clear_pointer (&doc_dir, g_dir_close);
               j++;
             }
 
@@ -273,9 +264,12 @@ g_document_portal_add_documents (GList       *uris,
   else
     {
       ruris = g_list_copy_deep (uris, (GCopyFunc)g_strdup, NULL);
+      g_variant_builder_clear (&builder);
     }
 
 out:
+  g_clear_object (&documents);
+  g_clear_pointer (&documents_mountpoint, g_free);
   g_clear_object (&fd_list);
   g_clear_pointer (&extra_out, g_variant_unref);
   g_clear_pointer (&doc_ids, g_strfreev);

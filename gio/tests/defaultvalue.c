@@ -1,6 +1,8 @@
 /* GIO default value tests
  * Copyright (C) 2013 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -15,8 +17,14 @@
  * along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <string.h>
 #include <gio/gio.h>
+
+#ifdef HAVE_COCOA
+#include <gio/gosxappinfo.h>
+#endif
 
 static void
 check_property (const char *output,
@@ -29,7 +37,6 @@ check_property (const char *output,
   if (g_param_value_defaults (pspec, value))
       return;
 
-  g_value_init (&default_value, G_PARAM_SPEC_VALUE_TYPE (pspec));
   g_param_value_set_default (pspec, &default_value);
 
   v = g_strdup_value_contents (value);
@@ -174,7 +181,7 @@ list_all_types (void)
       GType *tp;
       all_registered_types = g_new0 (GType, 1000);
       tp = all_registered_types;
-#include "giotypefuncs.c"
+#include "giotypefuncs.inc"
       *tp = 0;
     }
 
@@ -191,6 +198,9 @@ main (int argc, char **argv)
 
   g_setenv ("GIO_USE_VFS", "local", TRUE);
   g_setenv ("GSETTINGS_BACKEND", "memory", TRUE);
+
+  /* Disable deprecation warnings when we poke at deprecated properties */
+  g_setenv ("G_ENABLE_DIAGNOSTIC", "0", TRUE);
 
   g_test_init (&argc, &argv, NULL);
 

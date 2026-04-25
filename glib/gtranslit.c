@@ -1,6 +1,8 @@
 /*
  * Copyright © 2014 Canonical Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -185,11 +187,11 @@ lookup_item_id_for_locale (const gchar *locale)
 {
   gchar key[MAX_LOCALE_NAME + 1];
   const gchar *language;
-  guint language_len;
+  size_t language_len;
   const gchar *territory = NULL;
-  guint territory_len = 0;
+  size_t territory_len = 0;
   const gchar *modifier = NULL;
-  guint modifier_len = 0;
+  size_t modifier_len = 0;
   const gchar *next_char;
   guint id;
 
@@ -314,12 +316,12 @@ get_default_item_id (void)
  * If the source language of @str is known, it can used to improve the
  * accuracy of the translation by passing it as @from_locale.  It should
  * be a valid POSIX locale string (of the form
- * "language[_territory][.codeset][@modifier]").
+ * `language[_territory][.codeset][@modifier]`).
  *
  * If @from_locale is %NULL then the current locale is used.
  *
  * If you want to do translation for no specific locale, and you want it
- * to be done independently of the currently locale, specify "C" for
+ * to be done independently of the currently locale, specify `"C"` for
  * @from_locale.
  *
  * Returns: a string in plain ASCII
@@ -399,11 +401,6 @@ g_str_to_ascii (const gchar *str,
             }
           else /* no match found */
             g_string_append_c (result, '?');
-        }
-      else if (*str & 0x80) /* Out-of-range non-ASCII case */
-        {
-          g_string_append_c (result, '?');
-          str = g_utf8_next_char (str);
         }
       else /* ASCII case */
         g_string_append_c (result, *str++);

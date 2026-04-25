@@ -3,6 +3,8 @@
  * Copyright © 2008-2010 Red Hat, Inc.
  * Copyright © 2011 Nokia Corporation
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -86,7 +88,7 @@ test_pipe (GInputStream  **is,
  * @right: (out) (optional): used to return the other #GIOStream
  * @error: used to raise an error
  *
- * Return two #GIOStream<!---->s connected to each other with pipes.
+ * Return two #GIOStreams connected to each other with pipes.
  * The "left" input stream is connected by a unidirectional pipe
  * to the "right" output stream, and vice versa. This can be used
  * as a bidirectional pipe to a child process, for instance.

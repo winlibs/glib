@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2008-2009 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -114,7 +116,10 @@ GDBusConnection *_g_bus_get_priv (GBusType            bus_type,
                                   GCancellable       *cancellable,
                                   GError            **error);
 
-void ensure_gdbus_testserver_up (void);
+void ensure_gdbus_testserver_up (GDBusConnection *connection,
+                                 GMainContext    *context);
+
+void connection_wait_for_bus (GDBusConnection *conn);
 
 G_END_DECLS
 

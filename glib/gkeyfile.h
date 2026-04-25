@@ -4,6 +4,8 @@
  *
  *  Ray Strode <halfline@hawaii.rr.com>
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -52,7 +54,7 @@ typedef enum
   G_KEY_FILE_NONE              = 0,
   G_KEY_FILE_KEEP_COMMENTS     = 1 << 0,
   G_KEY_FILE_KEEP_TRANSLATIONS = 1 << 1
-} GKeyFileFlags;
+} G_GNUC_FLAG_ENUM GKeyFileFlags;
 
 GLIB_AVAILABLE_IN_ALL
 GKeyFile *g_key_file_new                    (void);
@@ -106,12 +108,12 @@ GLIB_AVAILABLE_IN_ALL
 gchar    *g_key_file_get_start_group        (GKeyFile             *key_file) G_GNUC_MALLOC;
 GLIB_AVAILABLE_IN_ALL
 gchar   **g_key_file_get_groups             (GKeyFile             *key_file,
-					     gsize                *length) G_GNUC_MALLOC;
+					     gsize                *length);
 GLIB_AVAILABLE_IN_ALL
 gchar   **g_key_file_get_keys               (GKeyFile             *key_file,
 					     const gchar          *group_name,
 					     gsize                *length,
-					     GError              **error) G_GNUC_MALLOC;
+					     GError              **error);
 GLIB_AVAILABLE_IN_ALL
 gboolean  g_key_file_has_group              (GKeyFile             *key_file,
 					     const gchar          *group_name);
@@ -146,6 +148,11 @@ gchar    *g_key_file_get_locale_string      (GKeyFile             *key_file,
 					     const gchar          *key,
 					     const gchar          *locale,
 					     GError              **error) G_GNUC_MALLOC;
+GLIB_AVAILABLE_IN_2_56
+gchar    *g_key_file_get_locale_for_key     (GKeyFile             *key_file,
+                                             const gchar          *group_name,
+                                             const gchar          *key,
+                                             const gchar          *locale) G_GNUC_MALLOC;
 GLIB_AVAILABLE_IN_ALL
 void      g_key_file_set_locale_string      (GKeyFile             *key_file,
 					     const gchar          *group_name,
@@ -207,7 +214,7 @@ gchar   **g_key_file_get_string_list        (GKeyFile             *key_file,
 					     const gchar          *group_name,
 					     const gchar          *key,
 					     gsize                *length,
-					     GError              **error) G_GNUC_MALLOC;
+					     GError              **error);
 GLIB_AVAILABLE_IN_ALL
 void      g_key_file_set_string_list        (GKeyFile             *key_file,
 					     const gchar          *group_name,
@@ -220,7 +227,7 @@ gchar   **g_key_file_get_locale_string_list (GKeyFile             *key_file,
 					     const gchar          *key,
 					     const gchar          *locale,
 					     gsize                *length,
-					     GError              **error) G_GNUC_MALLOC;
+					     GError              **error);
 GLIB_AVAILABLE_IN_ALL
 void      g_key_file_set_locale_string_list (GKeyFile             *key_file,
 					     const gchar          *group_name,

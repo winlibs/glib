@@ -1,6 +1,8 @@
 /*
  * Copyright © 2011 Canonical Ltd.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
@@ -25,13 +27,26 @@
 
 G_BEGIN_DECLS
 
-GLIB_AVAILABLE_IN_2_32
+/**
+ * G_MENU_EXPORTER_MAX_SECTION_SIZE:
+ *
+ * The maximum number of entries in a menu section supported by
+ * g_dbus_connection_export_menu_model().
+ *
+ * The exact value of the limit may change in future GLib versions.
+ *
+ * Since: 2.76
+ */
+#define G_MENU_EXPORTER_MAX_SECTION_SIZE 1000 \
+  GIO_AVAILABLE_MACRO_IN_2_76
+
+GIO_AVAILABLE_IN_2_32
 guint                   g_dbus_connection_export_menu_model             (GDBusConnection  *connection,
                                                                          const gchar      *object_path,
                                                                          GMenuModel       *menu,
                                                                          GError          **error);
 
-GLIB_AVAILABLE_IN_2_32
+GIO_AVAILABLE_IN_2_32
 void                    g_dbus_connection_unexport_menu_model           (GDBusConnection  *connection,
                                                                          guint             export_id);
 

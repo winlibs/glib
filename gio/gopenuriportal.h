@@ -2,6 +2,8 @@
  *
  * Copyright 2017 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -23,18 +25,20 @@
 
 G_BEGIN_DECLS
 
-gboolean g_openuri_portal_open_uri        (const char  *uri,
-                                           const char  *parent_window,
-                                           GError     **error);
+gboolean g_openuri_portal_open_file        (GFile       *file,
+                                            const char  *parent_window,
+                                            const char  *startup_id,
+                                            GError     **error);
 
-void     g_openuri_portal_open_uri_async  (const char          *uri,
-                                           const char          *parent_window,
-                                           GCancellable        *cancellable,
-                                           GAsyncReadyCallback  callback,
-                                           gpointer             user_data);
+void     g_openuri_portal_open_file_async  (GFile               *file,
+                                            const char          *parent_window,
+                                            const char          *startup_id,
+                                            GCancellable        *cancellable,
+                                            GAsyncReadyCallback  callback,
+                                            gpointer             user_data);
 
-gboolean g_openuri_portal_open_uri_finish (GAsyncResult        *result,
-                                           GError             **error);
+gboolean g_openuri_portal_open_file_finish (GAsyncResult        *result,
+                                            GError             **error);
 
 G_END_DECLS
 

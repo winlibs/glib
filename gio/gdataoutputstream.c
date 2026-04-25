@@ -2,6 +2,8 @@
  * 
  * Copyright (C) 2006-2007 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -28,16 +30,11 @@
 
 
 /**
- * SECTION:gdataoutputstream
- * @short_description: Data Output Stream
- * @include: gio/gio.h
- * @see_also: #GOutputStream
- * 
- * Data output stream implements #GOutputStream and includes functions for 
- * writing data directly to an output stream.
+ * GDataOutputStream:
  *
- **/
-
+ * Data output stream implements [class@Gio.OutputStream] and includes functions
+ * for writing data directly to an output stream.
+ */
 
 
 struct _GDataOutputStreamPrivate {
@@ -97,9 +94,7 @@ g_data_output_stream_class_init (GDataOutputStreamClass *klass)
    */
   g_object_class_install_property (object_class,
                                    PROP_BYTE_ORDER,
-                                   g_param_spec_enum ("byte-order",
-                                                      P_("Byte order"),
-                                                      P_("The byte order"),
+                                   g_param_spec_enum ("byte-order", NULL, NULL,
                                                       G_TYPE_DATA_STREAM_BYTE_ORDER,
                                                       G_DATA_STREAM_BYTE_ORDER_BIG_ENDIAN,
                                                       G_PARAM_READWRITE|G_PARAM_STATIC_NAME|G_PARAM_STATIC_BLURB));
@@ -119,7 +114,7 @@ g_data_output_stream_set_property (GObject     *object,
   switch (prop_id) 
     {
     case PROP_BYTE_ORDER:
-      g_data_output_stream_set_byte_order (dstream, g_value_get_enum (value));
+      g_data_output_stream_set_byte_order (dstream, (GDataStreamByteOrder) g_value_get_enum (value));
       break;
 
     default:
@@ -143,7 +138,7 @@ g_data_output_stream_get_property (GObject    *object,
   switch (prop_id)
     {
     case PROP_BYTE_ORDER:
-      g_value_set_enum (value, priv->byte_order);
+      g_value_set_enum (value, (int) priv->byte_order);
       break;
 
     default:

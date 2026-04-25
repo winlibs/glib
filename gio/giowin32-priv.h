@@ -2,6 +2,8 @@
  * 
  * Copyright (C) 2012 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -35,6 +37,8 @@ GOutputStream *
 g_win32_output_stream_new_from_fd (gint      fd,
 				   gboolean  close_fd);
 
+void
+gio_win32_appinfo_init (gboolean do_wait);
 G_END_DECLS
 
 #endif /* __G_IO_MODULE_PRIV_H__ */

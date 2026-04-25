@@ -2,6 +2,8 @@
  * 
  * Copyright (C) 2006-2007 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -31,25 +33,22 @@
 
 
 /**
- * SECTION:gfileoutputstream
- * @short_description: File output streaming operations
- * @include: gio/gio.h
- * @see_also: #GOutputStream, #GDataOutputStream, #GSeekable
+ * GFileOutputStream:
  * 
- * GFileOutputStream provides output streams that write their
+ * `GFileOutputStream` provides output streams that write their
  * content to a file.
  *
- * GFileOutputStream implements #GSeekable, which allows the output 
+ * `GFileOutputStream` implements [iface@Gio.Seekable], which allows the output
  * stream to jump to arbitrary positions in the file and to truncate
  * the file, provided the filesystem of the file supports these 
  * operations.
  *
- * To find the position of a file output stream, use g_seekable_tell().
+ * To find the position of a file output stream, use [method@Gio.Seekable.tell].
  * To find out if a file output stream supports seeking, use
- * g_seekable_can_seek().To position a file output stream, use
- * g_seekable_seek(). To find out if a file output stream supports
- * truncating, use g_seekable_can_truncate(). To truncate a file output
- * stream, use g_seekable_truncate().
+ * [method@Gio.Seekable.can_seek].To position a file output stream, use
+ * [method@Gio.Seekable.seek]. To find out if a file output stream supports
+ * truncating, use [method@Gio.Seekable.can_truncate]. To truncate a file output
+ * stream, use [method@Gio.Seekable.truncate].
  **/
 
 static void       g_file_output_stream_seekable_iface_init    (GSeekableIface       *iface);
@@ -188,7 +187,8 @@ async_ready_callback_wrapper (GObject *source_object,
  * g_file_output_stream_query_info_async:
  * @stream: a #GFileOutputStream.
  * @attributes: a file attribute query string.
- * @io_priority: the [I/O priority][gio-GIOScheduler] of the request
+ * @io_priority: the [I/O priority](iface.AsyncResult.html#io-priority) of the
+ *   request
  * @cancellable: optional #GCancellable object, %NULL to ignore. 
  * @callback: callback to call when the request is satisfied
  * @user_data: the data to pass to callback function
@@ -271,7 +271,7 @@ g_file_output_stream_query_info_finish (GFileOutputStream     *stream,
  * This must be called after the stream has been written
  * and closed, as the etag can change while writing.
  * 
- * Returns: the entity tag for the stream.
+ * Returns: (nullable) (transfer full): the entity tag for the stream.
  **/
 char *
 g_file_output_stream_get_etag (GFileOutputStream  *stream)

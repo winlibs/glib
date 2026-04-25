@@ -3,6 +3,8 @@
  * Copyright (C) 2010 Red Hat, Inc.
  * Copyright © 2015 Collabora, Ltd.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -91,12 +93,12 @@ g_dummy_tls_backend_get_default_database (GTlsBackend *backend)
 {
   GDummyTlsBackend *dummy = G_DUMMY_TLS_BACKEND (backend);
 
-  if (g_once_init_enter (&dummy->database))
+  if (g_once_init_enter_pointer (&dummy->database))
     {
       GTlsDatabase *tlsdb;
 
       tlsdb = g_object_new (_g_dummy_tls_database_get_type (), NULL);
-      g_once_init_leave (&dummy->database, tlsdb);
+      g_once_init_leave_pointer (&dummy->database, tlsdb);
     }
 
   return g_object_ref (dummy->database);
@@ -235,7 +237,9 @@ enum
   PROP_CONN_SERVER_IDENTITY,
   PROP_CONN_USE_SSL3,
   PROP_CONN_ACCEPTED_CAS,
-  PROP_CONN_AUTHENTICATION_MODE
+  PROP_CONN_AUTHENTICATION_MODE,
+  PROP_CONN_ADVERTISED_PROTOCOLS,
+  PROP_CONN_NEGOTIATED_PROTOCOL,
 };
 
 static void g_dummy_tls_connection_initable_iface_init (GInitableIface *iface);
@@ -301,6 +305,8 @@ g_dummy_tls_connection_class_init (GDummyTlsConnectionClass *connection_class)
   g_object_class_override_property (gobject_class, PROP_CONN_USE_SSL3, "use-ssl3");
   g_object_class_override_property (gobject_class, PROP_CONN_ACCEPTED_CAS, "accepted-cas");
   g_object_class_override_property (gobject_class, PROP_CONN_AUTHENTICATION_MODE, "authentication-mode");
+  g_object_class_override_property (gobject_class, PROP_CONN_ADVERTISED_PROTOCOLS, "advertised-protocols");
+  g_object_class_override_property (gobject_class, PROP_CONN_NEGOTIATED_PROTOCOL, "negotiated-protocol");
 }
 
 static void

@@ -2,6 +2,8 @@
  *
  * Copyright © 2009 Codethink Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -47,6 +49,8 @@ G_BEGIN_DECLS
 typedef struct _GSocketControlMessagePrivate                GSocketControlMessagePrivate;
 typedef struct _GSocketControlMessageClass                  GSocketControlMessageClass;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GSocketControlMessage, g_object_unref)
+
 /**
  * GSocketControlMessageClass:
  * @get_size: gets the size of the message.
@@ -88,18 +92,18 @@ struct _GSocketControlMessage
   GSocketControlMessagePrivate *priv;
 };
 
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 GType                  g_socket_control_message_get_type     (void) G_GNUC_CONST;
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 gsize                  g_socket_control_message_get_size     (GSocketControlMessage *message);
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 int                    g_socket_control_message_get_level    (GSocketControlMessage *message);
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 int                    g_socket_control_message_get_msg_type (GSocketControlMessage *message);
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 void                   g_socket_control_message_serialize    (GSocketControlMessage *message,
 							      gpointer               data);
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 GSocketControlMessage *g_socket_control_message_deserialize  (int                    level,
 							      int                    type,
 							      gsize                  size,

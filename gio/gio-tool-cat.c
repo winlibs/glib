@@ -1,6 +1,8 @@
 /*
  * Copyright 2015 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -39,14 +41,17 @@
 
 
 static const GOptionEntry entries[] = {
-  { NULL }
+  G_OPTION_ENTRY_NULL
 };
+
+/* 256k minus malloc overhead */
+#define STREAM_BUFFER_SIZE (1024*256 - 2*sizeof(gpointer))
 
 static gboolean
 cat (GFile *file)
 {
   GInputStream *in;
-  char buffer[1024 * 8 + 1];
+  char *buffer;
   char *p;
   gssize res;
   gboolean close_res;
@@ -62,10 +67,11 @@ cat (GFile *file)
       return FALSE;
     }
 
+  buffer = g_malloc (STREAM_BUFFER_SIZE);
   success = TRUE;
   while (1)
     {
-      res = g_input_stream_read (in, buffer, sizeof (buffer) - 1, NULL, &error);
+      res = g_input_stream_read (in, buffer, STREAM_BUFFER_SIZE, NULL, &error);
       if (res > 0)
         {
           gssize written;
@@ -73,11 +79,14 @@ cat (GFile *file)
           p = buffer;
           while (res > 0)
             {
-              written = write (STDOUT_FILENO, p, res);
+              int errsv;
 
-              if (written == -1 && errno != EINTR)
+              written = write (STDOUT_FILENO, p, res);
+              errsv = errno;
+
+              if (written == -1 && errsv != EINTR)
                 {
-                  print_file_error (file, _("Error writing to stdout"));
+                  print_error ("%s", _("Error writing to stdout"));
                   success = FALSE;
                   goto out;
                 }
@@ -106,6 +115,8 @@ cat (GFile *file)
       success = FALSE;
     }
 
+  g_free (buffer);
+
   return success;
 }
 
@@ -121,7 +132,7 @@ handle_cat (int argc, char *argv[], gboolean do_help)
 
   g_set_prgname ("gio cat");
   /* Translators: commandline placeholder */
-  param = g_strdup_printf ("%s...", _("LOCATION"));
+  param = g_strdup_printf ("%s…", _("LOCATION"));
   context = g_option_context_new (param);
   g_free (param);
   g_option_context_set_help_enabled (context, FALSE);

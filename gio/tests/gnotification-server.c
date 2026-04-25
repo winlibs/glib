@@ -1,6 +1,8 @@
 /*
  * Copyright © 2013 Lars Uebernickel
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -220,7 +222,7 @@ g_notification_server_bus_acquired (GDBusConnection *connection,
                                     gpointer         user_data)
 {
   const GDBusInterfaceVTable vtable = {
-    org_gtk_Notifications_method_call, NULL, NULL
+    org_gtk_Notifications_method_call, NULL, NULL, { 0 }
   };
   GNotificationServer *server = user_data;
 

@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2010 Collabora, Ltd.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -77,9 +79,9 @@ g_socks4a_proxy_init (GSocks4aProxy *proxy)
  * +----+----+----+----+----+----+----+----+----+----+....+----+------+....+------+
  * | VN | CD | DSTPORT |      DSTIP        | USERID       |NULL| HOST |    | NULL |
  * +----+----+----+----+----+----+----+----+----+----+....+----+------+....+------+
- *    1    1      2              4           variable       1    variable
+ *    1    1      2              4           variable       1    variable    1
  */
-#define SOCKS4_CONN_MSG_LEN	    (9 + SOCKS4_MAX_LEN * 2)
+#define SOCKS4_CONN_MSG_LEN	    (10 + SOCKS4_MAX_LEN * 2)
 static gint
 set_connect_msg (guint8      *msg,
 		 const gchar *hostname,
@@ -266,6 +268,7 @@ static void
 free_connect_data (ConnectAsyncData *data)
 {
   g_object_unref (data->io_stream);
+  g_free (data->buffer);
   g_slice_free (ConnectAsyncData, data);
 }
 

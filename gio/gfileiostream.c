@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2006-2007 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -32,31 +34,28 @@
 
 
 /**
- * SECTION:gfileiostream
- * @short_description:  File read and write streaming operations
- * @include: gio/gio.h
- * @see_also: #GIOStream, #GFileInputStream, #GFileOutputStream, #GSeekable
+ * GFileIOStream:
  *
- * GFileIOStream provides io streams that both read and write to the same
+ * `GFileIOStream` provides I/O streams that both read and write to the same
  * file handle.
  *
- * GFileIOStream implements #GSeekable, which allows the io
+ * `GFileIOStream` implements [iface@Gio.Seekable], which allows the I/O
  * stream to jump to arbitrary positions in the file and to truncate
  * the file, provided the filesystem of the file supports these
  * operations.
  *
- * To find the position of a file io stream, use
- * g_seekable_tell().
+ * To find the position of a file I/O stream, use [method@Gio.Seekable.tell].
  *
- * To find out if a file io stream supports seeking, use g_seekable_can_seek().
- * To position a file io stream, use g_seekable_seek().
- * To find out if a file io stream supports truncating, use
- * g_seekable_can_truncate(). To truncate a file io
- * stream, use g_seekable_truncate().
+ * To find out if a file I/O stream supports seeking, use
+ * [method@Gio.Seekable.can_seek]. To position a file I/O stream, use
+ * [method@Gio.Seekable.seek]. To find out if a file I/O stream supports
+ * truncating, use [method@Gio.Seekable.can_truncate]. To truncate a file I/O
+ * stream, use [method@Gio.Seekable.truncate].
  *
- * The default implementation of all the #GFileIOStream operations
- * and the implementation of #GSeekable just call into the same operations
- * on the output stream.
+ * The default implementation of all the `GFileIOStream` operations
+ * and the implementation of [iface@Gio.Seekable] just call into the same
+ * operations on the output stream.
+ *
  * Since: 2.22
  **/
 
@@ -191,10 +190,12 @@ async_ready_callback_wrapper (GObject *source_object,
  * g_file_io_stream_query_info_async:
  * @stream: a #GFileIOStream.
  * @attributes: a file attribute query string.
- * @io_priority: the [I/O priority][gio-GIOScheduler] of the request
+ * @io_priority: the [I/O priority](iface.AsyncResult.html#io-priority) of the
+ *   request
  * @cancellable: (nullable): optional #GCancellable object, %NULL to ignore.
- * @callback: (scope async): callback to call when the request is satisfied
- * @user_data: (closure): the data to pass to callback function
+ * @callback: (scope async): a #GAsyncReadyCallback
+ *   to call when the request is satisfied
+ * @user_data: the data to pass to callback function
  *
  * Asynchronously queries the @stream for a #GFileInfo. When completed,
  * @callback will be called with a #GAsyncResult which can be used to
@@ -277,7 +278,7 @@ g_file_io_stream_query_info_finish (GFileIOStream     *stream,
  * This must be called after the stream has been written
  * and closed, as the etag can change while writing.
  *
- * Returns: the entity tag for the stream.
+ * Returns: (nullable) (transfer full): the entity tag for the stream.
  *
  * Since: 2.22
  **/

@@ -2,6 +2,8 @@
  *
  * Copyright © 2009 Codethink Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -24,34 +26,28 @@
 
 #include <errno.h>
 #include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 /**
- * SECTION:gunixconnection
- * @title: GUnixConnection
- * @short_description: A UNIX domain GSocketConnection
- * @include: gio/gunixconnection.h
- * @see_also: #GSocketConnection.
+ * GUnixConnection:
  *
- * This is the subclass of #GSocketConnection that is created
+ * This is the subclass of [class@Gio.SocketConnection] that is created
  * for UNIX domain sockets.
  *
  * It contains functions to do some of the UNIX socket specific
  * functionality like passing file descriptors.
  *
- * Note that `<gio/gunixconnection.h>` belongs to the UNIX-specific
- * GIO interfaces, thus you have to use the `gio-unix-2.0.pc`
- * pkg-config file when using it.
+ * Since GLib 2.72, `GUnixConnection` is available on all platforms. It requires
+ * underlying system support (such as Windows 10 with `AF_UNIX`) at run time.
+ *
+ * Before GLib 2.72, `<gio/gunixconnection.h>` belonged to the UNIX-specific GIO
+ * interfaces, thus you had to use the `gio-unix-2.0.pc` pkg-config file when
+ * using it. This is no longer necessary since GLib 2.72.
  *
  * Since: 2.22
  */
-
-/**
- * GUnixConnection:
- *
- * #GUnixConnection is an opaque data structure and can only be accessed
- * using the following functions.
- **/
 
 G_DEFINE_TYPE_WITH_CODE (GUnixConnection, g_unix_connection,
 			 G_TYPE_SOCKET_CONNECTION,
@@ -86,6 +82,7 @@ g_unix_connection_send_fd (GUnixConnection  *connection,
                            GCancellable     *cancellable,
                            GError          **error)
 {
+#ifdef G_OS_UNIX
   GSocketControlMessage *scm;
   GSocket *socket;
 
@@ -114,6 +111,11 @@ g_unix_connection_send_fd (GUnixConnection  *connection,
   g_object_unref (scm);
 
   return TRUE;
+#else
+  g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+                       _("Sending FD is not supported"));
+  return FALSE;
+#endif
 }
 
 /**
@@ -139,6 +141,7 @@ g_unix_connection_receive_fd (GUnixConnection  *connection,
                               GCancellable     *cancellable,
                               GError          **error)
 {
+#ifdef G_OS_UNIX
   GSocketControlMessage **scms;
   gint *fds, nfd, fd, nscm;
   GUnixFDMessage *fdmsg;
@@ -163,10 +166,11 @@ g_unix_connection_receive_fd (GUnixConnection  *connection,
       gint i;
 
       g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
-        ngettext("Expecting 1 control message, got %d",
-                 "Expecting 1 control message, got %d",
-                 nscm),
-        nscm);
+                   g_dngettext (NULL,
+                                "Expecting 1 control message, got %d",
+                                "Expecting 1 control message, got %d",
+                                nscm),
+                   nscm);
 
       for (i = 0; i < nscm; i++)
         g_object_unref (scms[i]);
@@ -197,9 +201,10 @@ g_unix_connection_receive_fd (GUnixConnection  *connection,
       gint i;
 
       g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                   ngettext("Expecting one fd, but got %d\n",
-                            "Expecting one fd, but got %d\n",
-                            nfd),
+                   g_dngettext (NULL,
+                                "Expecting one fd, but got %d\n",
+                                "Expecting one fd, but got %d\n",
+                                nfd),
                    nfd);
 
       for (i = 0; i < nfd; i++)
@@ -221,6 +226,11 @@ g_unix_connection_receive_fd (GUnixConnection  *connection,
     }
 
   return fd;
+#else
+  g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+                       _("Receiving FD is not supported"));
+  return -1;
+#endif
 }
 
 static void
@@ -299,6 +309,14 @@ gboolean                g_unix_connection_create_pair                   (GUnixCo
  * As well as sending the credentials this also writes a single NUL
  * byte to the stream, as this is required for credentials passing to
  * work on some implementations.
+ *
+ * This method can be expected to be available on the following platforms:
+ *
+ * - Linux since GLib 2.26
+ * - FreeBSD since GLib 2.26
+ * - GNU/kFreeBSD since GLib 2.36
+ * - Solaris, Illumos and OpenSolaris since GLib 2.40
+ * - GNU/Hurd since GLib 2.40
  *
  * Other ways to exchange credentials with a foreign peer includes the
  * #GUnixCredentialsMessage type and g_socket_get_credentials() function.
@@ -387,8 +405,9 @@ send_credentials_async_thread (GTask         *task,
  * g_unix_connection_send_credentials_async:
  * @connection: A #GUnixConnection.
  * @cancellable: (nullable): optional #GCancellable object, %NULL to ignore.
- * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
- * @user_data: (closure): the data to pass to callback function
+ * @callback: (scope async): a #GAsyncReadyCallback
+ *   to call when the request is satisfied
+ * @user_data: the data to pass to callback function
  *
  * Asynchronously send credentials.
  *
@@ -450,6 +469,14 @@ g_unix_connection_send_credentials_finish (GUnixConnection *connection,
  * single byte from the stream, as this is required for credentials
  * passing to work on some implementations.
  *
+ * This method can be expected to be available on the following platforms:
+ *
+ * - Linux since GLib 2.26
+ * - FreeBSD since GLib 2.26
+ * - GNU/kFreeBSD since GLib 2.36
+ * - Solaris, Illumos and OpenSolaris since GLib 2.40
+ * - GNU/Hurd since GLib 2.40
+ *
  * Other ways to exchange credentials with a foreign peer includes the
  * #GUnixCredentialsMessage type and g_socket_get_credentials() function.
  *
@@ -497,11 +524,12 @@ g_unix_connection_receive_credentials (GUnixConnection      *connection,
 			      &opt_val,
 			      NULL))
       {
+        int errsv = errno;
         g_set_error (error,
                      G_IO_ERROR,
-                     g_io_error_from_errno (errno),
+                     g_io_error_from_errno (errsv),
                      _("Error checking if SO_PASSCRED is enabled for socket: %s"),
-                     strerror (errno));
+                     g_strerror (errsv));
         goto out;
       }
     if (opt_val == 0)
@@ -512,11 +540,12 @@ g_unix_connection_receive_credentials (GUnixConnection      *connection,
 				  TRUE,
 				  NULL))
           {
+            int errsv = errno;
             g_set_error (error,
                          G_IO_ERROR,
-                         g_io_error_from_errno (errno),
+                         g_io_error_from_errno (errsv),
                          _("Error enabling SO_PASSCRED: %s"),
-                         strerror (errno));
+                         g_strerror (errsv));
             goto out;
           }
         turn_off_so_passcreds = TRUE;
@@ -558,9 +587,10 @@ g_unix_connection_receive_credentials (GUnixConnection      *connection,
           g_set_error (error,
                        G_IO_ERROR,
                        G_IO_ERROR_FAILED,
-                       ngettext("Expecting 1 control message, got %d",
-                                "Expecting 1 control message, got %d",
-                                nscm),
+                       g_dngettext (NULL,
+                                    "Expecting 1 control message, got %d",
+                                    "Expecting 1 control message, got %d",
+                                    nscm),
                        nscm);
           goto out;
         }
@@ -605,11 +635,12 @@ g_unix_connection_receive_credentials (GUnixConnection      *connection,
 				FALSE,
 				NULL))
         {
+          int errsv = errno;
           g_set_error (error,
                        G_IO_ERROR,
-                       g_io_error_from_errno (errno),
+                       g_io_error_from_errno (errsv),
                        _("Error while disabling SO_PASSCRED: %s"),
-                       strerror (errno));
+                       g_strerror (errsv));
           goto out;
         }
     }
@@ -648,8 +679,9 @@ receive_credentials_async_thread (GTask         *task,
  * g_unix_connection_receive_credentials_async:
  * @connection: A #GUnixConnection.
  * @cancellable: (nullable): optional #GCancellable object, %NULL to ignore.
- * @callback: (scope async): a #GAsyncReadyCallback to call when the request is satisfied
- * @user_data: (closure): the data to pass to callback function
+ * @callback: (scope async): a #GAsyncReadyCallback
+ *   to call when the request is satisfied
+ * @user_data: the data to pass to callback function
  *
  * Asynchronously receive credentials.
  *

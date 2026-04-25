@@ -3,6 +3,8 @@
  * Authors: Xavier Claessens <xclaesse@gmail.com>
  *          Mike Ruprecht <mike.ruprecht@collabora.co.uk>
  *
+ * SPDX-License-Identifier: LicenseRef-old-glib-tests
+ *
  * This work is provided "as is"; redistribution and modification
  * in whole or in part, in any medium, physical or electronic is
  * permitted without restriction.
@@ -32,6 +34,7 @@ typedef enum
   TEST_THREADED_NONE    = 0,
   TEST_THREADED_ISTREAM = 1,
   TEST_THREADED_OSTREAM = 2,
+  TEST_CANCEL           = 4,
   TEST_THREADED_BOTH    = TEST_THREADED_ISTREAM | TEST_THREADED_OSTREAM,
 } TestThreadedFlags;
 
@@ -58,6 +61,15 @@ test_copy_chunks_splice_cb (GObject      *source,
 
   bytes_spliced = g_output_stream_splice_finish (G_OUTPUT_STREAM (source),
                                                  res, &error);
+
+  if (data->flags & TEST_CANCEL)
+    {
+      g_assert_error (error, G_IO_ERROR, G_IO_ERROR_CANCELLED);
+      g_error_free (error);
+      g_main_loop_quit (data->main_loop);
+      return;
+    }
+
   g_assert_no_error (error);
   g_assert_cmpint (bytes_spliced, ==, strlen (data->data));
 
@@ -100,10 +112,17 @@ test_copy_chunks_start (TestThreadedFlags flags)
 {
   TestCopyChunksData data;
   GError *error = NULL;
+  GCancellable *cancellable = NULL;
 
   data.main_loop = g_main_loop_new (NULL, FALSE);
   data.data = "abcdefghijklmnopqrstuvwxyz";
   data.flags = flags;
+
+  if (data.flags & TEST_CANCEL)
+    {
+      cancellable = g_cancellable_new ();
+      g_cancellable_cancel (cancellable);
+    }
 
   if (data.flags & TEST_THREADED_ISTREAM)
     {
@@ -150,7 +169,7 @@ test_copy_chunks_start (TestThreadedFlags flags)
   g_output_stream_splice_async (data.ostream, data.istream,
                                 G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE |
                                 G_OUTPUT_STREAM_SPLICE_CLOSE_TARGET,
-                                G_PRIORITY_DEFAULT, NULL,
+                                G_PRIORITY_DEFAULT, cancellable,
                                 test_copy_chunks_splice_cb, &data);
 
   /* We do not hold a ref in data struct, this is to make sure the operation
@@ -158,6 +177,7 @@ test_copy_chunks_start (TestThreadedFlags flags)
    */
   g_object_unref (data.istream);
   g_object_unref (data.ostream);
+  g_clear_object (&cancellable);
 
   g_main_loop_run (data.main_loop);
   g_main_loop_unref (data.main_loop);
@@ -187,6 +207,12 @@ test_copy_chunks_threaded (void)
   test_copy_chunks_start (TEST_THREADED_BOTH);
 }
 
+static void
+test_cancelled (void)
+{
+  test_copy_chunks_start (TEST_THREADED_NONE | TEST_CANCEL);
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -200,6 +226,8 @@ main (int   argc,
                    test_copy_chunks_threaded_output);
   g_test_add_func ("/async-splice/copy-chunks-threaded",
                    test_copy_chunks_threaded);
+  g_test_add_func ("/async-splice/cancelled",
+                   test_cancelled);
 
   return g_test_run();
 }

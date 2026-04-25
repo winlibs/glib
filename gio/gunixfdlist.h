@@ -2,6 +2,8 @@
  *
  * Copyright © 2009 Codethink Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -61,32 +63,32 @@ struct _GUnixFDList
   GUnixFDListPrivate *priv;
 };
 
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 GType                   g_unix_fd_list_get_type                         (void) G_GNUC_CONST;
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 GUnixFDList *           g_unix_fd_list_new                              (void);
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 GUnixFDList *           g_unix_fd_list_new_from_array                   (const gint   *fds,
                                                                          gint          n_fds);
 
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 gint                    g_unix_fd_list_append                           (GUnixFDList  *list,
                                                                          gint          fd,
                                                                          GError      **error);
 
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 gint                    g_unix_fd_list_get_length                       (GUnixFDList  *list);
 
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 gint                    g_unix_fd_list_get                              (GUnixFDList  *list,
                                                                          gint          index_,
                                                                          GError      **error);
 
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 const gint *            g_unix_fd_list_peek_fds                         (GUnixFDList  *list,
                                                                          gint         *length);
 
-GLIB_AVAILABLE_IN_ALL
+GIO_AVAILABLE_IN_ALL
 gint *                  g_unix_fd_list_steal_fds                        (GUnixFDList  *list,
                                                                          gint         *length);
 

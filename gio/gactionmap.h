@@ -1,6 +1,8 @@
 /*
  * Copyright © 2010 Codethink Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -72,23 +74,27 @@ struct _GActionEntry
   gsize padding[3];
 };
 
-GLIB_AVAILABLE_IN_2_32
+GIO_AVAILABLE_IN_2_32
 GType                   g_action_map_get_type                           (void) G_GNUC_CONST;
 
-GLIB_AVAILABLE_IN_2_32
+GIO_AVAILABLE_IN_2_32
 GAction *               g_action_map_lookup_action                      (GActionMap         *action_map,
                                                                          const gchar        *action_name);
-GLIB_AVAILABLE_IN_2_32
+GIO_AVAILABLE_IN_2_32
 void                    g_action_map_add_action                         (GActionMap         *action_map,
                                                                          GAction            *action);
-GLIB_AVAILABLE_IN_2_32
+GIO_AVAILABLE_IN_2_32
 void                    g_action_map_remove_action                      (GActionMap         *action_map,
                                                                          const gchar        *action_name);
-GLIB_AVAILABLE_IN_2_32
+GIO_AVAILABLE_IN_2_32
 void                    g_action_map_add_action_entries                 (GActionMap         *action_map,
                                                                          const GActionEntry *entries,
                                                                          gint                n_entries,
                                                                          gpointer            user_data);
+GIO_AVAILABLE_IN_2_78
+void                    g_action_map_remove_action_entries              (GActionMap         *action_map,
+                                                                         const GActionEntry *entries,
+                                                                         gint                n_entries);
 
 G_END_DECLS
 

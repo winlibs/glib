@@ -2,6 +2,8 @@
 
    Copyright (C) 2006 John McCutchan
 
+   SPDX-License-Identifier: LGPL-2.1-or-later
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
@@ -33,8 +35,8 @@ typedef struct
 } inotify_sub;
 
 inotify_sub *_ih_sub_new (const gchar  *dirname,
+			  const gchar  *basename,
 			  const gchar  *filename,
-			  gboolean      watch_hardlinks,
 			  gpointer      user_data);
 void         _ih_sub_free (inotify_sub *sub);
 

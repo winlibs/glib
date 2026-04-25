@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2009 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -24,35 +26,34 @@
 
 
 /**
- * SECTION:ginitable
- * @short_description: Failable object initialization interface
- * @include: gio/gio.h
- * @see_also: #GAsyncInitable
+ * GInitable:
  *
- * #GInitable is implemented by objects that can fail during
+ * `GInitable` is implemented by objects that can fail during
  * initialization. If an object implements this interface then
  * it must be initialized as the first thing after construction,
- * either via g_initable_init() or g_async_initable_init_async()
- * (the latter is only available if it also implements #GAsyncInitable).
+ * either via [method@Gio.Initable.init] or [method@Gio.AsyncInitable.init_async]
+ * (the latter is only available if it also implements [iface@Gio.AsyncInitable]).
  *
  * If the object is not initialized, or initialization returns with an
- * error, then all operations on the object except g_object_ref() and
- * g_object_unref() are considered to be invalid, and have undefined
- * behaviour. They will often fail with g_critical() or g_warning(), but
- * this must not be relied on.
+ * error, then all operations on the object except `g_object_ref()` and
+ * `g_object_unref()` are considered to be invalid, and have undefined
+ * behaviour. They will often fail with [func@GLib.critical] or
+ * [func@GLib.warning], but this must not be relied on.
  *
  * Users of objects implementing this are not intended to use
  * the interface method directly, instead it will be used automatically
  * in various ways. For C applications you generally just call
- * g_initable_new() directly, or indirectly via a foo_thing_new() wrapper.
- * This will call g_initable_init() under the cover, returning %NULL and
- * setting a #GError on failure (at which point the instance is
+ * [func@Gio.Initable.new] directly, or indirectly via a `foo_thing_new()` wrapper.
+ * This will call [method@Gio.Initable.init] under the cover, returning `NULL`
+ * and setting a `GError` on failure (at which point the instance is
  * unreferenced).
  *
  * For bindings in languages where the native constructor supports
- * exceptions the binding could check for objects implemention %GInitable
+ * exceptions the binding could check for objects implementing `GInitable`
  * during normal construction and automatically initialize them, throwing
  * an exception on failure.
+ *
+ * Since: 2.22
  */
 
 typedef GInitableIface GInitableInterface;
@@ -88,7 +89,7 @@ g_initable_default_init (GInitableInterface *iface)
  * If the object is not initialized, or initialization returns with an
  * error, then all operations on the object except g_object_ref() and
  * g_object_unref() are considered to be invalid, and have undefined
- * behaviour. See the [introduction][ginitable] for more details.
+ * behaviour. See the [description][iface@Gio.Initable#description] for more details.
  *
  * Callers should not assume that a class which implements #GInitable can be
  * initialized multiple times, unless the class explicitly documents itself as
@@ -187,6 +188,7 @@ g_initable_new (GType          object_type,
  * Deprecated: 2.54: Use g_object_new_with_properties() and
  * g_initable_init() instead. See #GParameter for more information.
  */
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 gpointer
 g_initable_newv (GType          object_type,
 		 guint          n_parameters,
@@ -198,9 +200,7 @@ g_initable_newv (GType          object_type,
 
   g_return_val_if_fail (G_TYPE_IS_INITABLE (object_type), NULL);
 
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
   obj = g_object_newv (object_type, n_parameters, parameters);
-G_GNUC_END_IGNORE_DEPRECATIONS
 
   if (!g_initable_init (G_INITABLE (obj), cancellable, error))
     {
@@ -210,6 +210,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 
   return (gpointer)obj;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 /**
  * g_initable_new_valist:

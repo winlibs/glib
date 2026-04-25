@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2008-2010 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -58,6 +60,7 @@ static gchar                   *mechanism_server_get_reject_reason  (GDBusAuthMe
 static void                     mechanism_server_shutdown           (GDBusAuthMechanism   *mechanism);
 static GDBusAuthMechanismState  mechanism_client_get_state          (GDBusAuthMechanism   *mechanism);
 static gchar                   *mechanism_client_initiate           (GDBusAuthMechanism   *mechanism,
+                                                                     GDBusConnectionFlags  conn_flags,
                                                                      gsize                *out_initial_response_len);
 static void                     mechanism_client_data_receive       (GDBusAuthMechanism   *mechanism,
                                                                      const gchar          *data,
@@ -259,9 +262,11 @@ mechanism_client_get_state (GDBusAuthMechanism   *mechanism)
 
 static gchar *
 mechanism_client_initiate (GDBusAuthMechanism   *mechanism,
+                           GDBusConnectionFlags  conn_flags,
                            gsize                *out_initial_response_len)
 {
   GDBusAuthMechanismAnon *m = G_DBUS_AUTH_MECHANISM_ANON (mechanism);
+  gchar *result;
 
   g_return_val_if_fail (G_IS_DBUS_AUTH_MECHANISM_ANON (mechanism), NULL);
   g_return_val_if_fail (!m->priv->is_server && !m->priv->is_client, NULL);
@@ -269,10 +274,11 @@ mechanism_client_initiate (GDBusAuthMechanism   *mechanism,
   m->priv->is_client = TRUE;
   m->priv->state = G_DBUS_AUTH_MECHANISM_STATE_ACCEPTED;
 
-  *out_initial_response_len = -1;
-
   /* just return our library name and version */
-  return g_strdup ("GDBus 0.1");
+  result = g_strdup ("GDBus 0.1");
+  *out_initial_response_len = strlen (result);
+
+  return result;
 }
 
 static void

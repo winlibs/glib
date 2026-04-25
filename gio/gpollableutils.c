@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2010 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -23,15 +25,6 @@
 #include "gpollableinputstream.h"
 #include "gasynchelper.h"
 #include "glibintl.h"
-
-/**
- * SECTION:gpollableutils
- * @short_description: Utilities for pollable streams
- * @include: gio/gio.h
- *
- * Utility functions for #GPollableInputStream and
- * #GPollableOutputStream implementations.
- */
 
 typedef struct {
   GSource       source;
@@ -89,6 +82,7 @@ static GSourceFuncs pollable_source_funcs =
   pollable_source_dispatch,
   pollable_source_finalize,
   (GSourceFunc)pollable_source_closure_callback,
+  NULL,
 };
 
 /**
@@ -115,7 +109,7 @@ g_pollable_source_new (GObject *pollable_stream)
 			G_IS_POLLABLE_OUTPUT_STREAM (pollable_stream), NULL);
 
   source = g_source_new (&pollable_source_funcs, sizeof (GPollableSource));
-  g_source_set_name (source, "GPollableSource");
+  g_source_set_static_name (source, "GPollableSource");
   pollable_source = (GPollableSource *)source;
   pollable_source->stream = g_object_ref (pollable_stream);
 

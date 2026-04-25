@@ -1,6 +1,8 @@
 /*
  * Copyright © 2010 Codethink Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -37,6 +39,7 @@ struct _GSettingsSchemaKey
   const GVariantType *type;
   GVariant *minimum, *maximum;
   GVariant *default_value;
+  GVariant *desktop_overrides;
 
   gint ref_count;
 };
@@ -49,6 +52,9 @@ const GQuark *          g_settings_schema_list                          (GSettin
 const gchar *           g_settings_schema_get_string                    (GSettingsSchema  *schema,
                                                                          const gchar      *key);
 
+GSettingsSchema *       g_settings_schema_get_child_schema              (GSettingsSchema *schema,
+                                                                         const gchar     *name);
+
 void                    g_settings_schema_key_init                      (GSettingsSchemaKey *key,
                                                                          GSettingsSchema    *schema,
                                                                          const gchar        *name);
@@ -58,6 +64,7 @@ gboolean                g_settings_schema_key_type_check                (GSettin
 GVariant *              g_settings_schema_key_range_fixup               (GSettingsSchemaKey *key,
                                                                          GVariant           *value);
 GVariant *              g_settings_schema_key_get_translated_default    (GSettingsSchemaKey *key);
+GVariant *              g_settings_schema_key_get_per_desktop_default   (GSettingsSchemaKey *key);
 
 gint                    g_settings_schema_key_to_enum                   (GSettingsSchemaKey *key,
                                                                          GVariant           *value);

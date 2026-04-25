@@ -83,6 +83,9 @@
     <key name="backspace" type="s">
       <default l10n="messages" context="keyboard label">"BackSpace"</default>
     </key>
+    <key name="midnight" type="s">
+      <default l10n="time">"12:00 AM"</default>
+    </key>
   </schema>
 
   <schema id="org.gtk.test.binding" path="/tests/binding/">
@@ -130,6 +133,10 @@
     </key>
     <key name="flags" flags="org.gtk.test.TestFlags">
       <default>['mourning', 'laughing']</default>
+    </key>
+    <key name="range" type='u'>
+      <default>33</default>
+      <range min="2" max="44"/>
     </key>
   </schema>
 
@@ -206,6 +213,12 @@
     <override name="int32">42</override>
     <key name='another-int32' type='i'>
       <default>0</default>
+    </key>
+  </schema>
+
+  <schema id="org.gtk.test.per-desktop" path="/tests/per-desktop/">
+    <key name="desktop" type="s">
+      <default>"GNOME"</default>
     </key>
   </schema>
 

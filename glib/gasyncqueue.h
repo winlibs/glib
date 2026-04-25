@@ -1,6 +1,8 @@
 /* GLIB - Library of useful routines for C programming
  * Copyright (C) 1995-1997  Peter Mattis, Spencer Kimball and Josh MacDonald
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -110,12 +112,14 @@ GLIB_AVAILABLE_IN_2_46
 void         g_async_queue_push_front_unlocked  (GAsyncQueue      *queue,
                                                  gpointer          item);
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 GLIB_DEPRECATED_FOR(g_async_queue_timeout_pop)
 gpointer     g_async_queue_timed_pop            (GAsyncQueue      *queue,
                                                  GTimeVal         *end_time);
 GLIB_DEPRECATED_FOR(g_async_queue_timeout_pop_unlocked)
 gpointer     g_async_queue_timed_pop_unlocked   (GAsyncQueue      *queue,
                                                  GTimeVal         *end_time);
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 G_END_DECLS
 

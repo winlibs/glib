@@ -2,6 +2,8 @@
  * 
  * Copyright (C) 2012 Colin Walters <walters@verbum.org>
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -28,7 +30,6 @@ struct _GSubprocessLauncher
   GObject parent;
 
   GSubprocessFlags flags;
-  gboolean path_from_envp;
   char **envp;
   char *cwd;
 
@@ -42,8 +43,9 @@ struct _GSubprocessLauncher
   gint stderr_fd;
   gchar *stderr_path;
 
-  GArray *basic_fd_assignments;
-  GArray *needdup_fd_assignments;
+  GArray *source_fds;  /* GSubprocessLauncher has ownership of the FD elements */
+  GArray *target_fds;  /* always the same length as source_fds; elements are just integers and not FDs in this process */
+  gboolean closed_fd;
 
   GSpawnChildSetupFunc child_setup_func;
   gpointer child_setup_user_data;

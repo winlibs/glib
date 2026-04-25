@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2014 Patrick Griffis
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -39,13 +41,13 @@ struct _GOsxAppInfoClass
   GObjectClass parent_class;
 };
 
-GLIB_AVAILABLE_IN_2_52
+GIO_AVAILABLE_IN_2_52
 GType   g_osx_app_info_get_type           (void) G_GNUC_CONST;
 
-GLIB_AVAILABLE_IN_2_52
-char  * g_osx_app_info_get_filename       (GOsxAppInfo *info);
+GIO_AVAILABLE_IN_2_52
+const char *g_osx_app_info_get_filename   (GOsxAppInfo *info);
 
-GLIB_AVAILABLE_IN_2_52
+GIO_AVAILABLE_IN_2_52
 GList * g_osx_app_info_get_all_for_scheme (const gchar *scheme);
 
 G_END_DECLS

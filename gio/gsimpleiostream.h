@@ -1,6 +1,8 @@
 /*
  * Copyright © 2014 NICE s.r.l.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -33,10 +35,10 @@ G_BEGIN_DECLS
 #define G_SIMPLE_IO_STREAM(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), G_TYPE_SIMPLE_IO_STREAM, GSimpleIOStream))
 #define G_IS_SIMPLE_IO_STREAM(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), G_TYPE_SIMPLE_IO_STREAM))
 
-GLIB_AVAILABLE_IN_2_44
+GIO_AVAILABLE_IN_2_44
 GType                g_simple_io_stream_get_type         (void) G_GNUC_CONST;
 
-GLIB_AVAILABLE_IN_2_44
+GIO_AVAILABLE_IN_2_44
 GIOStream           *g_simple_io_stream_new              (GInputStream  *input_stream,
                                                           GOutputStream *output_stream);
 

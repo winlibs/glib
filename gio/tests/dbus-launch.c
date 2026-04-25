@@ -1,7 +1,9 @@
 /*
- * Mock version of dbus-launch, for gdbus-unix-addresses test
+ * Mock version of dbus-launch, for gdbus-address-get-session test
  *
  * Copyright © 2015 Collabora Ltd.
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,7 +40,8 @@ write_all (const void *ptr,
 
   while (len > 0)
     {
-      ssize_t done = write (STDOUT_FILENO, p, len);
+      gssize done = write (STDOUT_FILENO, p, len);
+      int errsv = errno;
 
       if (done == 0)
         {
@@ -46,10 +49,10 @@ write_all (const void *ptr,
         }
       else if (done < 0)
         {
-          if (errno == EINTR)
+          if (errsv == EINTR)
             continue;
 
-          g_error ("%s: write: %s", ME, g_strerror (errno));
+          g_error ("%s: write: %s", ME, g_strerror (errsv));
         }
       else
         {

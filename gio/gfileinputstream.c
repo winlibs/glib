@@ -2,6 +2,8 @@
  * 
  * Copyright (C) 2006-2007 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -31,20 +33,17 @@
 
 
 /**
- * SECTION:gfileinputstream
- * @short_description: File input streaming operations
- * @include: gio/gio.h
- * @see_also: #GInputStream, #GDataInputStream, #GSeekable
+ * GFileInputStream:
  *
- * GFileInputStream provides input streams that take their
+ * `GFileInputStream` provides input streams that take their
  * content from a file.
  *
- * GFileInputStream implements #GSeekable, which allows the input 
+ * `GFileInputStream` implements [iface@Gio.Seekable], which allows the input
  * stream to jump to arbitrary positions in the file, provided the 
  * filesystem of the file allows it. To find the position of a file
- * input stream, use g_seekable_tell(). To find out if a file input
- * stream supports seeking, use g_seekable_can_seek().
- * To position a file input stream, use g_seekable_seek().
+ * input stream, use [method@Gio.Seekable.tell]. To find out if a file input
+ * stream supports seeking, use [vfunc@Gio.Seekable.can_seek].
+ * To position a file input stream, use [vfunc@Gio.Seekable.seek].
  **/
 
 static void       g_file_input_stream_seekable_iface_init    (GSeekableIface       *iface);
@@ -173,10 +172,11 @@ async_ready_callback_wrapper (GObject      *source_object,
  * g_file_input_stream_query_info_async:
  * @stream: a #GFileInputStream.
  * @attributes: a file attribute query string.
- * @io_priority: the [I/O priority][io-priority] of the request
+ * @io_priority: the [I/O priority](iface.AsyncResult.html#io-priority) of the request
  * @cancellable: (nullable): optional #GCancellable object, %NULL to ignore. 
- * @callback: (scope async): callback to call when the request is satisfied
- * @user_data: (closure): the data to pass to callback function
+ * @callback: (scope async): a #GAsyncReadyCallback
+ *   to call when the request is satisfied
+ * @user_data: the data to pass to callback function
  * 
  * Queries the stream information asynchronously.
  * When the operation is finished @callback will be called. 

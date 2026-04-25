@@ -2,6 +2,8 @@
  * Copyright © 2010 Codethink Limited
  * Copyright © 2011 Canonical Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -30,13 +32,13 @@
 
 G_BEGIN_DECLS
 
-GLIB_AVAILABLE_IN_2_32
+GIO_AVAILABLE_IN_2_32
 guint                   g_dbus_connection_export_action_group           (GDBusConnection  *connection,
                                                                          const gchar      *object_path,
                                                                          GActionGroup     *action_group,
                                                                          GError          **error);
 
-GLIB_AVAILABLE_IN_2_32
+GIO_AVAILABLE_IN_2_32
 void                    g_dbus_connection_unexport_action_group         (GDBusConnection  *connection,
                                                                          guint             export_id);
 

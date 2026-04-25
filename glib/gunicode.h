@@ -3,6 +3,8 @@
  *  Copyright (C) 1999, 2000 Tom Tromey
  *  Copyright 2000, 2005 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -154,9 +156,7 @@ typedef enum
  *
  * Deprecated: 2.30: Use %G_UNICODE_SPACING_MARK.
  */
-#ifndef G_DISABLE_DEPRECATED
-#define G_UNICODE_COMBINING_MARK G_UNICODE_SPACING_MARK
-#endif
+#define G_UNICODE_COMBINING_MARK G_UNICODE_SPACING_MARK GLIB_DEPRECATED_MACRO_IN_2_30_FOR(G_UNICODE_SPACING_MARK)
 
 /**
  * GUnicodeBreakType:
@@ -196,20 +196,27 @@ typedef enum
  * @G_UNICODE_BREAK_HANGUL_T_JAMO: Hangul T Jamo (JT)
  * @G_UNICODE_BREAK_HANGUL_LV_SYLLABLE: Hangul LV Syllable (H2)
  * @G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE: Hangul LVT Syllable (H3)
- * @G_UNICODE_BREAK_CLOSE_PARANTHESIS: Closing Parenthesis (CP). Since 2.28
+ * @G_UNICODE_BREAK_CLOSE_PARANTHESIS: Closing Parenthesis (CP). Since 2.28. Deprecated: 2.70: Use %G_UNICODE_BREAK_CLOSE_PARENTHESIS instead.
+ * @G_UNICODE_BREAK_CLOSE_PARENTHESIS: Closing Parenthesis (CP). Since 2.70
  * @G_UNICODE_BREAK_CONDITIONAL_JAPANESE_STARTER: Conditional Japanese Starter (CJ). Since: 2.32
  * @G_UNICODE_BREAK_HEBREW_LETTER: Hebrew Letter (HL). Since: 2.32
  * @G_UNICODE_BREAK_REGIONAL_INDICATOR: Regional Indicator (RI). Since: 2.36
  * @G_UNICODE_BREAK_EMOJI_BASE: Emoji Base (EB). Since: 2.50
  * @G_UNICODE_BREAK_EMOJI_MODIFIER: Emoji Modifier (EM). Since: 2.50
  * @G_UNICODE_BREAK_ZERO_WIDTH_JOINER: Zero Width Joiner (ZWJ). Since: 2.50
+ * @G_UNICODE_BREAK_AKSARA: Aksara (AK). Since: 2.80
+ * @G_UNICODE_BREAK_AKSARA_PRE_BASE: Aksara Pre-Base (AP). Since: 2.80
+ * @G_UNICODE_BREAK_AKSARA_START: Aksara Start (AS). Since: 2.80
+ * @G_UNICODE_BREAK_VIRAMA_FINAL: Virama Final (VF). Since: 2.80
+ * @G_UNICODE_BREAK_VIRAMA: Virama (VI). Since: 2.80
+ * @G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN: Unambiguous Hyphen (HH). Since: 2.88
  *
  * These are the possible line break classifications.
  *
- * Since new unicode versions may add new types here, applications should be ready 
+ * Since new Unicode versions may add new types here, applications should be ready
  * to handle unknown values. They may be regarded as %G_UNICODE_BREAK_UNKNOWN.
  *
- * See [Unicode Line Breaking Algorithm](http://www.unicode.org/unicode/reports/tr14/).
+ * See [Unicode Line Breaking Algorithm](https://www.unicode.org/reports/tr14/).
  */
 typedef enum
 {
@@ -250,12 +257,19 @@ typedef enum
   G_UNICODE_BREAK_HANGUL_LV_SYLLABLE,
   G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE,
   G_UNICODE_BREAK_CLOSE_PARANTHESIS,
+  G_UNICODE_BREAK_CLOSE_PARENTHESIS GLIB_AVAILABLE_ENUMERATOR_IN_2_70 = G_UNICODE_BREAK_CLOSE_PARANTHESIS,
   G_UNICODE_BREAK_CONDITIONAL_JAPANESE_STARTER,
   G_UNICODE_BREAK_HEBREW_LETTER,
   G_UNICODE_BREAK_REGIONAL_INDICATOR,
   G_UNICODE_BREAK_EMOJI_BASE,
   G_UNICODE_BREAK_EMOJI_MODIFIER,
-  G_UNICODE_BREAK_ZERO_WIDTH_JOINER
+  G_UNICODE_BREAK_ZERO_WIDTH_JOINER,
+  G_UNICODE_BREAK_AKSARA,
+  G_UNICODE_BREAK_AKSARA_PRE_BASE,
+  G_UNICODE_BREAK_AKSARA_START,
+  G_UNICODE_BREAK_VIRAMA_FINAL,
+  G_UNICODE_BREAK_VIRAMA,
+  G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN GLIB_AVAILABLE_ENUMERATOR_IN_2_88,
 } GUnicodeBreakType;
 
 /**
@@ -411,6 +425,44 @@ typedef enum
  * @G_UNICODE_SCRIPT_NEWA:                 Newa. Since: 2.50
  * @G_UNICODE_SCRIPT_OSAGE:                Osage. Since: 2.50
  * @G_UNICODE_SCRIPT_TANGUT:               Tangut. Since: 2.50
+ * @G_UNICODE_SCRIPT_MASARAM_GONDI:        Masaram Gondi. Since: 2.54
+ * @G_UNICODE_SCRIPT_NUSHU:                Nushu. Since: 2.54
+ * @G_UNICODE_SCRIPT_SOYOMBO:              Soyombo. Since: 2.54
+ * @G_UNICODE_SCRIPT_ZANABAZAR_SQUARE:     Zanabazar Square. Since: 2.54
+ * @G_UNICODE_SCRIPT_DOGRA:                Dogra. Since: 2.58
+ * @G_UNICODE_SCRIPT_GUNJALA_GONDI:        Gunjala Gondi. Since: 2.58
+ * @G_UNICODE_SCRIPT_HANIFI_ROHINGYA:      Hanifi Rohingya. Since: 2.58
+ * @G_UNICODE_SCRIPT_MAKASAR:              Makasar. Since: 2.58
+ * @G_UNICODE_SCRIPT_MEDEFAIDRIN:          Medefaidrin. Since: 2.58
+ * @G_UNICODE_SCRIPT_OLD_SOGDIAN:          Old Sogdian. Since: 2.58
+ * @G_UNICODE_SCRIPT_SOGDIAN:              Sogdian. Since: 2.58
+ * @G_UNICODE_SCRIPT_ELYMAIC:              Elym. Since: 2.62
+ * @G_UNICODE_SCRIPT_NANDINAGARI:          Nand. Since: 2.62
+ * @G_UNICODE_SCRIPT_NYIAKENG_PUACHUE_HMONG: Rohg. Since: 2.62
+ * @G_UNICODE_SCRIPT_WANCHO:               Wcho. Since: 2.62
+ * @G_UNICODE_SCRIPT_CHORASMIAN:           Chorasmian. Since: 2.66
+ * @G_UNICODE_SCRIPT_DIVES_AKURU:          Dives Akuru. Since: 2.66
+ * @G_UNICODE_SCRIPT_KHITAN_SMALL_SCRIPT:  Khitan small script. Since: 2.66
+ * @G_UNICODE_SCRIPT_YEZIDI:               Yezidi. Since: 2.66
+ * @G_UNICODE_SCRIPT_CYPRO_MINOAN:         Cypro-Minoan. Since: 2.72
+ * @G_UNICODE_SCRIPT_OLD_UYGHUR:           Old Uyghur. Since: 2.72
+ * @G_UNICODE_SCRIPT_TANGSA:               Tangsa. Since: 2.72
+ * @G_UNICODE_SCRIPT_TOTO:                 Toto. Since: 2.72
+ * @G_UNICODE_SCRIPT_VITHKUQI:             Vithkuqi. Since: 2.72
+ * @G_UNICODE_SCRIPT_MATH:                 Mathematical notation. Since: 2.72
+ * @G_UNICODE_SCRIPT_KAWI:                 Kawi. Since 2.74
+ * @G_UNICODE_SCRIPT_NAG_MUNDARI:          Nag Mundari. Since 2.74
+ * @G_UNICODE_SCRIPT_TODHRI:               Todhri. Since: 2.84
+ * @G_UNICODE_SCRIPT_GARAY:                Garay. Since: 2.84
+ * @G_UNICODE_SCRIPT_TULU_TIGALARI:        Tulu-Tigalari. Since: 2.84
+ * @G_UNICODE_SCRIPT_SUNUWAR:              Sunuwar. Since: 2.84
+ * @G_UNICODE_SCRIPT_GURUNG_KHEMA:         Gurung Khema. Since: 2.84
+ * @G_UNICODE_SCRIPT_KIRAT_RAI:            Kirat Rai. Since: 2.84
+ * @G_UNICODE_SCRIPT_OL_ONAL:              Ol Onal. Since: 2.84
+ * @G_UNICODE_SCRIPT_SIDETIC:              Sidetic. Since: 2.88
+ * @G_UNICODE_SCRIPT_TOLONG_SIKI:          Tolong Siki. Since: 2.88
+ * @G_UNICODE_SCRIPT_TAI_YO:               Tai Yo. Since: 2.88
+ * @G_UNICODE_SCRIPT_BERIA_ERFE:           Beria Erfe. Since: 2.88
  *
  * The #GUnicodeScript enumeration identifies different writing
  * systems. The values correspond to the names as defined in the
@@ -552,7 +604,7 @@ typedef enum
   G_UNICODE_SCRIPT_KHUDAWADI,              /* Sind */
   G_UNICODE_SCRIPT_LINEAR_A,               /* Lina */
   G_UNICODE_SCRIPT_MAHAJANI,               /* Mahj */
-  G_UNICODE_SCRIPT_MANICHAEAN,             /* Manu */
+  G_UNICODE_SCRIPT_MANICHAEAN,             /* Mani */
   G_UNICODE_SCRIPT_MENDE_KIKAKUI,          /* Mend */
   G_UNICODE_SCRIPT_MODI,                   /* Modi */
   G_UNICODE_SCRIPT_MRO,                    /* Mroo */
@@ -581,7 +633,63 @@ typedef enum
   G_UNICODE_SCRIPT_MARCHEN,                /* Marc */
   G_UNICODE_SCRIPT_NEWA,                   /* Newa */
   G_UNICODE_SCRIPT_OSAGE,                  /* Osge */
-  G_UNICODE_SCRIPT_TANGUT                  /* Tang */
+  G_UNICODE_SCRIPT_TANGUT,                 /* Tang */
+
+  /* Unicode 10.0 additions */
+  G_UNICODE_SCRIPT_MASARAM_GONDI,          /* Gonm */
+  G_UNICODE_SCRIPT_NUSHU,                  /* Nshu */
+  G_UNICODE_SCRIPT_SOYOMBO,                /* Soyo */
+  G_UNICODE_SCRIPT_ZANABAZAR_SQUARE,       /* Zanb */
+
+  /* Unicode 11.0 additions */
+  G_UNICODE_SCRIPT_DOGRA,                  /* Dogr */
+  G_UNICODE_SCRIPT_GUNJALA_GONDI,          /* Gong */
+  G_UNICODE_SCRIPT_HANIFI_ROHINGYA,        /* Rohg */
+  G_UNICODE_SCRIPT_MAKASAR,                /* Maka */
+  G_UNICODE_SCRIPT_MEDEFAIDRIN,            /* Medf */
+  G_UNICODE_SCRIPT_OLD_SOGDIAN,            /* Sogo */
+  G_UNICODE_SCRIPT_SOGDIAN,                /* Sogd */
+
+  /* Unicode 12.0 additions */
+  G_UNICODE_SCRIPT_ELYMAIC,                /* Elym */
+  G_UNICODE_SCRIPT_NANDINAGARI,            /* Nand */
+  G_UNICODE_SCRIPT_NYIAKENG_PUACHUE_HMONG, /* Rohg */
+  G_UNICODE_SCRIPT_WANCHO,                 /* Wcho */
+
+  /* Unicode 13.0 additions */
+  G_UNICODE_SCRIPT_CHORASMIAN,             /* Chrs */
+  G_UNICODE_SCRIPT_DIVES_AKURU,            /* Diak */
+  G_UNICODE_SCRIPT_KHITAN_SMALL_SCRIPT,    /* Kits */
+  G_UNICODE_SCRIPT_YEZIDI,                 /* Yezi */
+
+  /* Unicode 14.0 additions */
+  G_UNICODE_SCRIPT_CYPRO_MINOAN,           /* Cpmn */
+  G_UNICODE_SCRIPT_OLD_UYGHUR,             /* Ougr */
+  G_UNICODE_SCRIPT_TANGSA,                 /* Tnsa */
+  G_UNICODE_SCRIPT_TOTO,                   /* Toto */
+  G_UNICODE_SCRIPT_VITHKUQI,               /* Vith */
+
+  /* not really a Unicode script, but part of ISO 15924 */
+  G_UNICODE_SCRIPT_MATH,                   /* Zmth */
+
+  /* Unicode 15.0 additions */
+  G_UNICODE_SCRIPT_KAWI GLIB_AVAILABLE_ENUMERATOR_IN_2_74,          /* Kawi */
+  G_UNICODE_SCRIPT_NAG_MUNDARI GLIB_AVAILABLE_ENUMERATOR_IN_2_74,   /* Nagm */
+
+  /* Unicode 16.0 additions */
+  G_UNICODE_SCRIPT_TODHRI GLIB_AVAILABLE_ENUMERATOR_IN_2_84,         /* Todr */
+  G_UNICODE_SCRIPT_GARAY GLIB_AVAILABLE_ENUMERATOR_IN_2_84,          /* Gara */
+  G_UNICODE_SCRIPT_TULU_TIGALARI GLIB_AVAILABLE_ENUMERATOR_IN_2_84,  /* Tutg */
+  G_UNICODE_SCRIPT_SUNUWAR GLIB_AVAILABLE_ENUMERATOR_IN_2_84,        /* Sunu */
+  G_UNICODE_SCRIPT_GURUNG_KHEMA GLIB_AVAILABLE_ENUMERATOR_IN_2_84,   /* Gukh */
+  G_UNICODE_SCRIPT_KIRAT_RAI GLIB_AVAILABLE_ENUMERATOR_IN_2_84,      /* Krai */
+  G_UNICODE_SCRIPT_OL_ONAL GLIB_AVAILABLE_ENUMERATOR_IN_2_84,        /* Onao */
+
+  /* Unicode 17.0 additions */
+  G_UNICODE_SCRIPT_SIDETIC GLIB_AVAILABLE_ENUMERATOR_IN_2_88,                /* Sidt */
+  G_UNICODE_SCRIPT_TOLONG_SIKI GLIB_AVAILABLE_ENUMERATOR_IN_2_88,            /* Tols */
+  G_UNICODE_SCRIPT_TAI_YO GLIB_AVAILABLE_ENUMERATOR_IN_2_88,                 /* Tayo */
+  G_UNICODE_SCRIPT_BERIA_ERFE GLIB_AVAILABLE_ENUMERATOR_IN_2_88,             /* Berf */
 } GUnicodeScript;
 
 GLIB_AVAILABLE_IN_ALL
@@ -714,14 +822,19 @@ GLIB_VAR const gchar * const g_utf8_skip;
  * g_utf8_next_char:
  * @p: Pointer to the start of a valid UTF-8 character
  *
- * Skips to the next character in a UTF-8 string. The string must be
- * valid; this macro is as fast as possible, and has no error-checking.
- * You would use this macro to iterate over a string character by
- * character. The macro returns the start of the next UTF-8 character.
+ * Skips to the next character in a UTF-8 string.
+ *
+ * The string must be valid; this macro is as fast as possible, and has
+ * no error-checking.
+ *
+ * You would use this macro to iterate over a string character by character.
+ *
+ * The macro returns the start of the next UTF-8 character.
+ *
  * Before using this macro, use g_utf8_validate() to validate strings
  * that may contain invalid UTF-8.
  */
-#define g_utf8_next_char(p) (char *)((p) + g_utf8_skip[*(const guchar *)(p)])
+#define g_utf8_next_char(p) ((p) + g_utf8_skip[*(const guchar *)(p)])
 
 GLIB_AVAILABLE_IN_ALL
 gunichar g_utf8_get_char           (const gchar  *p) G_GNUC_PURE;
@@ -758,8 +871,12 @@ gchar   *g_utf8_strncpy           (gchar       *dest,
                                    const gchar *src,
                                    gsize        n);
 
+GLIB_AVAILABLE_IN_2_78
+gchar   *g_utf8_truncate_middle   (const gchar *string,
+                                   gsize        truncate_length);
+
 /* Find the UTF-8 character corresponding to ch, in string p. These
-   functions are equivalants to strchr and strrchr */
+   functions are equivalents to strchr and strrchr */
 GLIB_AVAILABLE_IN_ALL
 gchar* g_utf8_strchr  (const gchar *p,
                        gssize       len,
@@ -821,6 +938,10 @@ GLIB_AVAILABLE_IN_ALL
 gboolean g_utf8_validate (const gchar  *str,
                           gssize        max_len,
                           const gchar **end);
+GLIB_AVAILABLE_IN_2_60
+gboolean g_utf8_validate_len (const gchar  *str,
+                              gsize         max_len,
+                              const gchar **end);
 
 GLIB_AVAILABLE_IN_ALL
 gchar *g_utf8_strup   (const gchar *str,

@@ -1,6 +1,8 @@
 /*
  * Copyright © 2010 Novell, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -62,7 +64,7 @@ g_settings_set_mapping_int (const GValue       *value,
     }
   else if (g_variant_type_equal (expected_type, G_VARIANT_TYPE_UINT64))
     {
-      if (0 <= l && l <= G_MAXUINT64)
+      if (0 <= l && (guint64) l <= G_MAXUINT64)
         variant = g_variant_new_uint64 ((guint64) l);
     }
   else if (g_variant_type_equal (expected_type, G_VARIANT_TYPE_HANDLE))
@@ -117,7 +119,7 @@ g_settings_set_mapping_float (const GValue       *value,
     }
   else if (g_variant_type_equal (expected_type, G_VARIANT_TYPE_UINT64))
     {
-      if (0 <= l && l <= G_MAXUINT64)
+      if (0 <= l && (guint64) l <= G_MAXUINT64)
         variant = g_variant_new_uint64 ((guint64) l);
     }
   else if (g_variant_type_equal (expected_type, G_VARIANT_TYPE_HANDLE))
@@ -200,6 +202,8 @@ g_settings_get_mapping_int (GValue   *value,
     l = g_variant_get_int32 (variant);
   else if (g_variant_type_equal (type, G_VARIANT_TYPE_INT64))
     l = g_variant_get_int64 (variant);
+  else if (g_variant_type_equal (type, G_VARIANT_TYPE_HANDLE))
+    l = g_variant_get_handle (variant);
   else
     return FALSE;
 
@@ -221,7 +225,7 @@ g_settings_get_mapping_int (GValue   *value,
   else if (G_VALUE_HOLDS_UINT64 (value))
     {
       g_value_set_uint64 (value, l);
-      return (0 <= l && l <= G_MAXUINT64);
+      return (0 <= l && (guint64) l <= G_MAXUINT64);
     }
   else if (G_VALUE_HOLDS_DOUBLE (value))
     {
@@ -266,7 +270,7 @@ g_settings_get_mapping_float (GValue   *value,
   else if (G_VALUE_HOLDS_UINT64 (value))
     {
       g_value_set_uint64 (value, l);
-      return (0 <= l && l <= G_MAXUINT64);
+      return (0 <= l && (guint64) l <= G_MAXUINT64);
     }
   else if (G_VALUE_HOLDS_DOUBLE (value))
     {
@@ -291,8 +295,6 @@ g_settings_get_mapping_unsigned_int (GValue   *value,
     u = g_variant_get_uint32 (variant);
   else if (g_variant_type_equal (type, G_VARIANT_TYPE_UINT64))
     u = g_variant_get_uint64 (variant);
-  else if (g_variant_type_equal (type, G_VARIANT_TYPE_HANDLE))
-    u = g_variant_get_handle (variant);
   else
     return FALSE;
 
@@ -408,7 +410,7 @@ g_settings_set_mapping (const GValue       *value,
       fclass = g_type_class_peek (G_VALUE_TYPE (value));
       flags = g_value_get_flags (value);
 
-      g_variant_builder_init (&builder, G_VARIANT_TYPE ("as"));
+      g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("as"));
       while (flags)
         {
           flagsval = g_flags_get_first_value (fclass, flags);
@@ -459,7 +461,8 @@ g_settings_get_mapping (GValue   *value,
 
   else if (g_variant_is_of_type (variant, G_VARIANT_TYPE_INT16)  ||
            g_variant_is_of_type (variant, G_VARIANT_TYPE_INT32)  ||
-           g_variant_is_of_type (variant, G_VARIANT_TYPE_INT64))
+           g_variant_is_of_type (variant, G_VARIANT_TYPE_INT64)  ||
+           g_variant_is_of_type (variant, G_VARIANT_TYPE_HANDLE))
     return g_settings_get_mapping_int (value, variant);
 
   else if (g_variant_is_of_type (variant, G_VARIANT_TYPE_DOUBLE))
@@ -467,8 +470,7 @@ g_settings_get_mapping (GValue   *value,
 
   else if (g_variant_is_of_type (variant, G_VARIANT_TYPE_UINT16) ||
            g_variant_is_of_type (variant, G_VARIANT_TYPE_UINT32) ||
-           g_variant_is_of_type (variant, G_VARIANT_TYPE_UINT64) ||
-           g_variant_is_of_type (variant, G_VARIANT_TYPE_HANDLE))
+           g_variant_is_of_type (variant, G_VARIANT_TYPE_UINT64))
     return g_settings_get_mapping_unsigned_int (value, variant);
 
   else if (g_variant_is_of_type (variant, G_VARIANT_TYPE_STRING)      ||
@@ -498,7 +500,7 @@ g_settings_get_mapping (GValue   *value,
              return TRUE;
             }
 
-          g_warning ("Unable to lookup enum nick '%s' via GType\n", nick);
+          g_warning ("Unable to look up enum nick ‘%s’ via GType", nick);
           return FALSE;
         }
     }
@@ -530,7 +532,7 @@ g_settings_get_mapping (GValue   *value,
 
               else
                 {
-                  g_warning ("Unable to lookup flags nick '%s' via GType\n",
+                  g_warning ("Unable to lookup flags nick '%s' via GType",
                              nick);
                   return FALSE;
                 }

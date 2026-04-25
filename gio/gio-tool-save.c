@@ -1,6 +1,8 @@
 /*
  * Copyright 2015 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -36,7 +38,7 @@
 
 #include "gio-tool.h"
 
-static char *etag = NULL;
+static char *global_etag = NULL;
 static gboolean backup = FALSE;
 static gboolean create = FALSE;
 static gboolean append = FALSE;
@@ -54,17 +56,19 @@ static const GOptionEntry entries[] =
   /* Translators: The "etag" is a token allowing to verify whether a file has been modified */
   { "print-etag", 'v', 0, G_OPTION_ARG_NONE, &print_etag, N_("Print new etag at end"), NULL },
   /* Translators: The "etag" is a token allowing to verify whether a file has been modified */
-  { "etag", 'e', 0, G_OPTION_ARG_STRING, &etag, N_("The etag of the file being overwritten"), N_("ETAG") },
-  { NULL }
+  { "etag", 'e', 0, G_OPTION_ARG_STRING, &global_etag, N_("The etag of the file being overwritten"), N_("ETAG") },
+  G_OPTION_ENTRY_NULL
 };
+
+/* 256k minus malloc overhead */
+#define STREAM_BUFFER_SIZE (1024*256 - 2*sizeof(gpointer))
 
 static gboolean
 save (GFile *file)
 {
   GOutputStream *out;
   GFileCreateFlags flags;
-  char buffer[1025];
-  char *p;
+  char *buffer;
   gssize res;
   gboolean close_res;
   GError *error;
@@ -80,7 +84,7 @@ save (GFile *file)
   else if (append)
     out = (GOutputStream *)g_file_append_to (file, flags, NULL, &error);
   else
-    out = (GOutputStream *)g_file_replace (file, etag, backup, flags, NULL, &error);
+    out = (GOutputStream *)g_file_replace (file, global_etag, backup, flags, NULL, &error);
   if (out == NULL)
     {
       print_file_error (file, error->message);
@@ -88,30 +92,22 @@ save (GFile *file)
       return FALSE;
     }
 
+  buffer = g_malloc (STREAM_BUFFER_SIZE);
   save_res = TRUE;
 
   while (1)
     {
-      res = read (STDIN_FILENO, buffer, 1024);
+      res = read (STDIN_FILENO, buffer, STREAM_BUFFER_SIZE);
       if (res > 0)
 	{
-	  gssize written;
-
-	  p = buffer;
-	  while (res > 0)
-	    {
-	      error = NULL;
-	      written = g_output_stream_write (out, p, res, NULL, &error);
-	      if (written == -1)
-		{
-		  save_res = FALSE;
-                  print_error ("%s", error->message);
-		  g_error_free (error);
-		  goto out;
-		}
-	      res -= written;
-	      p += written;
-	    }
+          g_output_stream_write_all (out, buffer, res, NULL, NULL, &error);
+          if (error != NULL)
+            {
+              save_res = FALSE;
+              print_file_error (file, error->message);
+              g_clear_error (&error);
+              goto out;
+            }
 	}
       else if (res < 0)
 	{
@@ -129,7 +125,7 @@ save (GFile *file)
   if (!close_res)
     {
       save_res = FALSE;
-      print_error ("%s", error->message);
+      print_file_error (file, error->message);
       g_error_free (error);
     }
 
@@ -147,6 +143,7 @@ save (GFile *file)
     }
 
   g_object_unref (out);
+  g_free (buffer);
 
   return save_res;
 }
@@ -205,4 +202,3 @@ handle_save (int argc, char *argv[], gboolean do_help)
 
   return res ? 0 : 2;
 }
-

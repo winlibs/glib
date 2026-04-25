@@ -1,6 +1,8 @@
 /*
  * Copyright 2015 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -40,11 +42,13 @@ static const GOptionEntry entries[] = {
   { "interactive", 'i', 0, G_OPTION_ARG_NONE, &interactive, N_("Prompt before overwrite"), NULL },
   { "backup", 'b', 0, G_OPTION_ARG_NONE, &backup, N_("Backup existing destination files"), NULL },
   { "no-copy-fallback", 'C', 0, G_OPTION_ARG_NONE, &no_copy_fallback, N_("Don’t use copy and delete fallback"), NULL },
-  { NULL }
+  G_OPTION_ENTRY_NULL
 };
 
 static gint64 start_time;
 static gint64 previous_time;
+
+static goffset previous_num_bytes;
 
 static void
 show_progress (goffset current_num_bytes,
@@ -52,7 +56,9 @@ show_progress (goffset current_num_bytes,
                gpointer user_data)
 {
   gint64 tv;
-  char *current_size, *total_size, *rate;
+  char *current_size, *total_size, *current_rate, *average_rate;
+  goffset bytes_since_last;
+  gint64 time_since_last;
 
   tv = g_get_monotonic_time ();
   if (tv - previous_time < (G_USEC_PER_SEC / 5) &&
@@ -61,17 +67,35 @@ show_progress (goffset current_num_bytes,
 
   current_size = g_format_size (current_num_bytes);
   total_size = g_format_size (total_num_bytes);
-  rate = g_format_size (current_num_bytes /
-                        MAX ((tv - start_time) / G_USEC_PER_SEC, 1));
+
+  average_rate = g_format_size (current_num_bytes * G_USEC_PER_SEC /
+                                MAX ((tv - start_time), 1));
+
+  bytes_since_last = current_num_bytes - previous_num_bytes;
+  time_since_last = tv - previous_time;
+  current_rate = g_format_size ((bytes_since_last * G_USEC_PER_SEC) /
+                                MAX (time_since_last, 1));
+
   g_print ("\r\033[K");
-  g_print (_("Transferred %s out of %s (%s/s)"),
-           current_size, total_size, rate);
+
+  if (current_num_bytes == total_num_bytes)
+    {
+      g_print (_("Transferred %s (average: %s/s)"),
+               current_size, average_rate);
+    }
+  else
+    {
+      g_print (_("Transferred %s out of %s (%s/s; average: %s/s)"),
+               current_size, total_size, current_rate, average_rate);
+    }
 
   previous_time = tv;
+  previous_num_bytes = current_num_bytes;
 
   g_free (current_size);
   g_free (total_size);
-  g_free (rate);
+  g_free (current_rate);
+  g_free (average_rate);
 }
 
 int
@@ -91,7 +115,7 @@ handle_move (int argc, char *argv[], gboolean do_help)
   g_set_prgname ("gio move");
 
   /* Translators: commandline placeholder */
-  param = g_strdup_printf ("%s... %s", _("SOURCE"), _("DESTINATION"));
+  param = g_strdup_printf ("%s… %s", _("SOURCE"), _("DESTINATION"));
   context = g_option_context_new (param);
   g_free (param);
   g_option_context_set_help_enabled (context, FALSE);
@@ -106,6 +130,7 @@ handle_move (int argc, char *argv[], gboolean do_help)
   if (do_help)
     {
       show_help (context, NULL);
+      g_option_context_free (context);
       return 0;
     }
 

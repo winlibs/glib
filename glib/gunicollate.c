@@ -2,6 +2,8 @@
  *
  *  Copyright 2001,2005 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -20,7 +22,7 @@
 
 #include <locale.h>
 #include <string.h>
-#ifdef __STDC_ISO_10646__
+#ifdef HAVE_WCHAR_H
 #include <wchar.h>
 #endif
 
@@ -35,10 +37,11 @@
 #include "gstrfuncs.h"
 #include "gtestutils.h"
 #include "gcharset.h"
-#ifndef __STDC_ISO_10646__
 #include "gconvert.h"
-#endif
 
+#if SIZEOF_WCHAR_T == 4 && defined(__STDC_ISO_10646__)
+#define GUNICHAR_EQUALS_WCHAR_T 1
+#endif
 
 #ifdef _MSC_VER
 /* Workaround for bug in MSVCR80.DLL */
@@ -64,12 +67,16 @@ msc_strxfrm_wrapper (char       *string1,
  * @str2: a UTF-8 encoded string
  * 
  * Compares two strings for ordering using the linguistically
- * correct rules for the [current locale][setlocale].
+ * correct rules for the [current locale](running.html#locale).
  * When sorting a large number of strings, it will be significantly 
  * faster to obtain collation keys with g_utf8_collate_key() and 
  * compare the keys with strcmp() when sorting instead of sorting 
  * the original strings.
  * 
+ * If the two strings are not comparable due to being in different collation
+ * sequences, the result is undefined. This can happen if the strings are in
+ * different language scripts, for example.
+ *
  * Returns: < 0 if @str1 compares before @str2, 
  *   0 if they compare equal, > 0 if @str1 compares after @str2.
  **/
@@ -101,7 +108,7 @@ g_utf8_collate (const gchar *str1,
   g_free (str2_utf16);
   g_free (str1_utf16);
 
-#elif defined(__STDC_ISO_10646__)
+#elif defined(HAVE_WCHAR_H) && defined(GUNICHAR_EQUALS_WCHAR_T)
 
   gunichar *str1_norm;
   gunichar *str2_norm;
@@ -117,7 +124,7 @@ g_utf8_collate (const gchar *str1,
   g_free (str1_norm);
   g_free (str2_norm);
 
-#else /* !__STDC_ISO_10646__ */
+#else
 
   const gchar *charset;
   gchar *str1_norm;
@@ -154,12 +161,12 @@ g_utf8_collate (const gchar *str1,
   g_free (str1_norm);
   g_free (str2_norm);
 
-#endif /* __STDC_ISO_10646__ */
+#endif
 
   return result;
 }
 
-#if defined(__STDC_ISO_10646__)
+#if defined(HAVE_WCHAR_H) && defined(GUNICHAR_EQUALS_WCHAR_T)
 /* We need UTF-8 encoding of numbers to encode the weights if
  * we are using wcsxfrm. However, we aren't encoding Unicode
  * characters, so we can't simply use g_unichar_to_utf8.
@@ -206,7 +213,7 @@ utf8_encode (char *buf, wchar_t val)
 
   return retval;
 }
-#endif /* __STDC_ISO_10646__ */
+#endif
 
 #ifdef HAVE_CARBON
 
@@ -222,7 +229,7 @@ collate_key_to_string (UCCollationValue *key,
    *
    * UCCollateOptions (32/64 bits)
    * SizeInBytes      (32/64 bits)
-   * Value            (8 bits arrey)
+   * Value            (8 bits array)
    *
    * UCCollateOptions: ordering option mask of the collator
    * used to create the key. Size changes on 32-bit / 64-bit
@@ -365,11 +372,16 @@ carbon_collate_key_for_filename (const gchar *str,
  * The results of comparing the collation keys of two strings 
  * with strcmp() will always be the same as comparing the two 
  * original keys with g_utf8_collate().
+ *
+ * Note that this function depends on the [current locale](running.html#locale).
+ *
+ * Note that the returned string is not guaranteed to be in any
+ * encoding, especially UTF-8. The returned value is meant to be
+ * used only for comparisons.
  * 
- * Note that this function depends on the [current locale][setlocale].
- * 
- * Returns: a newly allocated string. This string should
- *   be freed with g_free() when you are done with it.
+ * Returns: (transfer full) (type filename): a newly allocated string.
+ *   The contents of the string are only meant to be used when sorting.
+ *   This string should be freed with g_free() when you are done with it.
  **/
 gchar *
 g_utf8_collate_key (const gchar *str,
@@ -382,7 +394,7 @@ g_utf8_collate_key (const gchar *str,
   g_return_val_if_fail (str != NULL, NULL);
   result = carbon_collate_key (str, len);
 
-#elif defined(__STDC_ISO_10646__)
+#elif defined(HAVE_WCHAR_H) && defined(GUNICHAR_EQUALS_WCHAR_T)
 
   gsize xfrm_len;
   gunichar *str_norm;
@@ -393,6 +405,8 @@ g_utf8_collate_key (const gchar *str,
   g_return_val_if_fail (str != NULL, NULL);
 
   str_norm = _g_utf8_normalize_wc (str, len, G_NORMALIZE_ALL_COMPOSE);
+
+  g_return_val_if_fail (str_norm != NULL, NULL);
 
   xfrm_len = wcsxfrm (NULL, (wchar_t *)str_norm, 0);
   result_wc = g_new (wchar_t, xfrm_len + 1);
@@ -412,9 +426,9 @@ g_utf8_collate_key (const gchar *str,
   g_free (str_norm);
 
   return result;
-#else /* !__STDC_ISO_10646__ */
+#else
 
-  gsize xfrm_len;
+  gsize xfrm_len = 0;
   const gchar *charset;
   gchar *str_norm;
 
@@ -427,7 +441,7 @@ g_utf8_collate_key (const gchar *str,
   if (g_get_charset (&charset))
     {
       xfrm_len = strxfrm (NULL, str_norm, 0);
-      if (xfrm_len >= 0 && xfrm_len < G_MAXINT - 2)
+      if (xfrm_len < G_MAXINT - 2)
         {
           result = g_malloc (xfrm_len + 1);
           strxfrm (result, str_norm, xfrm_len + 1);
@@ -440,7 +454,7 @@ g_utf8_collate_key (const gchar *str,
       if (str_locale)
 	{
 	  xfrm_len = strxfrm (NULL, str_locale, 0);
-	  if (xfrm_len < 0 || xfrm_len >= G_MAXINT - 2)
+	  if (xfrm_len >= G_MAXINT - 2)
 	    {
 	      g_free (str_locale);
 	      str_locale = NULL;
@@ -466,7 +480,7 @@ g_utf8_collate_key (const gchar *str,
     }
 
   g_free (str_norm);
-#endif /* __STDC_ISO_10646__ */
+#endif
 
   return result;
 }
@@ -493,10 +507,15 @@ g_utf8_collate_key (const gchar *str,
  * would like to treat numbers intelligently so that "file1" "file10" "file5"
  * is sorted as "file1" "file5" "file10".
  * 
- * Note that this function depends on the [current locale][setlocale].
+ * Note that this function depends on the [current locale](running.html#locale).
  *
- * Returns: a newly allocated string. This string should
- *   be freed with g_free() when you are done with it.
+ * Note that the returned string is not guaranteed to be in any
+ * encoding, especially UTF-8. The returned value is meant to be
+ * used only for comparisons.
+ *
+ * Returns: (transfer full) (type filename): a newly allocated string.
+ *   The contents of the string are only meant to be used when sorting.
+ *   This string should be freed with g_free() when you are done with it.
  *
  * Since: 2.8
  */

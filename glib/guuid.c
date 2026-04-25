@@ -35,28 +35,6 @@ typedef struct {
   guint8 bytes[16];
 } GUuid;
 
-/**
- * SECTION:uuid
- * @title: GUuid
- * @short_description: a universally unique identifier
- *
- * A UUID, or Universally unique identifier, is intended to uniquely
- * identify information in a distributed environment. For the
- * definition of UUID, see [RFC 4122](https://tools.ietf.org/html/rfc4122.html).
- *
- * The creation of UUIDs does not require a centralized authority.
- *
- * UUIDs are of relatively small size (128 bits, or 16 bytes). The
- * common string representation (ex:
- * 1d6c0810-2bd6-45f3-9890-0268422a6f14) needs 37 bytes.
- *
- * The UUID specification defines 5 versions, and calling
- * g_uuid_string_random() will generate a unique (or rather random)
- * UUID of the most common version, version 4.
- *
- * Since: 2.52
- */
-
 /*
  * g_uuid_to_string:
  * @uuid: a #GUuid
@@ -113,7 +91,7 @@ uuid_parse_string (const gchar *str,
       if (hi == -1 || lo == -1)
         return FALSE;
 
-      bytes[i++] = hi << 8 | lo;
+      bytes[i++] = hi << 4 | lo;
     }
 
   if (uuid != NULL)
@@ -193,7 +171,9 @@ g_uuid_generate_v4 (GUuid *uuid)
 /**
  * g_uuid_string_random:
  *
- * Generates a random UUID (RFC 4122 version 4) as a string.
+ * Generates a random UUID (RFC 4122 version 4) as a string. It has the same
+ * randomness guarantees as #GRand, so must not be used for cryptographic
+ * purposes such as key generation, nonces, salts or one-time pads.
  *
  * Returns: (transfer full): A string that should be freed with g_free().
  * Since: 2.52
@@ -207,4 +187,3 @@ g_uuid_string_random (void)
 
   return g_uuid_to_string (&uuid);
 }
-

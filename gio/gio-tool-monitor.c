@@ -1,6 +1,8 @@
 /*
  * Copyright 2015 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -45,8 +47,9 @@ static const GOptionEntry entries[] = {
       N_("Report moves and renames as simple deleted/created events"), NULL },
   { "mounts", 'm', 0, G_OPTION_ARG_NONE, &mounts,
       N_("Watch for mount events"), NULL },
-  { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &watch_default },
-  { NULL }
+  { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &watch_default,
+      NULL, NULL },
+  G_OPTION_ENTRY_NULL
 };
 
 static void
@@ -200,7 +203,7 @@ handle_monitor (int argc, gchar *argv[], gboolean do_help)
   g_set_prgname ("gio monitor");
 
   /* Translators: commandline placeholder */
-  param = g_strdup_printf ("[%s...]", _("LOCATION"));
+  param = g_strdup_printf ("%s…", _("LOCATION"));
   context = g_option_context_new (param);
   g_free (param);
   g_option_context_set_help_enabled (context, FALSE);
@@ -223,7 +226,7 @@ handle_monitor (int argc, gchar *argv[], gboolean do_help)
       return 1;
     }
 
-  if (!watch_dirs || !watch_files || !watch_direct || !watch_silent || !watch_default)
+  if (!watch_dirs && !watch_files && !watch_direct && !watch_silent && !watch_default)
     {
       show_help (context, _("No locations given"));
       g_option_context_free (context);

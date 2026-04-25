@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2008-2010 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -22,6 +24,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "gdbusprivate.h"
 #include "gdbus-tests.h"
 
 /* all tests rely on a shared mainloop */
@@ -48,7 +51,7 @@ test_introspection (GDBusProxy *proxy)
    * Invoke Introspect(), then parse the output.
    */
   result = g_dbus_proxy_call_sync (proxy,
-                                   "org.freedesktop.DBus.Introspectable.Introspect",
+                                   DBUS_INTERFACE_INTROSPECTABLE ".Introspect",
                                    NULL,
                                    G_DBUS_CALL_FLAGS_NONE,
                                    -1,
@@ -67,7 +70,7 @@ test_introspection (GDBusProxy *proxy)
   interface_info = g_dbus_node_info_lookup_interface (node_info, "com.example.NonExistantInterface");
   g_assert (interface_info == NULL);
 
-  interface_info = g_dbus_node_info_lookup_interface (node_info, "org.freedesktop.DBus.Introspectable");
+  interface_info = g_dbus_node_info_lookup_interface (node_info, DBUS_INTERFACE_INTROSPECTABLE);
   g_assert (interface_info != NULL);
   method_info = g_dbus_interface_info_lookup_method (interface_info, "NonExistantMethod");
   g_assert (method_info == NULL);
@@ -305,7 +308,7 @@ main (int   argc,
 {
   gint ret;
 
-  g_test_init (&argc, &argv, NULL);
+  g_test_init (&argc, &argv, G_TEST_OPTION_ISOLATE_DIRS, NULL);
 
   /* all the tests rely on a shared main loop */
   loop = g_main_loop_new (NULL, FALSE);

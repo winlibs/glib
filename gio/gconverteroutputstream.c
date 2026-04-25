@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2009 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -31,17 +33,14 @@
 
 
 /**
- * SECTION:gconverteroutputstream
- * @short_description: Converter Output Stream
- * @include: gio/gio.h
- * @see_also: #GOutputStream, #GConverter
+ * GConverterOutputStream:
  *
- * Converter output stream implements #GOutputStream and allows
+ * Converter output stream implements [class@Gio.OutputStream] and allows
  * conversion of data of various types during reading.
  *
- * As of GLib 2.34, #GConverterOutputStream implements
- * #GPollableOutputStream.
- **/
+ * As of GLib 2.34, `GConverterOutputStream` implements
+ * [iface@Gio.PollableOutputStream].
+ */
 
 #define INITIAL_BUFFER_SIZE 4096
 
@@ -130,11 +129,14 @@ g_converter_output_stream_class_init (GConverterOutputStreamClass *klass)
   istream_class->write_fn = g_converter_output_stream_write;
   istream_class->flush = g_converter_output_stream_flush;
 
+  /**
+   * GConverterOutputStream:converter:
+   *
+   * The converter object.
+   */
   g_object_class_install_property (object_class,
 				   PROP_CONVERTER,
-				   g_param_spec_object ("converter",
-							P_("Converter"),
-							P_("The converter object"),
+				   g_param_spec_object ("converter", NULL, NULL,
 							G_TYPE_CONVERTER,
 							G_PARAM_READWRITE|
 							G_PARAM_CONSTRUCT_ONLY|
@@ -420,7 +422,11 @@ write_internal (GOutputStream  *stream,
     return -1;
 
   if (priv->finished)
-    return 0;
+    {
+      g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_MESSAGE_TOO_LARGE,
+                           _("Unexpected data after end of conversion"));
+      return -1;
+    }
 
   /* Convert as much as possible */
   if (buffer_data_size (&priv->output_buffer) > 0)
@@ -485,7 +491,7 @@ write_internal (GOutputStream  *stream,
 
 	  if (converted_bytes > 0)
 	    {
-	      /* We got an conversion error, but we did convert some bytes before
+	      /* We got a conversion error, but we did convert some bytes before
 		 that, so handle those before reporting the error */
 	      g_error_free (my_error);
 	      break;
@@ -505,7 +511,7 @@ write_internal (GOutputStream  *stream,
 	      return count; /* consume everything */
 	    }
 
-	  /* Converted no data and got an normal error, return it */
+	  /* Converted no data and got a normal error, return it */
 	  g_propagate_error (error, my_error);
 	  return -1;
 	}
@@ -595,7 +601,7 @@ g_converter_output_stream_flush (GOutputStream  *stream,
 	  if (!is_closing &&
 	      res == G_CONVERTER_FLUSHED)
 	    {
-	      /* Should not have retured FLUSHED with input left */
+	      /* Should not have returned FLUSHED with input left */
 	      g_assert (buffer_data_size (&priv->output_buffer) == 0);
 	      flushed = TRUE;
 	    }

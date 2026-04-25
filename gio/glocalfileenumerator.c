@@ -2,6 +2,8 @@
  * 
  * Copyright (C) 2006-2007 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -21,6 +23,7 @@
 #include "config.h"
 
 #include <glib.h>
+#include <gcancellable.h>
 #include <glocalfileenumerator.h>
 #include <glocalfileinfo.h>
 #include <glocalfile.h>
@@ -380,6 +383,9 @@ g_local_file_enumerator_next_file (GFileEnumerator  *enumerator,
     }
 
  next_file:
+
+  if (g_cancellable_set_error_if_cancelled (cancellable, error))
+    return NULL;
 
 #ifdef USE_GDIR
   filename = g_dir_read_name (local->dir);

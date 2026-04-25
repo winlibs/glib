@@ -1,6 +1,8 @@
 /*
  * Copyright © 2013 Canonical Limited
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -34,10 +36,10 @@ G_BEGIN_DECLS
 #define G_IS_PROPERTY_ACTION(inst)                          (G_TYPE_CHECK_INSTANCE_TYPE ((inst),                     \
                                                              G_TYPE_PROPERTY_ACTION))
 
-GLIB_AVAILABLE_IN_2_38
+GIO_AVAILABLE_IN_2_38
 GType                   g_property_action_get_type                      (void) G_GNUC_CONST;
 
-GLIB_AVAILABLE_IN_2_38
+GIO_AVAILABLE_IN_2_38
 GPropertyAction *       g_property_action_new                           (const gchar *name,
                                                                          gpointer     object,
                                                                          const gchar *property_name);

@@ -1,6 +1,8 @@
 /*
  * Copyright 2015 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -37,6 +39,7 @@ gboolean file_is_dir (GFile *file);
 int handle_cat     (int argc, char *argv[], gboolean do_help);
 int handle_copy    (int argc, char *argv[], gboolean do_help);
 int handle_info    (int argc, char *argv[], gboolean do_help);
+int handle_launch  (int argc, char *argv[], gboolean do_help);
 int handle_list    (int argc, char *argv[], gboolean do_help);
 int handle_mime    (int argc, char *argv[], gboolean do_help);
 int handle_mkdir   (int argc, char *argv[], gboolean do_help);

@@ -2,6 +2,8 @@
  *
  * Copyright (C) 2008-2013 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -61,17 +63,10 @@ server_new_for_mechanism (const gchar *allowed_mechanism)
   guid = g_dbus_generate_guid ();
 
 #ifdef G_OS_UNIX
-  if (g_unix_socket_address_abstract_names_supported ())
-    {
-      addr = g_strdup ("unix:tmpdir=/tmp/gdbus-test-");
-    }
-  else
-    {
-      gchar *tmpdir;
-      tmpdir = g_dir_make_tmp ("gdbus-test-XXXXXX", NULL);
-      addr = g_strdup_printf ("unix:tmpdir=%s", tmpdir);
-      g_free (tmpdir);
-    }
+  gchar *tmpdir;
+  tmpdir = g_dir_make_tmp ("gdbus-test-XXXXXX", NULL);
+  addr = g_strdup_printf ("unix:tmpdir=%s", tmpdir);
+  g_free (tmpdir);
 #else
   addr = g_strdup ("nonce-tcp:");
 #endif
@@ -115,15 +110,6 @@ test_auth_on_new_connection (GDBusServer     *server,
   g_main_loop_quit (loop);
   return FALSE;
 }
-
-static gboolean
-test_auth_on_timeout (gpointer user_data)
-{
-  g_error ("Timeout waiting for client");
-  g_assert_not_reached ();
-  return FALSE;
-}
-
 
 typedef struct
 {
@@ -177,13 +163,12 @@ test_auth_mechanism (const gchar *allowed_client_mechanism,
                     G_CALLBACK (test_auth_on_new_connection),
                     loop);
 
-  g_timeout_add_seconds (5, test_auth_on_timeout, NULL);
-
   data.allowed_client_mechanism = allowed_client_mechanism;
   data.allowed_server_mechanism = allowed_server_mechanism;
   data.address = g_dbus_server_get_client_address (server);
 
-  /* run the D-Bus client in a thread */
+  /* Run the D-Bus client in a thread. If this hangs forever, the test harness
+   * (typically Meson) will eventually kill the test. */
   client_thread = g_thread_new ("gdbus-client-thread",
                                 test_auth_client_thread_func,
                                 &data);
@@ -290,7 +275,7 @@ main (int   argc,
 
   temp_dbus_keyrings_setup ();
 
-  g_test_init (&argc, &argv, NULL);
+  g_test_init (&argc, &argv, G_TEST_OPTION_ISOLATE_DIRS, NULL);
 
   g_test_add_func ("/gdbus/auth/client/EXTERNAL",         auth_client_external);
   g_test_add_func ("/gdbus/auth/client/DBUS_COOKIE_SHA1", auth_client_dbus_cookie_sha1);
@@ -310,4 +295,3 @@ main (int   argc,
 
   return ret;
 }
-

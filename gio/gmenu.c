@@ -1,6 +1,8 @@
 /*
  * Copyright © 2011 Canonical Ltd.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -27,26 +29,16 @@
 #include "gicon.h"
 
 /**
- * SECTION:gmenu
- * @title: GMenu
- * @short_description: A simple implementation of GMenuModel
- * @include: gio/gio.h
- *
- * #GMenu is a simple implementation of #GMenuModel.
- * You populate a #GMenu by adding #GMenuItem instances to it.
- *
- * There are some convenience functions to allow you to directly
- * add items (avoiding #GMenuItem) for the common cases. To add
- * a regular item, use g_menu_insert(). To add a section, use
- * g_menu_insert_section(). To add a submenu, use
- * g_menu_insert_submenu().
- */
-
-/**
  * GMenu:
  *
- * #GMenu is an opaque structure type.  You must access it using the
- * functions below.
+ * `GMenu` is a simple implementation of [class@Gio.MenuModel].
+ * You populate a `GMenu` by adding [class@Gio.MenuItem] instances to it.
+ *
+ * There are some convenience functions to allow you to directly
+ * add items (avoiding [class@Gio.MenuItem]) for the common cases. To add
+ * a regular item, use [method@Gio.Menu.insert]. To add a section, use
+ * [method@Gio.Menu.insert_section]. To add a submenu, use
+ * [method@Gio.Menu.insert_submenu].
  *
  * Since: 2.32
  */
@@ -162,7 +154,7 @@ g_menu_insert_item (GMenu     *menu,
   g_return_if_fail (G_IS_MENU (menu));
   g_return_if_fail (G_IS_MENU_ITEM (item));
 
-  if (position < 0 || position > menu->items->len)
+  if (position < 0 || (guint) position > menu->items->len)
     position = menu->items->len;
 
   new_item.attributes = g_hash_table_ref (item->attributes);
@@ -480,7 +472,7 @@ g_menu_remove (GMenu *menu,
                gint   position)
 {
   g_return_if_fail (G_IS_MENU (menu));
-  g_return_if_fail (0 <= position && position < menu->items->len);
+  g_return_if_fail (0 <= position && (guint) position < menu->items->len);
 
   g_menu_clear_item (&g_array_index (menu->items, struct item, position));
   g_array_remove_index (menu->items, position);
@@ -781,7 +773,7 @@ g_menu_item_set_link (GMenuItem   *menu_item,
  * type, %NULL is returned.  %NULL is also returned if the attribute
  * simply does not exist.
  *
- * Returns: (transfer full): the attribute value, or %NULL
+ * Returns: (nullable) (transfer full): the attribute value, or %NULL
  *
  * Since: 2.34
  */
@@ -865,7 +857,7 @@ g_menu_item_get_attribute (GMenuItem   *menu_item,
  *
  * Queries the named @link on @menu_item.
  *
- * Returns: (transfer full): the link, or %NULL
+ * Returns: (nullable) (transfer full): the link, or %NULL
  *
  * Since: 2.34
  */
@@ -1190,7 +1182,7 @@ g_menu_item_new_submenu (const gchar *label,
  * the menu that @menu_item is added to.
  *
  * Visual separation is typically displayed between two non-empty
- * sections.  If @label is non-%NULL then it will be encorporated into
+ * sections.  If @label is non-%NULL then it will be incorporated into
  * this visual indication.  This allows for labeled subsections of a
  * menu.
  *

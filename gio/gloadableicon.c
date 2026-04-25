@@ -2,6 +2,8 @@
  * 
  * Copyright (C) 2006-2007 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -27,13 +29,10 @@
 
 
 /**
- * SECTION:gloadableicon
- * @short_description: Loadable Icons
- * @include: gio/gio.h
- * @see_also: #GIcon, #GThemedIcon
+ * GLoadableIcon:
  * 
- * Extends the #GIcon interface and adds the ability to 
- * load icons from streams.
+ * `GLoadableIcon` extends the [iface@Gio.Icon] interface and adds the ability
+ * to load icons from streams.
  **/
 
 static void          g_loadable_icon_real_load_async  (GLoadableIcon        *icon,
@@ -93,9 +92,9 @@ g_loadable_icon_load (GLoadableIcon  *icon,
  * @icon: a #GLoadableIcon.
  * @size: an integer.
  * @cancellable: (nullable): optional #GCancellable object, %NULL to ignore. 
- * @callback: (scope async): a #GAsyncReadyCallback to call when the
- *            request is satisfied
- * @user_data: (closure): the data to pass to callback function
+ * @callback: (scope async): a #GAsyncReadyCallback
+ *   to call when the request is satisfied
+ * @user_data: the data to pass to callback function
  * 
  * Loads an icon asynchronously. To finish this function, see 
  * g_loadable_icon_load_finish(). For the synchronous, blocking 

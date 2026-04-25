@@ -2,6 +2,8 @@
  *
  * Copyright 2016 Endless Mobile, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -22,9 +24,6 @@
 #include <gio/gio.h>
 
 G_BEGIN_DECLS
-
-char * g_document_portal_add_document (GFile   *file,
-                                       GError **error);
 
 GList * g_document_portal_add_documents (GList       *uris,
                                          const char  *app_id,

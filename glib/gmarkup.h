@@ -2,6 +2,8 @@
  *
  *  Copyright 2000 Red Hat, Inc.
  *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -74,6 +76,7 @@ GQuark g_markup_error_quark (void);
 
 /**
  * GMarkupParseFlags:
+ * @G_MARKUP_DEFAULT_FLAGS: No special behaviour. Since: 2.74
  * @G_MARKUP_DO_NOT_USE_THIS_UNSUPPORTED_FLAG: flag you should not use
  * @G_MARKUP_TREAT_CDATA_AS_TEXT: When this flag is set, CDATA marked
  *     sections are not passed literally to the @passthrough function of
@@ -94,11 +97,12 @@ GQuark g_markup_error_quark (void);
  */
 typedef enum
 {
+  G_MARKUP_DEFAULT_FLAGS GLIB_AVAILABLE_ENUMERATOR_IN_2_74 = 0,
   G_MARKUP_DO_NOT_USE_THIS_UNSUPPORTED_FLAG = 1 << 0,
   G_MARKUP_TREAT_CDATA_AS_TEXT              = 1 << 1,
   G_MARKUP_PREFIX_ERROR_POSITION            = 1 << 2,
   G_MARKUP_IGNORE_QUALIFIED                 = 1 << 3
-} GMarkupParseFlags;
+} G_GNUC_FLAG_ENUM GMarkupParseFlags;
 
 /**
  * GMarkupParseContext:
@@ -139,6 +143,10 @@ typedef struct _GMarkupParser GMarkupParser;
  * errors are intended to be set from these callbacks. If you set an error
  * from a callback, g_markup_parse_context_parse() will report that error
  * back to its caller.
+ *
+ * Refer to the [GMarkup](../glib/markup.html) documentation to understand
+ * the scope and limitations of `GMarkupParser`. In particular, it is not a
+ * full XML parser and it must not be used to process untrusted data.
  */
 struct _GMarkupParser
 {
@@ -219,6 +227,15 @@ GLIB_AVAILABLE_IN_ALL
 void                 g_markup_parse_context_get_position (GMarkupParseContext *context,
                                                           gint                *line_number,
                                                           gint                *char_number);
+GLIB_AVAILABLE_IN_2_88
+gsize                g_markup_parse_context_get_offset   (GMarkupParseContext *context);
+
+GLIB_AVAILABLE_IN_2_88
+void                 g_markup_parse_context_get_tag_start (GMarkupParseContext *context,
+                                                           gsize               *line_number,
+                                                           gsize               *char_number,
+                                                           gsize               *offset);
+
 GLIB_AVAILABLE_IN_ALL
 gpointer             g_markup_parse_context_get_user_data (GMarkupParseContext *context);
 
