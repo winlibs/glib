@@ -5,7 +5,7 @@ gthread_sources = ['gthread-impl.c']
 if host_system == 'windows' and glib_build_shared
   gthread_rc_conf = configuration_data({
     'NAME': 'GThread',
-    'FILENAME': (cc.get_argument_syntax() == 'msvc' ? '' : 'lib') + 'gthread-' + glib_api_version + '-' + soversion.to_string() + '.dll',
+    'FILENAME': gthread_dll_filename,
     'DESCRIPTION': 'Portable threading API',
   })
   gthread_rc_conf.merge_from(rc_conf_base)
@@ -20,16 +20,14 @@ if host_system == 'windows' and glib_build_shared
   )]
 endif
 
-libgthread = library('gthread-2.0',
+libgthread = library(gthread_lib_name,
   sources : gthread_sources,
-  version : library_version,
-  soversion : soversion,
-  darwin_versions : darwin_versions,
   install : true,
   dependencies : [libglib_dep],
   c_args : ['-DG_LOG_DOMAIN="GThread"', glib_c_args_internal, warning_sign_conversion_args, warning_shorten_64_to_32_args],
   gnu_symbol_visibility : 'hidden',
   link_args : glib_link_flags,
+  kwargs : library_version_kwargs,
 )
 
 pkg.generate(libgthread,

@@ -105,6 +105,29 @@ current = binary_age - interface_age
 library_version = '@0@.@1@.@2@'.format(soversion, current, interface_age)
 darwin_versions = [current + 1, '@0@.@1@'.format(current + 1, interface_age)]
 
+winlib_legacy_dll_names = get_option('winlib_legacy_dll_names') and host_system == 'windows' and cc.get_argument_syntax() == 'msvc'
+glib_lib_name = winlib_legacy_dll_names ? 'glib-2' : 'glib-2.0'
+gobject_lib_name = winlib_legacy_dll_names ? 'gobject-2' : 'gobject-2.0'
+gmodule_lib_name = winlib_legacy_dll_names ? 'gmodule-2' : 'gmodule-2.0'
+gio_lib_name = winlib_legacy_dll_names ? 'gio-2' : 'gio-2.0'
+gthread_lib_name = winlib_legacy_dll_names ? 'gthread-2' : 'gthread-2.0'
+
+dll_prefix = cc.get_argument_syntax() == 'msvc' ? '' : 'lib'
+glib_dll_filename = winlib_legacy_dll_names ? 'glib-2.dll' : dll_prefix + 'glib-' + glib_api_version + '-' + soversion.to_string() + '.dll'
+gobject_dll_filename = winlib_legacy_dll_names ? 'gobject-2.dll' : dll_prefix + 'gobject-' + glib_api_version + '-' + soversion.to_string() + '.dll'
+gmodule_dll_filename = winlib_legacy_dll_names ? 'gmodule-2.dll' : dll_prefix + 'gmodule-' + glib_api_version + '-' + soversion.to_string() + '.dll'
+gio_dll_filename = winlib_legacy_dll_names ? 'gio-2.dll' : dll_prefix + 'gio-' + glib_api_version + '-' + soversion.to_string() + '.dll'
+gthread_dll_filename = winlib_legacy_dll_names ? 'gthread-2.dll' : dll_prefix + 'gthread-' + glib_api_version + '-' + soversion.to_string() + '.dll'
+
+library_version_kwargs = {}
+if not winlib_legacy_dll_names
+  library_version_kwargs = {
+    'version': library_version,
+    'soversion': soversion,
+    'darwin_versions': darwin_versions,
+  }
+endif
+
 configinc = include_directories('.')
 glibinc = include_directories('glib')
 gobjectinc = include_directories('gobject')
@@ -210,12 +233,15 @@ add_test_setup('unstable_tests',
   #suites: ['flaky', 'unstable']
 )
 
-add_test_setup('thorough',
-  exclude_suites: ['flaky', 'failing', 'performance'],
-  env: common_test_env,
-  timeout_multiplier: 20,
-  exe_wrapper: [find_program('./.gitlab-ci/thorough-test-wrapper.sh', required: true)],
-)
+thorough_test_wrapper = find_program('./.gitlab-ci/thorough-test-wrapper.sh', required: false)
+if thorough_test_wrapper.found()
+  add_test_setup('thorough',
+    exclude_suites: ['flaky', 'failing', 'performance'],
+    env: common_test_env,
+    timeout_multiplier: 20,
+    exe_wrapper: [thorough_test_wrapper],
+  )
+endif
 
 # Allow the tests to be easily run under valgrind using --setup=valgrind
 valgrind = find_program('valgrind', required: false)
@@ -2249,6 +2275,14 @@ else
   libiconv = dependency('iconv')
 endif
 
+winlib_deps_root = get_option('winlib_deps_root')
+winlib_deps_inc = []
+winlib_deps_libdir = ''
+if winlib_deps_root != ''
+  winlib_deps_inc = include_directories(join_paths(winlib_deps_root, 'include'))
+  winlib_deps_libdir = join_paths(winlib_deps_root, 'lib')
+endif
+
 pcre2_req = '>=10.32'
 pcre2_options = [
   'default_library=static',
@@ -2298,9 +2332,23 @@ subproject('gvdb', default_options: {'tests': false})
 gvdb_dep = dependency('gvdb')
 
 libm = cc.find_library('m', required : false)
-libffi_dep = dependency('libffi', version : '>= 3.0.0', default_options: {'werror': false})
+if winlib_deps_root != ''
+  libffi_dep = declare_dependency(
+    include_directories: winlib_deps_inc,
+    dependencies: cc.find_library('libffi', dirs: winlib_deps_libdir, required: true),
+  )
+else
+  libffi_dep = dependency('libffi', version : '>= 3.0.0', default_options: {'werror': false})
+endif
 
-libz_dep = dependency('zlib')
+if winlib_deps_root != ''
+  libz_dep = declare_dependency(
+    include_directories: winlib_deps_inc,
+    dependencies: cc.find_library('zlib_a', dirs: winlib_deps_libdir, required: true),
+  )
+else
+  libz_dep = dependency('zlib')
+endif
 
 libatomic_test_code = '''
   int main (int argc, char ** argv) {
@@ -2317,8 +2365,21 @@ endif
 # implementations. This could be extended if issues are found in some platforms.
 libintl_deps = []
 libintl_prefix = '#include <libintl.h>'
-libintl = dependency('intl', required: false)
-if libintl.found() and libintl.type_name() != 'internal'
+if winlib_deps_root != ''
+  libintl = declare_dependency(
+    include_directories: winlib_deps_inc,
+    dependencies: cc.find_library('libintl_a', dirs: winlib_deps_libdir, required: true),
+  )
+  if cc.has_function('ngettext', dependencies : libintl, prefix: libintl_prefix)
+    libintl_deps += [libintl]
+  else
+    error('winlib_deps_root libintl is missing ngettext')
+  endif
+else
+  libintl = dependency('intl', required: false)
+endif
+
+if winlib_deps_root == '' and libintl.found() and libintl.type_name() != 'internal'
   # libintl supports different threading APIs, which may not
   # require additional flags, but it defaults to using pthreads if
   # found. Meson's "threads" dependency does not allow you to
@@ -2345,7 +2406,9 @@ if libintl.found() and libintl.type_name() != 'internal'
   endif
 endif
 
-if libintl.found() and libintl.type_name() != 'internal'
+if winlib_deps_root != ''
+  have_bind_textdomain_codeset = cc.has_function('bind_textdomain_codeset', dependencies: libintl_deps, prefix: libintl_prefix)
+elif libintl.found() and libintl.type_name() != 'internal'
   have_bind_textdomain_codeset = cc.has_function('bind_textdomain_codeset', dependencies: libintl_deps, prefix: libintl_prefix)
 else
   # using proxy-libintl fallback
