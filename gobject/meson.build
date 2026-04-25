@@ -63,7 +63,7 @@ gobject_sources += files(
 if host_system == 'windows' and glib_build_shared
   gobject_rc_conf = configuration_data({
     'NAME': 'GObject',
-    'FILENAME': (cc.get_argument_syntax() == 'msvc' ? '' : 'lib') + 'gobject-' + glib_api_version + '-' + soversion.to_string() + '.dll',
+    'FILENAME': gobject_dll_filename,
     'DESCRIPTION': 'The base type system and object class',
   })
   gobject_rc_conf.merge_from(rc_conf_base)
@@ -146,18 +146,16 @@ glib_enumtypes_c = custom_target('glib_enumtypes_c',
 # when it includes GLib as a subproject
 glib_types_h = files('glib-types.h')
 
-libgobject = library('gobject-2.0',
+libgobject = library(gobject_lib_name,
   gobject_dtrace_obj, gobject_dtrace_hdr, glib_enumtypes_h, glib_enumtypes_c,
   sources : gobject_sources,
-  version : library_version,
-  soversion : soversion,
-  darwin_versions : darwin_versions,
   install : true,
   include_directories : [configinc],
   dependencies : [libffi_dep, libglib_dep],
   c_args : ['-DG_LOG_DOMAIN="GLib-GObject"', '-DGOBJECT_COMPILATION', warning_sign_conversion_args, warning_shorten_64_to_32_args],
   gnu_symbol_visibility : 'hidden',
   link_args : glib_link_flags,
+  kwargs : library_version_kwargs,
 )
 
 pkg.generate(libgobject,
