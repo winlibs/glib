@@ -479,7 +479,7 @@ else
   if glib_build_shared
     gio_rc_conf = configuration_data({
       'NAME': 'GIO',
-      'FILENAME': (cc.get_argument_syntax() == 'msvc' ? '' : 'lib') + 'gio-' + glib_api_version + '-' + soversion.to_string() + '.dll',
+      'FILENAME': gio_dll_filename,
       'DESCRIPTION': 'Gio is a library providing general purpose I/O, networking, IPC, settings, and other high level application functionality',
     })
     gio_rc_conf.merge_from(rc_conf_base)
@@ -891,12 +891,9 @@ else
   gio_dtrace_hdr = []
 endif
 
-libgio = library('gio-2.0',
+libgio = library(gio_lib_name,
   gioenumtypes_h, gioenumtypes_c, gnetworking_h, gio_sources,
   gio_dtrace_hdr, gio_dtrace_obj,
-  version : library_version,
-  soversion : soversion,
-  darwin_versions : darwin_versions,
   install : true,
   include_directories : [configinc, gioinc],
   #  '$(gio_win32_res_ldflag)',
@@ -910,6 +907,7 @@ libgio = library('gio-2.0',
   gnu_symbol_visibility : 'hidden',
   # intl.lib is not compatible with SAFESEH
   link_args : [noseh_link_args, glib_link_flags],
+  kwargs : library_version_kwargs,
 )
 
 if get_option('gio_module_dir') != ''
