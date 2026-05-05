@@ -492,7 +492,7 @@ name_validate (GMarkupParseContext  *context,
 static gboolean
 text_validate (GMarkupParseContext  *context,
                const gchar          *p,
-               gint                  len,
+               gsize                 len,
                GError              **error)
 {
   if (!g_utf8_validate_len (p, len, NULL))
@@ -2280,7 +2280,7 @@ append_escaped_text (GString     *str,
           /* The utf-8 control characters to escape begins with 0xc2 byte */
           else if (c == 0xc2)
             {
-              gunichar u = g_utf8_get_char (pending);
+              gunichar u = g_utf8_get_char_validated (pending, end - pending);
 
               if ((0x7f < u && u <= 0x84) ||
                   (0x86 <= u && u <= 0x9f))
@@ -2296,7 +2296,11 @@ append_escaped_text (GString     *str,
                   p++;
                 }
               else
-                pending++;
+                {
+                  /* Not the UTF-8 control characters we’re looking for, or an
+                   * invalid or partial encoding. Pass it through. */
+                  pending++;
+                }
             }
           else
             pending++;
