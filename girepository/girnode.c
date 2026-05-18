@@ -2573,9 +2573,11 @@ gi_ir_write_string (const char  *str,
   g_hash_table_insert (strings, (void *)str, GUINT_TO_POINTER (*offset));
 
   start = *offset;
-  *offset = ALIGN_VALUE (start + strlen (str) + 1, 4);
-
-  strcpy ((char *)&data[start], str);
+  {
+    size_t len = strlen (str);
+    *offset = ALIGN_VALUE (start + len + 1, 4);
+    memcpy ((char *)&data[start], str, len + 1);
+  }
 
   return start;
 }
