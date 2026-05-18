@@ -35,6 +35,7 @@ function Resolve-VsInstall {
     $versionRange = switch ($Version) {
         "16" { "[16.0,17.0)" }
         "17" { "[17.0,18.0)" }
+        "18" { "[18.0,19.0)" }
         default { throw "Unsupported Visual Studio version $Version" }
     }
 
