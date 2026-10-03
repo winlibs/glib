@@ -127,7 +127,9 @@ g_app_info_default_init (GAppInfoInterface *iface)
  *
  * Creates a new [iface@Gio.AppInfo] from the given information.
  *
- * Note that for @commandline, the quoting rules of the `Exec` key of the
+ * When constructing @commandline, quote any filenames or potentially-
+ * untrusted input using [func@GLib.shell_quote], and note that the
+ * quoting rules of the `Exec` key of the
  * [freedesktop.org Desktop Entry Specification](http://freedesktop.org/Standards/desktop-entry-spec)
  * are applied. For example, if the @commandline contains
  * percent-encoded URIs, the percent-character must be doubled in order to prevent it from
@@ -557,6 +559,13 @@ g_app_info_get_default_for_uri_scheme (const char *uri_scheme)
   return g_app_info_get_default_for_uri_scheme_impl (uri_scheme);
 }
 
+static gboolean
+is_valid_extension (const char *extension)
+{
+  return (*extension != '\0' &&
+          strpbrk (extension, "/\\") == NULL);
+}
+
 /**
  * g_app_info_set_as_default_for_extension:
  * @appinfo: the app info
@@ -576,8 +585,16 @@ g_app_info_set_as_default_for_extension (GAppInfo    *appinfo,
   
   g_return_val_if_fail (G_IS_APP_INFO (appinfo), FALSE);
   g_return_val_if_fail (extension != NULL, FALSE);
+  g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
   iface = G_APP_INFO_GET_IFACE (appinfo);
+
+  if (!is_valid_extension (extension))
+    {
+      g_set_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+                   _("Invalid file extension ‘%s’"), extension);
+      return FALSE;
+    }
 
   if (iface->set_as_default_for_extension)
     return (* iface->set_as_default_for_extension) (appinfo, extension, error);

@@ -1070,7 +1070,6 @@ typedef enum    /*< skip >*/
 } G_GNUC_FLAG_ENUM GTypeFundamentalFlags;
 /**
  * GTypeFlags:
- * @G_TYPE_FLAG_NONE: No special flags. Since: 2.74
  * @G_TYPE_FLAG_ABSTRACT: Indicates an abstract type. No instances can be
  *  created for an abstract type
  * @G_TYPE_FLAG_VALUE_ABSTRACT: Indicates an abstract value type, i.e. a type
@@ -1086,6 +1085,13 @@ typedef enum    /*< skip >*/
  */
 typedef enum    /*< skip >*/
 {
+  /**
+   * G_TYPE_FLAG_NONE:
+   *
+   * No special flags.
+   *
+   * Since: 2.74
+   */
   G_TYPE_FLAG_NONE GOBJECT_AVAILABLE_ENUMERATOR_IN_2_74 = 0,
   G_TYPE_FLAG_ABSTRACT = (1 << 4),
   G_TYPE_FLAG_VALUE_ABSTRACT = (1 << 5),
@@ -1574,7 +1580,7 @@ guint     g_type_get_type_registration_serial (void);
  * - the usual `my_app_window_get_type()` function is declared with a return type of #GType
  *
  * - the `MyAppWindow` type is defined as a `typedef` of `struct _MyAppWindow`.  The struct itself is not
- *   defined and should be defined from the .c file before G_DEFINE_TYPE() is used.
+ *   defined and should be defined from the `.c` file before `G_DEFINE_TYPE()` is used.
  *
  * - the `MY_APP_WINDOW()` cast is emitted as `static inline` function along with the `MY_APP_IS_WINDOW()` type
  *   checking function
@@ -1585,9 +1591,9 @@ guint     g_type_get_type_registration_serial (void);
  *   and therefore the fact that the size of the class structure is exposed is not a concern and it can be
  *   freely changed at any point in the future.
  *
- * - g_autoptr() support being added for your type, based on the type of your parent class
+ * - `g_autoptr()` support being added for your type, based on the type of your parent class
  *
- * You can only use this function if your parent type also supports g_autoptr().
+ * You can only use this function if your parent type also supports `g_autoptr()`.
  *
  * Because the type macro (`MY_APP_TYPE_WINDOW` in the above example) is not a callable, you must continue to
  * manually define this as a macro for yourself.
@@ -1595,11 +1601,11 @@ guint     g_type_get_type_registration_serial (void);
  * The declaration of the `_get_type()` function is the first thing emitted by the macro.  This allows this macro
  * to be used in the usual way with export control and API versioning macros.
  *
- * If you want to declare your own class structure, use G_DECLARE_DERIVABLE_TYPE().
+ * If you want to declare your own class structure, use [func@GObject.DECLARE_DERIVABLE_TYPE].
  *
  * If you are writing a library, it is important to note that it is possible to convert a type from using
- * G_DECLARE_FINAL_TYPE() to G_DECLARE_DERIVABLE_TYPE() without breaking API or ABI.  As a precaution, you
- * should therefore use G_DECLARE_FINAL_TYPE() until you are sure that it makes sense for your class to be
+ * `G_DECLARE_FINAL_TYPE()` to `G_DECLARE_DERIVABLE_TYPE()` without breaking API or ABI.  As a precaution, you
+ * should therefore use `G_DECLARE_FINAL_TYPE()` until you are sure that it makes sense for your class to be
  * subclassed.  Once a class structure has been exposed it is not possible to change its size or remove or
  * reorder items without breaking the API and/or ABI.
  *
@@ -1687,7 +1693,7 @@ guint     g_type_get_type_registration_serial (void);
  *
  * - g_autoptr() support being added for your type, based on the type of your parent class
  *
- * You can only use this function if your parent type also supports g_autoptr().
+ * You can only use this function if your parent type also supports `g_autoptr()`.
  *
  * Because the type macro (`GTK_TYPE_FROBBER` in the above example) is not a callable, you must continue to
  * manually define this as a macro for yourself.
@@ -1696,14 +1702,14 @@ guint     g_type_get_type_registration_serial (void);
  * to be used in the usual way with export control and API versioning macros.
  *
  * If you are writing a library, it is important to note that it is possible to convert a type from using
- * G_DECLARE_FINAL_TYPE() to G_DECLARE_DERIVABLE_TYPE() without breaking API or ABI.  As a precaution, you
- * should therefore use G_DECLARE_FINAL_TYPE() until you are sure that it makes sense for your class to be
+ * [func@GObject.DECLARE_FINAL_TYPE] to `G_DECLARE_DERIVABLE_TYPE()` without breaking API or ABI.  As a precaution, you
+ * should therefore use `G_DECLARE_FINAL_TYPE()` until you are sure that it makes sense for your class to be
  * subclassed.  Once a class structure has been exposed it is not possible to change its size or remove or
  * reorder items without breaking the API and/or ABI.  If you want to declare your own class structure, use
- * G_DECLARE_DERIVABLE_TYPE().  If you want to declare a class without exposing the class or instance
- * structures, use G_DECLARE_FINAL_TYPE().
+ * `G_DECLARE_DERIVABLE_TYPE()`.  If you want to declare a class without exposing the class or instance
+ * structures, use `G_DECLARE_FINAL_TYPE()`.
  *
- * If you must use G_DECLARE_DERIVABLE_TYPE() you should be sure to include some padding at the bottom of your
+ * If you must use `G_DECLARE_DERIVABLE_TYPE()` you should be sure to include some padding at the bottom of your
  * class structure to leave space for the addition of future virtual functions.
  *
  * Since: 2.44
@@ -1931,9 +1937,9 @@ guint     g_type_get_type_registration_serial (void);
  *
  * A convenience macro for type implementations.
  *
- * Similar to G_DEFINE_TYPE(), but defines a final type.
+ * Similar to [func@GObject.DEFINE_TYPE], but defines a final type.
  *
- * See G_DEFINE_TYPE_EXTENDED() for an example.
+ * See [func@GObject.DEFINE_TYPE_EXTENDED] for an example.
  *
  * Since: 2.70
  */
@@ -2289,7 +2295,7 @@ static void     type_name##_class_intern_init (gpointer klass) \
 static void     type_name##_init              (TypeName        *self); \
 static void     type_name##_class_init        (TypeName##Class *klass); \
 static GType    type_name##_get_type_once     (void); \
-static gpointer type_name##_parent_class = NULL; \
+G_GNUC_UNUSED static gpointer type_name##_parent_class = NULL; \
 static gint     TypeName##_private_offset; \
 \
 _G_DEFINE_TYPE_EXTENDED_CLASS_INIT(TypeName, type_name) \
@@ -2675,34 +2681,34 @@ const gchar *    g_type_name_from_class         (GTypeClass	*g_class);
 #define _G_TYPE_CIFT(ip, ft)            (g_type_check_instance_is_fundamentally_a ((GTypeInstance*) ip, ft))
 #ifdef	__GNUC__
 #  define _G_TYPE_CIT(ip, gt)             (G_GNUC_EXTENSION ({ \
-  GTypeInstance *__inst = (GTypeInstance*) ip; GType __t = gt; gboolean __r; \
-  if (!__inst) \
-    __r = FALSE; \
-  else if (__inst->g_class && __inst->g_class->g_type == __t) \
-    __r = TRUE; \
+  GTypeInstance *_inst = (GTypeInstance*) ip; GType _t = gt; gboolean _r; \
+  if (!_inst) \
+    _r = FALSE; \
+  else if (_inst->g_class && _inst->g_class->g_type == _t) \
+    _r = TRUE; \
   else \
-    __r = g_type_check_instance_is_a (__inst, __t); \
-  __r; \
+    _r = g_type_check_instance_is_a (_inst, _t); \
+  _r; \
 }))
 #  define _G_TYPE_CCT(cp, gt)             (G_GNUC_EXTENSION ({ \
-  GTypeClass *__class = (GTypeClass*) cp; GType __t = gt; gboolean __r; \
-  if (!__class) \
-    __r = FALSE; \
-  else if (__class->g_type == __t) \
-    __r = TRUE; \
+  GTypeClass *_class = (GTypeClass*) cp; GType _t = gt; gboolean _r; \
+  if (!_class) \
+    _r = FALSE; \
+  else if (_class->g_type == _t) \
+    _r = TRUE; \
   else \
-    __r = g_type_check_class_is_a (__class, __t); \
-  __r; \
+    _r = g_type_check_class_is_a (_class, _t); \
+  _r; \
 }))
 #  define _G_TYPE_CVH(vl, gt)             (G_GNUC_EXTENSION ({ \
-  const GValue *__val = (const GValue*) vl; GType __t = gt; gboolean __r; \
-  if (!__val) \
-    __r = FALSE; \
-  else if (__val->g_type == __t)		\
-    __r = TRUE; \
+  const GValue *_val = (const GValue*) vl; GType _t = gt; gboolean _r; \
+  if (!_val) \
+    _r = FALSE; \
+  else if (_val->g_type == _t)		\
+    _r = TRUE; \
   else \
-    __r = g_type_check_value_holds (__val, __t); \
-  __r; \
+    _r = g_type_check_value_holds (_val, _t); \
+  _r; \
 }))
 #else  /* !__GNUC__ */
 #  define _G_TYPE_CIT(ip, gt)             (g_type_check_instance_is_a ((GTypeInstance*) ip, gt))

@@ -799,7 +799,7 @@ typedef enum {
  *
  * GResourceFlags give information about a particular file inside a resource
  * bundle.
- * 
+ *
  * Since: 2.32
  **/
 typedef enum {
@@ -812,7 +812,7 @@ typedef enum {
  * @G_RESOURCE_LOOKUP_FLAGS_NONE: No flags set.
  *
  * GResourceLookupFlags determine how resource path lookups are handled.
- * 
+ *
  * Since: 2.32
  **/
 typedef enum /*< flags >*/ {
@@ -1232,12 +1232,6 @@ typedef enum
  * delayed until g_dbus_connection_start_message_processing() is called.
  * @G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_REQUIRE_SAME_USER: When authenticating
  * as a server, require the UID of the peer to be the same as the UID of the server. (Since: 2.68)
- * @G_DBUS_CONNECTION_FLAGS_CROSS_NAMESPACE: When authenticating, try to use
- *  protocols that work across a Linux user namespace boundary, even if this
- *  reduces interoperability with older D-Bus implementations. This currently
- *  affects client-side `EXTERNAL` authentication, for which this flag makes
- *  connections to a server in another user namespace succeed, but causes
- *  a deadlock when connecting to a GDBus server older than 2.73.3. Since: 2.74
  *
  * Flags used when creating a new #GDBusConnection.
  *
@@ -1251,6 +1245,21 @@ typedef enum {
   G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION = (1<<3),
   G_DBUS_CONNECTION_FLAGS_DELAY_MESSAGE_PROCESSING = (1<<4),
   G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_REQUIRE_SAME_USER GIO_AVAILABLE_ENUMERATOR_IN_2_68 = (1<<5),
+  /**
+   * G_DBUS_CONNECTION_FLAGS_CROSS_NAMESPACE:
+   *
+   * Prefers protocols that work across user namespace boundaries during
+   * authentication.
+   *
+   * When authenticating, try to use protocols that work across a Linux user
+   * namespace boundary, even if this reduces interoperability with older D-Bus
+   * implementations. This currently affects client-side `EXTERNAL`
+   * authentication, for which this flag makes connections to a server in
+   * another user namespace succeed, but causes a deadlock when connecting to a
+   * GDBus server older than 2.73.3.
+   *
+   * Since: 2.74
+   */
   G_DBUS_CONNECTION_FLAGS_CROSS_NAMESPACE GIO_AVAILABLE_ENUMERATOR_IN_2_74 = (1<<6)
 } G_GNUC_FLAG_ENUM GDBusConnectionFlags;
 
@@ -1510,8 +1519,9 @@ typedef enum
  * @G_APPLICATION_IS_LAUNCHER: Don't try to become the primary instance.
  * @G_APPLICATION_HANDLES_OPEN: This application handles opening files (in
  *     the primary instance). Note that this flag only affects the default
- *     implementation of local_command_line(), and has no effect if
- *     %G_APPLICATION_HANDLES_COMMAND_LINE is given.
+ *     implementation of local_command_line(). It can be useful even when
+ *     using `G_APPLICATION_HANDLES_COMMAND_LINE` to handle
+ *     `org.freedesktop.Application.open`.
  *     See g_application_run() for details.
  * @G_APPLICATION_HANDLES_COMMAND_LINE: This application handles command line
  *     arguments (in the primary instance). Note that this flag only affect
@@ -1617,7 +1627,6 @@ typedef enum {
 
 /**
  * GTlsCertificateFlags:
- * @G_TLS_CERTIFICATE_NO_FLAGS: No flags set. Since: 2.74
  * @G_TLS_CERTIFICATE_UNKNOWN_CA: The signing certificate authority is
  *   not known.
  * @G_TLS_CERTIFICATE_BAD_IDENTITY: The certificate does not match the
@@ -1649,6 +1658,13 @@ typedef enum {
  * Since: 2.28
  */
 typedef enum {
+  /**
+   * G_TLS_CERTIFICATE_NO_FLAGS:
+   *
+   * No flags set.
+   *
+   * Since: 2.74
+   */
   G_TLS_CERTIFICATE_NO_FLAGS GIO_AVAILABLE_ENUMERATOR_IN_2_74 = 0,
   G_TLS_CERTIFICATE_UNKNOWN_CA    = (1 << 0),
   G_TLS_CERTIFICATE_BAD_IDENTITY  = (1 << 1),
@@ -1685,9 +1701,6 @@ typedef enum {
  * @G_TLS_CHANNEL_BINDING_TLS_SERVER_END_POINT:
  *    [`tls-server-end-point`](https://tools.ietf.org/html/rfc5929#section-4)
  *    binding type
- * @G_TLS_CHANNEL_BINDING_TLS_EXPORTER:
- *    [`tls-exporter`](https://www.rfc-editor.org/rfc/rfc9266.html) binding
- *    type. Since: 2.74
  *
  * The type of TLS channel binding data to retrieve from #GTlsConnection
  * or #GDtlsConnection, as documented by RFC 5929 or RFC 9266. The
@@ -1700,6 +1713,13 @@ GIO_AVAILABLE_TYPE_IN_2_66
 typedef enum {
   G_TLS_CHANNEL_BINDING_TLS_UNIQUE,
   G_TLS_CHANNEL_BINDING_TLS_SERVER_END_POINT,
+  /**
+   * G_TLS_CHANNEL_BINDING_TLS_EXPORTER:
+   *
+   * [`tls-exporter`](https://www.rfc-editor.org/rfc/rfc9266.html) binding type.
+   *
+   * Since: 2.74
+   */
   G_TLS_CHANNEL_BINDING_TLS_EXPORTER GIO_AVAILABLE_ENUMERATOR_IN_2_74,
 } GTlsChannelBindingType;
 

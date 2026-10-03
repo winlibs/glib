@@ -1,5 +1,5 @@
 project('glib', 'c',
-  version : '2.88.3',
+  version : '2.90.0',
   # NOTE: See the policy in docs/meson-version.md before changing the Meson dependency
   meson_version : '>= 1.4.0',
   default_options : [
@@ -7,9 +7,9 @@ project('glib', 'c',
     'warning_level=3',
     # FIXME: After https://github.com/mesonbuild/meson/issues/13639 is
     # fixed, change this to
-    # meson.version().version_compare('>=FIXED_MESON_VERSION') ? 'c_std=gnu99,c99' : 'c_std=gnu99'
+    # meson.version().version_compare('>=FIXED_MESON_VERSION') ? 'c_std=gnu11,c11' : 'c_std=gnu11'
     # to avoid a warning on MSVC.
-    'c_std=gnu99'
+    'c_std=gnu11',
   ]
 )
 
@@ -240,6 +240,7 @@ if valgrind.found()
     env: common_test_env,
     timeout_multiplier: 20,
   )
+  meson.add_devenv({'VALGRIND_OPTS': '--suppressions=' + valgrind_suppression_file.full_path()}, method : 'append')
 endif
 
 add_project_arguments('-D_GNU_SOURCE', language: ['c', 'cpp', 'objc', 'objcpp'])
@@ -341,8 +342,6 @@ if glib_build_static_only
   glibconfig_conf.set('GIO_STATIC_COMPILATION', '1')
   glibconfig_conf.set('GMODULE_STATIC_COMPILATION', '1')
   glibconfig_conf.set('GI_STATIC_COMPILATION', '1')
-  glibconfig_conf.set('G_INTL_STATIC_COMPILATION', '1')
-  glibconfig_conf.set('FFI_STATIC_BUILD', '1')
 endif
 
 # Cygwin glib port maintainers made it clear
@@ -613,11 +612,9 @@ if cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Werror=implicit-function-declaration',
     '-Werror=missing-prototypes',
     '-Werror=pointer-sign',
+    # Public headers must support C99, even though GLib itself requires C11.
+    '-Werror=typedef-redefinition',
     '-Wno-string-plus-int',
-    # We require a compiler that supports C11 even though it's not yet a
-    # strict requirement, so allow typedef redefinition not to break clang and
-    # older gcc versions.
-    '-Wno-typedef-redefinition',
   ]
   warning_cxx_args = warning_common_args
   warning_c_link_args = [
@@ -1125,6 +1122,10 @@ if cc.links(clock_gettime_test_code, name : 'clock_gettime')
 elif cc.links(clock_gettime_test_code, args : '-lrt', name : 'clock_gettime in librt')
   glib_conf.set('HAVE_CLOCK_GETTIME', 1)
   librt = cc.find_library('rt')
+endif
+
+if cc.has_function('clock_nanosleep', prefix : '#include <time.h>')
+  glib_conf.set('HAVE_CLOCK_NANOSLEEP', 1)
 endif
 
 dlopen_dlsym_test_code = '''
@@ -2298,7 +2299,7 @@ subproject('gvdb', default_options: {'tests': false})
 gvdb_dep = dependency('gvdb')
 
 libm = cc.find_library('m', required : false)
-libffi_dep = dependency('libffi', version : '>= 3.0.0', default_options: {'werror': false})
+libffi_dep = dependency('libffi', version : '>= 3.0.0', default_options: {'werror': false, 'tests': false, 'doc': false})
 
 libz_dep = dependency('zlib')
 

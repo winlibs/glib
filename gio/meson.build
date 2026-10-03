@@ -345,6 +345,7 @@ contenttype_sources = []
 portal_sources = []
 unix_sources = []
 win32_sources = []
+have_gio_launch_desktop = false
 
 # This is also used by tests/gdbus-daemon, so use files() to include the path
 gdbus_daemon_sources = [
@@ -409,6 +410,7 @@ if host_system != 'windows'
   if glib_have_cocoa
     settings_sources += files('gnextstepsettingsbackend.m')
     contenttype_sources += files('gcontenttype-osx.m')
+    unix_sources += files('glocalfile-osx.m')
     unix_sources += files('gosxappinfo.m')
     framework_dep = dependency('appleframeworks', modules : ['Foundation', 'CoreFoundation', 'AppKit'])
     platform_deps += [framework_dep]
@@ -427,6 +429,7 @@ if host_system != 'windows'
         launch_desktop_sources += files('../glib/gjournal-private.c')
       endif
 
+      have_gio_launch_desktop = true
       gio_launch_desktop = executable('gio-launch-desktop', launch_desktop_sources,
         dependencies: [app_profile_dep],
         include_directories : glibinc,
@@ -448,6 +451,7 @@ if host_system != 'windows'
     unix_sources += files(
       'gnetworkmonitornetlink.c',
       'gnetworkmonitornm.c',
+      'gnetworkmonitorsystemd.c',
     )
   endif
 else

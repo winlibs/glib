@@ -29,6 +29,7 @@
 #include "gdbuserror.h"
 #include "gdbusprivate.h"
 #include "gdbusconnection.h"
+#include "gioerror.h"
 
 #include "glibintl.h"
 
@@ -942,7 +943,8 @@ g_bus_unown_name (guint owner_id)
                                                 &error);
           if (result == NULL)
             {
-              g_warning ("Error releasing name %s: %s", client->name, error->message);
+              if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CLOSED))
+                g_warning ("Error releasing name %s: %s", client->name, error->message);
               g_error_free (error);
             }
           else

@@ -76,8 +76,7 @@ GQuark g_markup_error_quark (void);
 
 /**
  * GMarkupParseFlags:
- * @G_MARKUP_DEFAULT_FLAGS: No special behaviour. Since: 2.74
- * @G_MARKUP_DO_NOT_USE_THIS_UNSUPPORTED_FLAG: flag you should not use
+ * @G_MARKUP_DO_NOT_USE_THIS_UNSUPPORTED_FLAG: Flag you should not use
  * @G_MARKUP_TREAT_CDATA_AS_TEXT: When this flag is set, CDATA marked
  *     sections are not passed literally to the @passthrough function of
  *     the parser. Instead, the content of the section (without the
@@ -97,6 +96,13 @@ GQuark g_markup_error_quark (void);
  */
 typedef enum
 {
+  /**
+   * G_MARKUP_DEFAULT_FLAGS:
+   *
+   * No special behaviour.
+   *
+   * Since: 2.74
+   */
   G_MARKUP_DEFAULT_FLAGS GLIB_AVAILABLE_ENUMERATOR_IN_2_74 = 0,
   G_MARKUP_DO_NOT_USE_THIS_UNSUPPORTED_FLAG = 1 << 0,
   G_MARKUP_TREAT_CDATA_AS_TEXT              = 1 << 1,
@@ -235,6 +241,16 @@ void                 g_markup_parse_context_get_tag_start (GMarkupParseContext *
                                                            gsize               *line_number,
                                                            gsize               *char_number,
                                                            gsize               *offset);
+GLIB_AVAILABLE_IN_2_90
+void                 g_markup_parse_context_get_attribute_position
+                                                          (GMarkupParseContext *context,
+                                                           unsigned int         attr,
+                                                           size_t              *start_lines,
+                                                           size_t              *start_chars,
+                                                           size_t              *start_offset,
+                                                           size_t              *end_lines,
+                                                           size_t              *end_chars,
+                                                           size_t              *end_offset);
 
 GLIB_AVAILABLE_IN_ALL
 gpointer             g_markup_parse_context_get_user_data (GMarkupParseContext *context);
