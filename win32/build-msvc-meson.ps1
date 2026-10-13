@@ -4,6 +4,7 @@ param(
     [Parameter(Mandatory)] [String] $Configuration,
     [String] $PythonPath = "",
     [String] $PlatformToolset = "",
+    [String] $WindowsSdkVersion = "",
     [Switch] $Clean
 )
 
@@ -78,32 +79,34 @@ function Resolve-VcVarsVersion {
         [String] $Toolset
     )
 
-    $prefix = switch ($Toolset) {
-        "v141" { "14.1" }
-        "v142" { "14.2" }
+    $pattern = switch ($Toolset) {
+        "v141" { '^14\.1\d\.' }
+        "v142" { '^14\.2\d\.' }
+        "v143" { '^14\.[34]\d\.' }
+        "v145" { '^14\.5\d\.' }
         default { "" }
     }
 
-    if (-not $prefix) {
+    if (-not $pattern) {
         return ""
+    }
+
+    if ($Platform -eq 'ARM64' -and $env:VSCMD_ARG_TGT_ARCH -eq 'arm64' -and
+        $env:VCToolsVersion -match $pattern -and $env:VSINSTALLDIR -eq $VsInstall) {
+        return $env:VCToolsVersion.TrimEnd('\')
     }
 
     $toolsDir = Join-Path $VsInstall "VC\Tools\MSVC"
     $tool = Get-ChildItem $toolsDir -Directory |
-        Where-Object { $_.Name.StartsWith($prefix) } |
-        Sort-Object Name -Descending |
+        Where-Object { $_.Name -match $pattern } |
+        Sort-Object { [version] $_.Name } -Descending |
         Select-Object -First 1
 
     if (-not $tool) {
         throw "MSVC toolset $Toolset was not found under $toolsDir"
     }
 
-    $parts = $tool.Name.Split(".")
-    if ($parts.Count -lt 2) {
-        throw "Could not parse MSVC toolset version $($tool.Name)"
-    }
-
-    return "$($parts[0]).$($parts[1])"
+    return $tool.Name
 }
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -114,7 +117,23 @@ if (-not $pythonUserScripts) {
     throw "Could not determine Python user scripts directory"
 }
 
-$vsInstall = Resolve-VsInstall $VSVersion
+$installationVersion = switch ($PlatformToolset) {
+    'v141' { $VSVersion }
+    'v142' { '16' }
+    'v143' { '17' }
+    'v145' { '18' }
+    default { $VSVersion }
+}
+# The project directory identifies the output layout, not the compiler instance.
+# Preserve an ARM64 developer environment selected by the caller.
+if ($Platform -eq 'ARM64' -and $env:VSCMD_ARG_TGT_ARCH -eq 'arm64' -and $env:VSINSTALLDIR) {
+    $vsInstall = $env:VSINSTALLDIR
+    if (-not $WindowsSdkVersion -and $env:WindowsSDKVersion) {
+        $WindowsSdkVersion = $env:WindowsSDKVersion.TrimEnd('\')
+    }
+} else {
+    $vsInstall = Resolve-VsInstall $installationVersion
+}
 $vcvars = Join-Path $vsInstall "VC\Auxiliary\Build\vcvarsall.bat"
 if (-not (Test-Path $vcvars)) {
     throw "vcvarsall.bat was not found at $vcvars"
@@ -152,9 +171,13 @@ if ($Clean) {
 
 $cmdFile = Join-Path ([System.IO.Path]::GetTempPath()) ("glib-meson-build-{0}-{1}-{2}.cmd" -f $VSVersion, $Platform, $Configuration)
 $vcVarsArgs = "`"$vcvars`" $vcArch"
+if ($WindowsSdkVersion) {
+    $vcVarsArgs += " $WindowsSdkVersion"
+}
 if ($toolsetVersion) {
     $vcVarsArgs += " -vcvars_ver=$toolsetVersion"
 }
+Write-Host "MSVC environment: $vcVarsArgs"
 
 $setupMode = if (Test-Path (Join-Path $buildDir "meson-private\coredata.dat")) { "--reconfigure" } else { "" }
 $mesonOptions = @(
@@ -204,7 +227,8 @@ if ($useWinlibDeps) {
 }
 
 $mesonSetupCommand = "`"$python`" -m mesonbuild.mesonmain " + ($mesonOptions -join " ")
-$mesonInstallCommand = "`"$python`" -m mesonbuild.mesonmain install -C `"$buildDir`" --skip-subprojects"
+$mesonBuildCommand = "`"$python`" -m mesonbuild.mesonmain compile -C `"$buildDir`""
+$mesonInstallCommand = "`"$python`" -m mesonbuild.mesonmain install -C `"$buildDir`" --no-rebuild --skip-subprojects"
 $depsEnvCommands = ""
 if ($useWinlibDeps) {
     $depsInclude = Join-Path $depsRoot "include"
@@ -229,6 +253,8 @@ set "PATH=$pythonDir;$pythonUserScripts;!PATH!"
 $depsEnvCommands
 if exist "$prefix" rmdir /s /q "$prefix"
 $mesonSetupCommand
+if errorlevel 1 exit /b !errorlevel!
+$mesonBuildCommand
 if errorlevel 1 exit /b !errorlevel!
 $mesonInstallCommand
 if errorlevel 1 exit /b !errorlevel!
