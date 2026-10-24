@@ -1,5 +1,5 @@
 project('glib', 'c',
-  version : '2.90.0',
+  version : '2.90.1',
   # NOTE: See the policy in docs/meson-version.md before changing the Meson dependency
   meson_version : '>= 1.4.0',
   default_options : [
@@ -104,29 +104,6 @@ soversion = 0
 current = binary_age - interface_age
 library_version = '@0@.@1@.@2@'.format(soversion, current, interface_age)
 darwin_versions = [current + 1, '@0@.@1@'.format(current + 1, interface_age)]
-
-winlib_legacy_dll_names = get_option('winlib_legacy_dll_names') and host_system == 'windows' and cc.get_argument_syntax() == 'msvc'
-glib_lib_name = winlib_legacy_dll_names ? 'glib-2' : 'glib-2.0'
-gobject_lib_name = winlib_legacy_dll_names ? 'gobject-2' : 'gobject-2.0'
-gmodule_lib_name = winlib_legacy_dll_names ? 'gmodule-2' : 'gmodule-2.0'
-gio_lib_name = winlib_legacy_dll_names ? 'gio-2' : 'gio-2.0'
-gthread_lib_name = winlib_legacy_dll_names ? 'gthread-2' : 'gthread-2.0'
-
-dll_prefix = cc.get_argument_syntax() == 'msvc' ? '' : 'lib'
-glib_dll_filename = winlib_legacy_dll_names ? 'glib-2.dll' : dll_prefix + 'glib-' + glib_api_version + '-' + soversion.to_string() + '.dll'
-gobject_dll_filename = winlib_legacy_dll_names ? 'gobject-2.dll' : dll_prefix + 'gobject-' + glib_api_version + '-' + soversion.to_string() + '.dll'
-gmodule_dll_filename = winlib_legacy_dll_names ? 'gmodule-2.dll' : dll_prefix + 'gmodule-' + glib_api_version + '-' + soversion.to_string() + '.dll'
-gio_dll_filename = winlib_legacy_dll_names ? 'gio-2.dll' : dll_prefix + 'gio-' + glib_api_version + '-' + soversion.to_string() + '.dll'
-gthread_dll_filename = winlib_legacy_dll_names ? 'gthread-2.dll' : dll_prefix + 'gthread-' + glib_api_version + '-' + soversion.to_string() + '.dll'
-
-library_version_kwargs = {}
-if not winlib_legacy_dll_names
-  library_version_kwargs = {
-    'version': library_version,
-    'soversion': soversion,
-    'darwin_versions': darwin_versions,
-  }
-endif
 
 configinc = include_directories('.')
 glibinc = include_directories('glib')
@@ -233,15 +210,12 @@ add_test_setup('unstable_tests',
   #suites: ['flaky', 'unstable']
 )
 
-thorough_test_wrapper = find_program('./.gitlab-ci/thorough-test-wrapper.sh', required: false)
-if thorough_test_wrapper.found()
-  add_test_setup('thorough',
-    exclude_suites: ['flaky', 'failing', 'performance'],
-    env: common_test_env,
-    timeout_multiplier: 20,
-    exe_wrapper: [thorough_test_wrapper],
-  )
-endif
+add_test_setup('thorough',
+  exclude_suites: ['flaky', 'failing', 'performance'],
+  env: common_test_env,
+  timeout_multiplier: 20,
+  exe_wrapper: [find_program('./.gitlab-ci/thorough-test-wrapper.sh', required: true)],
+)
 
 # Allow the tests to be easily run under valgrind using --setup=valgrind
 valgrind = find_program('valgrind', required: false)
@@ -601,7 +575,7 @@ foreach m : struct_members
 endforeach
 
 # Compiler flags
-if cc.get_id() == 'gcc' or cc.get_id() == 'clang'
+if cc.get_argument_syntax() == 'gcc'
   warning_common_args = [
     '-Wduplicated-branches',
     '-Wfloat-conversion',
@@ -1836,7 +1810,7 @@ g_sizet_compatibility = {
 # Do separate checks for gcc/clang (and ignore other compilers for now), since
 # we need to explicitly pass -Werror to the compilers.
 # FIXME: https://github.com/mesonbuild/meson/issues/5399
-if cc.get_id() == 'gcc' or cc.get_id() == 'clang'
+if cc.get_argument_syntax() == 'gcc'
   foreach type_name, size_compatibility : g_sizet_compatibility
     g_sizet_compatibility += { type_name: size_compatibility and
       cc.compiles(
@@ -2134,7 +2108,7 @@ if cc.get_id() == 'msvc' or cc.get_id() == 'clang-cl' or cc.links(atomictest, na
     glib_conf.set('__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4', true)
   endif
 
-  if cc.get_id() == 'gcc' or cc.get_id() == 'clang'
+  if cc.get_argument_syntax() == 'gcc'
     sync_swap_test = '''
       int main() {
         int atomic = 2;
@@ -2276,14 +2250,6 @@ else
   libiconv = dependency('iconv')
 endif
 
-winlib_deps_root = get_option('winlib_deps_root')
-winlib_deps_inc = []
-winlib_deps_libdir = ''
-if winlib_deps_root != ''
-  winlib_deps_inc = include_directories(join_paths(winlib_deps_root, 'include'))
-  winlib_deps_libdir = join_paths(winlib_deps_root, 'lib')
-endif
-
 pcre2_req = '>=10.32'
 pcre2_options = [
   'default_library=static',
@@ -2333,23 +2299,9 @@ subproject('gvdb', default_options: {'tests': false})
 gvdb_dep = dependency('gvdb')
 
 libm = cc.find_library('m', required : false)
-if winlib_deps_root != ''
-  libffi_dep = declare_dependency(
-    include_directories: winlib_deps_inc,
-    dependencies: cc.find_library('libffi', dirs: winlib_deps_libdir, required: true),
-  )
-else
-  libffi_dep = dependency('libffi', version : '>= 3.0.0', default_options: {'werror': false, 'tests': false, 'doc': false})
-endif
+libffi_dep = dependency('libffi', version : '>= 3.0.0', default_options: {'werror': false, 'tests': false, 'doc': false})
 
-if winlib_deps_root != ''
-  libz_dep = declare_dependency(
-    include_directories: winlib_deps_inc,
-    dependencies: cc.find_library('zlib_a', dirs: winlib_deps_libdir, required: true),
-  )
-else
-  libz_dep = dependency('zlib')
-endif
+libz_dep = dependency('zlib')
 
 libatomic_test_code = '''
   int main (int argc, char ** argv) {
@@ -2366,21 +2318,8 @@ endif
 # implementations. This could be extended if issues are found in some platforms.
 libintl_deps = []
 libintl_prefix = '#include <libintl.h>'
-if winlib_deps_root != ''
-  libintl = declare_dependency(
-    include_directories: winlib_deps_inc,
-    dependencies: cc.find_library('libintl_a', dirs: winlib_deps_libdir, required: true),
-  )
-  if cc.has_function('ngettext', dependencies : libintl, prefix: libintl_prefix)
-    libintl_deps += [libintl]
-  else
-    error('winlib_deps_root libintl is missing ngettext')
-  endif
-else
-  libintl = dependency('intl', required: false)
-endif
-
-if winlib_deps_root == '' and libintl.found() and libintl.type_name() != 'internal'
+libintl = dependency('intl', required: false)
+if libintl.found() and libintl.type_name() != 'internal'
   # libintl supports different threading APIs, which may not
   # require additional flags, but it defaults to using pthreads if
   # found. Meson's "threads" dependency does not allow you to
@@ -2407,9 +2346,7 @@ if winlib_deps_root == '' and libintl.found() and libintl.type_name() != 'intern
   endif
 endif
 
-if winlib_deps_root != ''
-  have_bind_textdomain_codeset = cc.has_function('bind_textdomain_codeset', dependencies: libintl_deps, prefix: libintl_prefix)
-elif libintl.found() and libintl.type_name() != 'internal'
+if libintl.found() and libintl.type_name() != 'internal'
   have_bind_textdomain_codeset = cc.has_function('bind_textdomain_codeset', dependencies: libintl_deps, prefix: libintl_prefix)
 else
   # using proxy-libintl fallback
@@ -2786,6 +2723,89 @@ if gobject_introspection.version().version_compare('>=1.83.2')
   gir_args += [
     '--doc-format=gi-docgen',
   ]
+endif
+
+glib_exec_preloaded_libs = []
+glib_exec_preloaded_env = {}
+
+if host_system in ['ios', 'darwin']
+  glib_exec_var_library_path = 'DYLD_LIBRARY_PATH'
+  glib_exec_var_preload = 'DYLD_INSERT_LIBRARIES'
+  glib_exec_var_preload_separator = ':'
+else
+  glib_exec_var_library_path = 'LD_LIBRARY_PATH'
+  glib_exec_var_preload = 'LD_PRELOAD'
+  glib_exec_var_preload_separator = ' '
+endif
+
+glib_exec_asan_options_disable = []
+glib_exec_asan_option_ignore_preload = ''
+if 'address' in glib_sanitizers
+  # libasan needs to be the first in the preload list, and that we can’t
+  # guarantee that, so we have to disable its link order checking when using
+  # LD_PRELOAD in tests.
+  glib_exec_asan_option_ignore_preload = 'verify_asan_link_order=false'
+  glib_exec_asan_options_disable = [
+    glib_exec_asan_option_ignore_preload,
+    'start_deactivated=true',
+    'detect_leaks=false',
+  ]
+endif
+
+if cc.get_argument_syntax() == 'gcc'
+  test_preloaded_libs = []
+
+  if 'address' in glib_sanitizers
+    # ASAN has to be the first in list
+    test_preloaded_libs += 'asan'
+  endif
+
+  if 'undefined' in glib_sanitizers
+    test_preloaded_libs += 'ubsan'
+  endif
+
+  if 'leak' in glib_sanitizers
+    test_preloaded_libs += 'lsan'
+  endif
+
+  if 'thread' in glib_sanitizers
+    test_preloaded_libs += 'tsan'
+
+    if enable_dtrace
+      # Tracing is not meant to be thread-safe, so let's make it incompatible with tsan.
+      error('Using Tracing together with thread sanitizer is not supported.')
+    endif
+  endif
+
+  # FIXME: Ideally meson should handle this for us
+  # https://github.com/mesonbuild/meson/issues/13249
+  foreach libname: test_preloaded_libs
+    lib = run_command(cc,
+      '-print-file-name=lib@0@.so'.format(libname),
+      check: true,
+    ).stdout().strip()
+
+    # Support linker script files
+    if run_command('grep', '-qI', '^INPUT', lib, check: false).returncode() == 0
+      out = run_command('cat', lib, check: true).stdout()
+      lib = out.split('(')[1].split(')')[0].strip()
+    endif
+
+    if lib != '' and lib[0] == '/'
+      message('Found @0@ library as @1@'.format(libname, lib))
+      glib_exec_preloaded_libs += '@0@'.format(files(lib)[0].full_path())
+    else
+      warning('No library found for ' + libname + ', sanitizers [' +
+        ', '.join(glib_sanitizers) + '] executions may fail')
+    endif
+  endforeach
+
+  if glib_exec_preloaded_libs.length() > 0
+    glib_exec_preloaded_env = {
+      glib_exec_var_preload: glib_exec_var_preload_separator.join(
+        glib_exec_preloaded_libs),
+    }
+  endif
 endif
 
 pkg = import('pkgconfig')

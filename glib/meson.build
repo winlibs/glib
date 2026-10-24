@@ -359,7 +359,7 @@ if host_system == 'windows'
   if glib_build_shared
     glib_rc_conf = configuration_data({
       'NAME': 'GLib',
-      'FILENAME': glib_dll_filename,
+      'FILENAME': (cc.get_argument_syntax() == 'msvc' ? '' : 'lib') + 'glib-' + glib_api_version + '-' + soversion.to_string() + '.dll',
       'DESCRIPTION': 'GLib is a general-purpose, portable utility library',
     })
     glib_rc_conf.merge_from(rc_conf_base)
@@ -419,9 +419,12 @@ if use_pcre2_static_flag
 endif
 
 glib_c_args = ['-DG_LOG_DOMAIN="GLib"'] + glib_c_args_internal + pcre2_static_args
-libglib = library(glib_lib_name,
+libglib = library('glib-2.0',
   glib_dtrace_obj, glib_dtrace_hdr,
   sources : [glib_deprecated_sources, glib_sources],
+  version : library_version,
+  soversion : soversion,
+  darwin_versions : darwin_versions,
   install : true,
   # intl.lib is not compatible with SAFESEH
   link_args : [noseh_link_args, glib_link_flags, win32_ldflags],
@@ -442,7 +445,6 @@ libglib = library(glib_lib_name,
   c_args : glib_c_args,
   objc_args : glib_c_args,
   gnu_symbol_visibility : 'hidden',
-  kwargs : library_version_kwargs,
 )
 
 libglib_dep = declare_dependency(

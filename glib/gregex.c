@@ -1162,7 +1162,7 @@ g_match_info_free (GMatchInfo *match_info)
  * The match is done on the string passed to the match function, so you
  * cannot free it before calling this function.
  *
- * Returns: %TRUE is the string matched, %FALSE otherwise
+ * Returns: %TRUE if the string matched, %FALSE otherwise
  *
  * Since: 2.14
  */
@@ -1177,7 +1177,9 @@ g_match_info_next (GMatchInfo  *match_info,
 
   g_return_val_if_fail (match_info != NULL, FALSE);
   g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-  g_return_val_if_fail (match_info->pos_valid, FALSE);
+
+  if (!match_info->pos_valid)
+    return FALSE;
 
   prev_match_start = match_info->offsets[0];
   prev_match_end = match_info->offsets[1];
@@ -1273,11 +1275,18 @@ g_match_info_next (GMatchInfo  *match_info,
           match_info->matches = PCRE2_ERROR_NOMATCH;
           return FALSE;
         }
-
-      match_info->pos = NEXT_CHAR (match_info->regex,
-                                   &match_info->string[match_info->pos]) -
-                                   match_info->string;
-      match_info->pos_valid = TRUE;
+      else if (match_info->pos > match_info->string_len)
+        {
+          /* we have one last empty match at the end of the string */
+          match_info->pos_valid = FALSE;
+        }
+      else
+        {
+          match_info->pos = NEXT_CHAR (match_info->regex,
+                                       &match_info->string[match_info->pos]) -
+                                       match_info->string;
+          match_info->pos_valid = TRUE;
+        }
     }
   else
     {
@@ -2498,7 +2507,7 @@ g_regex_match_simple (const gchar        *pattern,
  * you use any #GMatchInfo method (except g_match_info_free()) after
  * freeing or modifying @string then the behaviour is undefined.
  *
- * Returns: %TRUE is the string matched, %FALSE otherwise
+ * Returns: %TRUE if the string matched, %FALSE otherwise
  *
  * Since: 2.14
  */
@@ -2575,7 +2584,7 @@ g_regex_match (const GRegex      *regex,
  * }
  * ]|
  *
- * Returns: %TRUE is the string matched, %FALSE otherwise
+ * Returns: %TRUE if the string matched, %FALSE otherwise
  *
  * Since: 2.14
  */
@@ -2634,7 +2643,7 @@ g_regex_match_full (const GRegex      *regex,
  * you use any #GMatchInfo method (except g_match_info_free()) after
  * freeing or modifying @string then the behaviour is undefined.
  *
- * Returns: %TRUE is the string matched, %FALSE otherwise
+ * Returns: %TRUE if the string matched, %FALSE otherwise
  *
  * Since: 2.14
  */
@@ -2698,7 +2707,7 @@ g_regex_match_all (const GRegex      *regex,
  * you use any #GMatchInfo method (except g_match_info_free()) after
  * freeing or modifying @string then the behaviour is undefined.
  *
- * Returns: %TRUE is the string matched, %FALSE otherwise
+ * Returns: %TRUE if the string matched, %FALSE otherwise
  *
  * Since: 2.14
  */
